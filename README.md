@@ -1,4 +1,4 @@
-wastewater
+WaMEx
 ==========
 
-Wastewater
+Wastewater Management Expert
