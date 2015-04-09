@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the WaMEx Test Content Type feature.
+ */
+
+include_once 'wamex_test_content_type.features.inc';
