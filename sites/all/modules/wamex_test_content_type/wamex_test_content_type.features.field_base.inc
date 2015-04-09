@@ -52,6 +52,7 @@ function wamex_test_content_type_field_default_field_bases() {
     'type' => 'text',
   );
 
+<<<<<<< dev
   // Exported field_base: 'field_test_text_2'
   $field_bases['field_test_text_2'] = array(
     'active' => 1,
@@ -97,5 +98,7 @@ function wamex_test_content_type_field_default_field_bases() {
   );
 
 >>>>>>> dev-features
+=======
+>>>>>>> local
   return $field_bases;
 }

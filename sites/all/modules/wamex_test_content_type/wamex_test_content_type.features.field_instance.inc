@@ -94,6 +94,7 @@ function wamex_test_content_type_field_default_field_instances() {
     ),
   );
 
+<<<<<<< dev
   // Exported field_instance: 'node-test-field_test_text_2'
   $field_instances['node-test-field_test_text_2'] = array(
     'bundle' => 'test',
@@ -177,15 +178,20 @@ function wamex_test_content_type_field_default_field_instances() {
   );
 
 >>>>>>> dev-features
+=======
+>>>>>>> local
   // Translatables
   // Included for use with string extractors like potx.
   t('Body');
   t('Test Text');
+<<<<<<< dev
   t('Test Text 2');
 <<<<<<< HEAD
 =======
   t('Test Text 3');
 >>>>>>> dev-features
+=======
+>>>>>>> local
 
   return $field_instances;
 }

@@ -1,14 +1,12 @@
 name = WaMEx Test Content Type
-description = Added new fields
 core = 7.x
 package = Features
-version = 7.x-0.3
-project = wamex_test_content_type
 dependencies[] = features
 dependencies[] = text
 features[features_api][] = api:2
 features[field_base][] = body
 features[field_base][] = field_test_text
+<<<<<<< dev
 features[field_base][] = field_test_text_2
 <<<<<<< HEAD
 features[field_instance][] = node-test-body
@@ -21,4 +19,8 @@ features[field_instance][] = node-test-field_test_text
 features[field_instance][] = node-test-field_test_text_2
 features[field_instance][] = node-test-field_test_text_3
 >>>>>>> dev-features
+=======
+features[field_instance][] = node-test-body
+features[field_instance][] = node-test-field_test_text
+>>>>>>> local
 features[node][] = test
