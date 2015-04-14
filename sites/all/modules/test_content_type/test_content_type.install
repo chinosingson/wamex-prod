@@ -1,0 +1,8 @@
+﻿<?php
+  /**
+ * Added Test Text 2 Field
+ */
+function test_content_type_update_7002(&$sandbox) {
+  features_revert_module('test_content_type');
+}
+?>
