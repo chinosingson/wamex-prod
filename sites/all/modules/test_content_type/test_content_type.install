@@ -1,11 +1,8 @@
 ﻿<?php
-  /**
- * Added Multiple Fields
- * - Date field
- * - Link field
- * - May bayad ito!
+/**
+ * Removed Test Text 2
  */
-function test_content_type_update_7004(&$sandbox) {
+function test_content_type_update_7005(&$sandbox) {
   features_revert_module('test_content_type');
 }
 ?>
