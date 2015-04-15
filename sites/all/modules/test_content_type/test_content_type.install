@@ -1,8 +1,0 @@
-﻿<?php
-/**
- * Removed Test Text 2
- */
-function test_content_type_update_7005(&$sandbox) {
-  features_revert_module('test_content_type');
-}
-?>
