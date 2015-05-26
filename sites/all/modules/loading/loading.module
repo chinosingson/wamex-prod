@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loading feature.
+ */
+
+include_once 'loading.features.inc';
