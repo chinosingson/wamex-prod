@@ -1,0 +1,12 @@
+name = Loading Fields
+description = Loading content type fields
+core = 7.x
+package = Content Type
+version = 7.x-1.0
+project = wamex_loading_fields
+dependencies[] = entityreference
+dependencies[] = features
+features[features_api][] = api:2
+features[field_base][] = field_loading_project
+features[field_instance][] = node-loading-field_loading_project
+project path = sites/all/modules/wamex/features
