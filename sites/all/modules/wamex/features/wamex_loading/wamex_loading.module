@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loading feature.
+ */
+
+include_once 'wamex_loading.features.inc';
