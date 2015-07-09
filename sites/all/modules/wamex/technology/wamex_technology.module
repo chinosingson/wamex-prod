@@ -1,0 +1,780 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *   Wamex Technology module.
+ */
+
+/**
+* Implementation of hook_help().
+*/
+function wamex_technology_help($path, $arg) {
+  switch ($path) {
+
+    case 'admin/help#wamex_technology':
+      return '<p>'. t('Technology Module for Wamex.') .'</p>';
+  }
+}
+
+/**
+* Implementation of hook_help().
+*/
+function wamex_technology_permission() {
+  return array(
+    'access simple page' => array(
+      'title' => t('administer wamex technology'),
+      'description' => t('Allow users to access Wamex Technology page'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function wamex_technology_menu() {
+	
+  $items = array();
+	
+  $items['admin/config/wamex/technology'] = array(
+    'title' => 'Wamex Technology',
+    'description' => "Wamex Technology",
+    'page callback' => 'wamex_technology_list',
+    'access arguments' => array('administer wamex technology'),
+  );
+  $items['admin/config/wamex/technology/add'] = array(
+    'title' => 'Add Technology',
+	'page callback' => 'drupal_get_form',
+	'page arguments' => array('wamex_technology_form'),
+    'access arguments' => array('administer wamex technology'),
+    'type' => MENU_LOCAL_TASK,
+  );  
+  $items['admin/config/wamex/technology/edit/%'] = array(
+    'title' => 'Edit Technology',
+	'page callback' => 'drupal_get_form',
+	'page arguments' => array('wamex_technology_form', 5),
+    'access arguments' => array('administer wamex technology'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/config/wamex/technology/delete/%'] = array(
+    'title' => 'Delete Technology',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wamex_technology_delete_confirm', 5),
+    'access arguments' => array('administer wamex technology'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/config/wamex/technology/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  return $items;
+}
+
+
+/**
+ * Return a listing of all defined URL aliases and titles.
+ * When filter key passed, perform a standard search on the given key,
+ * and return the list of matching URL aliases.
+ */
+function wamex_technology_list($keys = NULL) {
+  // Add the filter form above the overview table.
+ // $output = drupal_get_form('dsmisc_path_title_filter_form', $keys);
+
+ /* if ($keys) {
+    // Replace wildcards with MySQL/PostgreSQL wildcards.
+    $keys = preg_replace('!\*+!', '%', $keys);
+    $sql = "SELECT * FROM {wamex_technology} WHERE name LIKE '%%%s%%'";
+  }
+  else {
+    $sql = 'SELECT * FROM {wamex_technology}';
+  } */
+  
+  $header = array(
+    array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
+	array('data' => t('CAPEX PE > 1'), 'field' => 'capex_1'),
+    array('data' => t('CAPEX PE > 10'), 'field' => 'capex_10'),
+    array('data' => t('CAPEX PE > 200'), 'field' => 'capex_200'),
+    array('data' => t('CAPEX PE > 2000 A'), 'field' => 'capex_2ka'),
+	array('data' => t('CAPEX PE > 2000 B'), 'field' => 'capex_2kb'),
+	array('data' => t('CAPEX PE > 20000 A'), 'field' => 'capex_20ka'),
+    array('data' => t('CAPEX PE > 20000 B'), 'field' => 'capex_20kb'),
+	array('data' => t('CAPEX PE > 200000 A'), 'field' => 'capex_200ka'),
+    array('data' => t('CAPEX PE > 200000 B'), 'field' => 'capex_200kb'),
+	array('data' => t('CAPEX PE > 600000 A'), 'field' => 'capex_600ka'),
+    array('data' => t('CAPEX PE > 600000 B'), 'field' => 'capex_600kb'),
+	array('data' => t('CAPEX PE > 1200000 A'), 'field' => 'capex_1200ka'),
+    array('data' => t('CAPEX PE > 1200000 B'), 'field' => 'capex_1200kb'),
+	array('data' => t('OPEX PE > 1'), 'field' => 'opex_1'),
+	array('data' => t('OPEX PE > 10'), 'field' => 'opex_10'),
+    array('data' => t('OPEX PE > 200'), 'field' => 'opex_200'),
+	array('data' => t('OPEX PE > 2000 A'), 'field' => 'opex_2ka'),
+	array('data' => t('OPEX PE > 2000 B'), 'field' => 'opex_2kb'),
+    array('data' => t('OPEX PE > 20000 A'), 'field' => 'opex_20ka'),
+	array('data' => t('OPEX PE > 20000 B'), 'field' => 'opex_20kb'),
+    array('data' => t('OPEX PE > 200000 A'), 'field' => 'opex_200ka'),
+	array('data' => t('OPEX PE > 200000 B'), 'field' => 'opex_200kb'),
+    array('data' => t('OPEX PE > 600000 A'), 'field' => 'opex_600ka'),
+	array('data' => t('OPEX PE > 600000 B'), 'field' => 'opex_600kb'),
+    array('data' => t('Land Requirement > 200'), 'field' => 'land_200'),
+	array('data' => t('Land Requirement > 1000'), 'field' => 'land_1k'),
+    array('data' => t('Sludge Treatment > 10'), 'field' => 'sludge_10'),
+	array('data' => t('Sludge Treatment > 2000'), 'field' => 'sludge_2k'),
+    array('data' => t('Sludge Treatment > 20000'), 'field' => 'sludge_20k'),
+	array('data' => t('Sludge Treatment > 200000'), 'field' => 'sludge_200k'),
+    array('data' => t('BOD Treatment max'), 'field' => 'max_bod'),
+	array('data' => t('TSS Removal %'), 'field' => 'max_tss_p'),
+    array('data' => t('TSS Removal max'), 'field' => 'max_tss_a'),
+	array('data' => t('N Removal %'), 'field' => 'max_n_p'),
+    array('data' => t('N Removal max'), 'field' => 'max_n_a'),
+	array('data' => t('P Removal'), 'field' => 'max_p_a	'),
+    array('data' => t('Complexity Level'), 'field' => 'complex'),
+	array('data' => t('Land Requirement'), 'field' => 'req_land'),
+    array('data' => t('Chemical Requirement'), 'field' => 'req_chem'),
+	array('data' => t('Energy Requirement'), 'field' => 'req_energy'),
+    array('data' => t('Operation and Maintenance Simplicity'), 'field' => 'om'),
+	array('data' => t('Shock Resistance'), 'field' => 'shock'),
+    array('data' => t('Flow Resistance'), 'field' => 'flows'),
+	array('data' => t('Toxicity Resistance'), 'field' => 'toxic'),
+    array('data' => t('Sludge Handling'), 'field' => 'sludge'),	
+    array('data' => t('Operations'), 'colspan' => '2')
+  );
+    
+  
+  //$sql .= tablesort_sql($header);
+  //$result = pager_query($sql, 50, 0 , NULL, $keys);
+
+  $select = db_select('wamex_technology', 'wt')->extend('Tablesort');
+  $results = $select->fields('wt', array('tid', 'name', 'capex_1', 'capex_10', 'capex_200', 'capex_2ka', 'capex_2kb', 'capex_20ka', 'capex_20kb', 'capex_200ka', 'capex_200kb', 'capex_600ka', 'capex_600kb', 'capex_1200ka', 'capex_1200kb', 
+															  'opex_1', 'opex_10', 'opex_200', 'opex_2ka', 'opex_2kb', 'opex_20ka', 'opex_20kb', 'opex_200ka', 'opex_200kb', 'opex_600ka', 'opex_600kb', 'land_200', 'land_1k', 
+															  'sludge_10', 'sludge_2k', 'sludge_20k', 'sludge_200k', 'max_bod', 'max_tss_p', 'max_tss_a', 'max_n_p', 'max_n_a', 'max_p_a', 'complex', 
+															  'req_land', 'req_chem',  'req_energy', 'om', 'shock', 'flows', 'toxic', 'sludge'))->orderByHeader($header)->execute();
+  
+   $rows = array();
+   $destination = drupal_get_destination();
+   foreach ($results as $val) {
+    $rows[] = array(
+      $val->name,
+	  $val->capex_1, 
+	  $val->capex_10, 
+	  $val->capex_200, 
+	  $val->capex_2ka, 
+	  $val->capex_2kb, 
+	  $val->capex_20ka, 
+	  $val->capex_20kb, 
+	  $val->capex_200ka, 
+	  $val->capex_200kb, 
+	  $val->capex_600ka, 
+	  $val->capex_600kb, 
+	  $val->capex_1200ka, 
+	  $val->capex_1200kb, 
+	  $val->opex_1, 
+	  $val->opex_10, 
+	  $val->opex_200, 
+	  $val->opex_2ka,
+	  $val->opex_2kb,	  
+	  $val->opex_20ka, 
+	  $val->opex_20kb, 
+	  $val->opex_200ka, 
+	  $val->opex_200kb, 
+	  $val->opex_600ka, 
+	  $val->opex_600kb, 
+	  $val->land_200, 
+	  $val->land_1k, 
+	  $val->sludge_10, 
+	  $val->sludge_2k, 
+	  $val->sludge_20k, 
+	  $val->sludge_200k, 
+	  $val->max_bod, 
+	  $val->max_tss_p, 
+	  $val->max_tss_a, 
+	  $val->max_n_p, 
+	  $val->max_n_a, 
+	  $val->max_p_a, 
+	  $val->complex, 
+	  $val->req_land, 
+	  $val->req_chem,  
+	  $val->req_energy, 
+	  $val->om, 
+	  $val->shock, 
+	  $val->flows, 
+	  $val->toxic, 
+	  $val->sludge,
+	   l(t('edit'), "admin/config/wamex/technology/edit/$val->tid", array('query' => $destination)),
+       l(t('delete'), "admin/config/wamex/technology/delete/$val->tid", array('query' => $destination)),
+      );
+   }
+  
+  if (empty($rows)) {
+    $empty_message = $keys ? t('No URL aliases found.') : t('No URL aliases available.') ;
+    $rows[] = array(array('data' => $empty_message, 'colspan' => 48));
+  }
+
+  $output = theme('table', array('header' => $header, 'rows' =>$rows));
+  //$output .= theme('pager', NULL, 50, 0);
+
+  return $output;
+}
+
+/**
+ * Return a form for editing or creating an individual technology.
+ */
+function wamex_technology_form($form, &$form_state, $tid = NULL) {
+  
+  if ($tid) {
+	  	  
+    $data = db_query('SELECT * FROM {wamex_technology} WHERE tid = :tid', array(':tid' => $tid))->fetchObject();
+	
+	foreach ($data as $key => $val) {
+        $edit[$key] = $val;
+	 }	 
+  }
+  else {
+	 $edit = NULL;  
+  }
+  
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Technology Name'),
+    '#default_value' => $edit['name'],
+    '#maxlength' => 255,
+    '#size' => 60,
+    '#description' => t('Title of the technology'),
+    '#required' => TRUE,
+  );
+
+  $form['capex_1'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 1'),
+    '#default_value' => $edit['capex_1'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 1'),
+  );
+  
+  $form['capex_10'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 10'),
+    '#default_value' => $edit['capex_10'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 10'),
+  );
+  
+  $form['capex_200'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 200'),
+    '#default_value' => $edit['capex_200'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 200'),
+  );
+
+  $form['capex_2ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 2000 A'),
+    '#default_value' => $edit['capex_2ka'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 2000 A'),
+  );
+
+  $form['capex_2kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 2000 B'),
+    '#default_value' => $edit['capex_2kb'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 2000 B'),
+  );
+
+  $form['capex_20ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 20000 A'),
+    '#default_value' => $edit['capex_20ka'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 20000 A'),
+  );
+
+  $form['capex_20kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 20000 B'),
+    '#default_value' => $edit['capex_20kb'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 20000 B'),
+  );
+
+  $form['capex_200ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 200000 A'),
+    '#default_value' => $edit['capex_200ka'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 200000 A'),
+  );
+
+  $form['capex_200kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 200000 B'),
+    '#default_value' => $edit['capex_200kb'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 200000 B'),
+  );
+
+  $form['capex_600ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 600000 A'),
+    '#default_value' => $edit['capex_600ka'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 600000 A'),
+  );
+
+  $form['capex_600kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 600000 B'),
+    '#default_value' => $edit['capex_600kb'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 600000 B'),
+  );
+
+  $form['capex_1200ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 1200000 A'),
+    '#default_value' => $edit['capex_1200ka'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 1200000 A'),
+  );
+
+  $form['capex_1200kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CAPEX PE > 1200000 B'),
+    '#default_value' => $edit['capex_1200kb'],
+    '#size' => 15,
+    '#description' => t('CAPEX PE > 1200000 B'),
+  );
+  
+  $form['opex_1'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 1'),
+    '#default_value' => $edit['opex_1'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 1'),
+  );
+
+  $form['opex_10'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 10'),
+    '#default_value' => $edit['opex_10'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 10'),
+  );
+
+  $form['opex_200'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 200'),
+    '#default_value' => $edit['opex_200'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 200'),
+  );
+
+  $form['opex_2ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 2000 A'),
+    '#default_value' => $edit['opex_2ka'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 2000 A'),
+  );
+
+  $form['opex_2kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 2000 B'),
+    '#default_value' => $edit['opex_2kb'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 2000 B'),
+  );
+
+  $form['opex_20ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 20000 A'),
+    '#default_value' => $edit['opex_20ka'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 20000 A'),
+  );
+
+  $form['opex_20kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 20000 B'),
+    '#default_value' => $edit['opex_20kb'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 20000 B'),
+  );
+
+  $form['opex_200ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 200000 A'),
+    '#default_value' => $edit['opex_200ka'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 200000 A'),
+  );
+
+  $form['opex_200kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 200000 B'),
+    '#default_value' => $edit['opex_200kb'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 200000 B'),
+  );
+
+  $form['opex_600ka'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 600000 A'),
+    '#default_value' => $edit['opex_600ka'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 600000 A'),
+  );
+
+  $form['opex_600kb'] = array(
+    '#type' => 'textfield',
+    '#title' => t('OPEX PE > 600000 B'),
+    '#default_value' => $edit['opex_600kb'],
+    '#size' => 15,
+    '#description' => t('OPEX PE > 600000 B'),
+  );
+
+  $form['land_200'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Land Requirement > 200'),
+    '#default_value' => $edit['land_200'],
+    '#size' => 15,
+    '#description' => t('Land Requirement > 200'),
+  );
+
+  $form['land_1k'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Land Requirement > 1000'),
+    '#default_value' => $edit['land_1k'],
+    '#size' => 15,
+    '#description' => t('Land Requirement > 1000'),
+  );
+
+  $form['sludge_10'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sludge Treatment > 10'),
+    '#default_value' => $edit['sludge_10'],
+    '#size' => 15,
+    '#description' => t('Sludge Treatment > 10'),
+  );
+
+  $form['sludge_2k'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sludge Treatment > 2000'),
+    '#default_value' => $edit['sludge_2k'],
+    '#size' => 15,
+    '#description' => t('Sludge Treatment > 2000'),
+  );
+
+  $form['sludge_20k'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sludge Treatment > 20000'),
+    '#default_value' => $edit['sludge_20k'],
+    '#size' => 15,
+    '#description' => t('Sludge Treatment > 20000'),
+  );
+
+  $form['sludge_200k'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sludge Treatment > 200000'),
+    '#default_value' => $edit['sludge_200k'],
+    '#size' => 15,
+    '#description' => t('Sludge Treatment > 200000'),
+  );
+
+  $form['max_bod'] = array(
+    '#type' => 'textfield',
+    '#title' => t('BOD Treatment max'),
+    '#default_value' => $edit['max_bod'],
+    '#size' => 15,
+    '#description' => t('BOD Treatment max'),
+  );
+
+  $form['max_tss_p'] = array(
+    '#type' => 'textfield',
+    '#title' => t('TSS Removal %'),
+    '#default_value' => $edit['max_tss_p'],
+    '#size' => 15,
+    '#description' => t('TSS Removal %'),
+  );
+
+  $form['max_tss_a'] = array(
+    '#type' => 'textfield',
+    '#title' => t('TSS Removal max'),
+    '#default_value' => $edit['max_tss_a'],
+    '#size' => 15,
+    '#description' => t('TSS Removal max'),
+  );
+
+  $form['max_n_p'] = array(
+    '#type' => 'textfield',
+    '#title' => t('N Removal %'),
+    '#default_value' => $edit['max_n_p'],
+    '#size' => 15,
+    '#description' => t('N Removal %'),
+  );
+
+  $form['max_n_a'] = array(
+    '#type' => 'textfield',
+    '#title' => t('N Removal max'),
+    '#default_value' => $edit['max_n_a'],
+    '#size' => 15,
+    '#description' => t('N Removal max'),
+  );
+
+  $form['max_p_a'] = array(
+    '#type' => 'textfield',
+    '#title' => t('P Removal'),
+    '#default_value' => $edit['max_p_a'],
+    '#size' => 15,
+    '#description' => t('P Removal'),
+  );
+  
+  $form['complex'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Complexity Level'),
+    '#default_value' => $edit['complex'],
+    '#size' => 15,
+    '#description' => t('Complexity Level'),
+  );
+
+  $form['req_land'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Land Requirement'),
+    '#default_value' => $edit['req_land'],
+    '#size' => 15,
+    '#description' => t('Land Requirement'),
+  );
+
+  $form['req_chem'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Chemical Requirement'),
+    '#default_value' => $edit['req_chem'],
+    '#size' => 15,
+    '#description' => t('Chemical Requirement'),
+  );
+
+  $form['req_energy'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Energy Requirement'),
+    '#default_value' => $edit['req_energy'],
+    '#size' => 15,
+    '#description' => t('Energy Requirement'),
+  );
+
+  $form['om'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Operation and Maintenance Simplicity'),
+    '#default_value' => $edit['om'],
+    '#size' => 15,
+    '#description' => t('Operation and Maintenance Simplicity'),
+  );
+
+  $form['shock'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Shock Resistance'),
+    '#default_value' => $edit['shock'],
+    '#size' => 15,
+    '#description' => t('Shock Resistance'),
+  );
+
+  $form['flows'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Flow Resistance'),
+    '#default_value' => $edit['flows'],
+    '#size' => 15,
+    '#description' => t('Flow Resistance'),
+  );
+
+  $form['toxic'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Toxicity Resistance'),
+    '#default_value' => $edit['toxic'],
+    '#size' => 15,
+    '#description' => t('Toxicity Resistance'),
+  );
+
+  $form['sludge'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sludge Handling'),
+    '#default_value' => $edit['sludge'],
+    '#size' => 15,
+    '#description' => t('Sludge Handling'),
+  );
+              
+  if ($edit['tid']) {
+    $form['tid'] = array('#type' => 'hidden', '#value' => $edit['tid']);
+    $form['submit'] = array('#type' => 'submit', '#value' => t('Update'));
+  }
+  else {
+    $form['submit'] = array('#type' => 'submit', '#value' => t('Create new'));
+  }
+
+  return $form;
+}
+
+
+/**
+ * Verify that a new URL alias is valid
+ */
+function wamex_technology_form_validate($form, &$form_state) {
+  $name = $form_state['values']['name'];
+    
+  if (db_query("SELECT COUNT(name) FROM {wamex_technology} WHERE name = ':name'", array(':name' =>$name))->fetchField()) {
+    form_set_error('path', t('The technology name %name is already in use.', array('%name' => $name)));
+  }
+}
+
+/**
+ * Save a new URL alias and title to the database.
+ */
+function wamex_technology_form_submit($form, &$form_state) {
+    
+  if (empty($form_state['values']['tid'])) {	 
+  	  	  db_insert('wamex_technology') // Table name no longer needs {}
+			->fields(array(
+				'name' => $form_state['values']['name'],
+				'capex_1' => $form_state['values']['capex_1'] ? $form_state['values']['capex_1'] : NULL, 
+				'capex_10' => $form_state['values']['capex_10'] ? $form_state['values']['capex_10'] : NULL, 
+				'capex_200' => $form_state['values']['capex_200'] ? $form_state['values']['capex_200'] : NULL, 
+				'capex_2ka' => $form_state['values']['capex_2ka'] ? $form_state['values']['capex_2ka'] : NULL,
+				'capex_2kb' => $form_state['values']['capex_2kb'] ? $form_state['values']['capex_2kb'] : NULL, 				
+				'capex_20ka' => $form_state['values']['capex_20ka'] ? $form_state['values']['capex_20ka'] : NULL, 
+				'capex_20kb' => $form_state['values']['capex_20kb'] ? $form_state['values']['capex_20kb'] : NULL, 
+				'capex_200ka' => $form_state['values']['capex_200ka'] ? $form_state['values']['capex_200ka'] : NULL, 
+				'capex_200kb' => $form_state['values']['capex_200kb'] ? $form_state['values']['capex_200kb'] :  NULL, 
+				'capex_600ka' => $form_state['values']['capex_600ka'] ? $form_state['values']['capex_600ka'] : NULL, 
+				'capex_600kb' => $form_state['values']['capex_600kb'] ? $form_state['values']['capex_600kb'] : NULL, 
+				'capex_1200ka' => $form_state['values']['capex_1200ka'] ? $form_state['values']['capex_1200ka'] : NULL,
+				'capex_1200kb' => $form_state['values']['capex_1200kb'] ? $form_state['values']['capex_1200kb'] : NULL, 
+				'opex_1' => $form_state['values']['opex_1'] ? $form_state['values']['opex_1'] : NULL,
+				'opex_10' => $form_state['values']['opex_10'] ? $form_state['values']['opex_10'] : NULL,
+				'opex_200' => $form_state['values']['opex_200'] ? $form_state['values']['opex_200'] : NULL,
+				'opex_2ka' => $form_state['values']['opex_2ka'] ? $form_state['values']['opex_2ka'] : NULL,
+				'opex_2kb' => $form_state['values']['opex_2kb'] ? $form_state['values']['opex_2kb'] : NULL,
+				'opex_20ka' => $form_state['values']['opex_20ka'] ? $form_state['values']['opex_20ka'] : NULL,
+				'opex_20kb' => $form_state['values']['opex_20kb'] ? $form_state['values']['opex_20kb'] : NULL,
+				'opex_200ka' => $form_state['values']['opex_200ka'] ? $form_state['values']['opex_200ka'] : NULL, 
+				'opex_200kb' => $form_state['values']['opex_200kb'] ? $form_state['values']['opex_200kb'] : NULL, 
+				'opex_600ka' => $form_state['values']['opex_600ka'] ? $form_state['values']['opex_600ka'] : NULL, 
+				'opex_600kb' => $form_state['values']['opex_600kb'] ? $form_state['values']['opex_600kb'] : NULL, 
+				'land_200' => $form_state['values']['land_200'] ? $form_state['values']['land_200'] : NULL, 
+				'land_1k' => $form_state['values']['land_1k'] ? $form_state['values']['land_1k'] : NULL, 
+				'sludge_10' => $form_state['values']['sludge_10'] ? $form_state['values']['sludge_10'] : NULL, 
+				'sludge_2k' => $form_state['values']['sludge_2k'] ? $form_state['values']['sludge_2k'] : NULL, 
+				'sludge_20k' => $form_state['values']['sludge_20k'] ? $form_state['values']['sludge_20k'] : NULL, 
+				'sludge_200k' => $form_state['values']['sludge_200k'] ? $form_state['values']['sludge_200k'] : NULL, 
+				'max_bod' => $form_state['values']['max_bod'] ? $form_state['values']['max_bod'] : NULL, 
+				'max_tss_p' => $form_state['values']['max_tss_p'] ? $form_state['values']['max_tss_p'] : NULL, 
+				'max_tss_a' => $form_state['values']['max_tss_a'] ? $form_state['values']['max_tss_a'] : NULL, 
+				'max_n_p' => $form_state['values']['max_n_p'] ? $form_state['values']['max_n_p'] : NULL, 
+				'max_n_a' => $form_state['values']['max_n_a'] ? $form_state['values']['max_n_a'] : NULL, 
+				'max_p_a' => $form_state['values']['max_p_a'] ? $form_state['values']['max_p_a'] : NULL, 
+				'complex' => $form_state['values']['complex'] ? $form_state['values']['complex'] : NULL, 
+				'req_land' => $form_state['values']['req_land'] ? $form_state['values']['req_land'] : NULL, 
+				'req_chem' => $form_state['values']['req_chem'] ? $form_state['values']['req_chem'] : NULL,  
+				'req_energy' => $form_state['values']['req_energy'] ? $form_state['values']['req_energy'] : NULL, 
+				'om' => $form_state['values']['om'] ? $form_state['values']['om'] :  NULL, 
+				'shock' => $form_state['values']['shock'] ? $form_state['values']['shock'] : NULL, 
+				'flows' => $form_state['values']['flows'] ? $form_state['values']['flows'] :  NULL, 
+				'toxic' => $form_state['values']['toxic'] ? $form_state['values']['toxic'] : NULL, 
+				'sludge' => $form_state['values']['sludge'] ? $form_state['values']['sludge'] : NULL,
+			))
+			->execute();
+	
+  }
+  else {	  
+		db_update('wamex_technology')
+		  ->fields(array(
+			'name' => $form_state['values']['name'],
+			'capex_1' => $form_state['values']['capex_1'] ? $form_state['values']['capex_1'] : NULL, 
+			'capex_10' => $form_state['values']['capex_10'] ? $form_state['values']['capex_10'] : NULL, 
+			'capex_200' => $form_state['values']['capex_200'] ? $form_state['values']['capex_200'] : NULL, 
+			'capex_2ka' => $form_state['values']['capex_2ka'] ? $form_state['values']['capex_2ka'] : NULL,
+			'capex_2kb' => $form_state['values']['capex_2kb'] ? $form_state['values']['capex_2kb'] : NULL, 				
+			'capex_20ka' => $form_state['values']['capex_20ka'] ? $form_state['values']['capex_20ka'] : NULL, 
+			'capex_20kb' => $form_state['values']['capex_20kb'] ? $form_state['values']['capex_20kb'] : NULL, 
+			'capex_200ka' => $form_state['values']['capex_200ka'] ? $form_state['values']['capex_200ka'] : NULL, 
+			'capex_200kb' => $form_state['values']['capex_200kb'] ? $form_state['values']['capex_200kb'] :  NULL, 
+			'capex_600ka' => $form_state['values']['capex_600ka'] ? $form_state['values']['capex_600ka'] : NULL, 
+			'capex_600kb' => $form_state['values']['capex_600kb'] ? $form_state['values']['capex_600kb'] : NULL, 
+			'capex_1200ka' => $form_state['values']['capex_1200ka'] ? $form_state['values']['capex_1200ka'] : NULL,
+			'capex_1200kb' => $form_state['values']['capex_1200kb'] ? $form_state['values']['capex_1200kb'] : NULL, 
+			'opex_1' => $form_state['values']['opex_1'] ? $form_state['values']['opex_1'] : NULL,
+			'opex_10' => $form_state['values']['opex_10'] ? $form_state['values']['opex_10'] : NULL,
+			'opex_200' => $form_state['values']['opex_200'] ? $form_state['values']['opex_200'] : NULL,
+			'opex_2ka' => $form_state['values']['opex_2ka'] ? $form_state['values']['opex_2ka'] : NULL,
+			'opex_2kb' => $form_state['values']['opex_2kb'] ? $form_state['values']['opex_2kb'] : NULL,
+			'opex_20ka' => $form_state['values']['opex_20ka'] ? $form_state['values']['opex_20ka'] : NULL,
+			'opex_20kb' => $form_state['values']['opex_20kb'] ? $form_state['values']['opex_20kb'] : NULL,
+			'opex_200ka' => $form_state['values']['opex_200ka'] ? $form_state['values']['opex_200ka'] : NULL, 
+			'opex_200kb' => $form_state['values']['opex_200kb'] ? $form_state['values']['opex_200kb'] : NULL, 
+			'opex_600ka' => $form_state['values']['opex_600ka'] ? $form_state['values']['opex_600ka'] : NULL, 
+			'opex_600kb' => $form_state['values']['opex_600kb'] ? $form_state['values']['opex_600kb'] : NULL, 
+			'land_200' => $form_state['values']['land_200'] ? $form_state['values']['land_200'] : NULL, 
+			'land_1k' => $form_state['values']['land_1k'] ? $form_state['values']['land_1k'] : NULL, 
+			'sludge_10' => $form_state['values']['sludge_10'] ? $form_state['values']['sludge_10'] : NULL, 
+			'sludge_2k' => $form_state['values']['sludge_2k'] ? $form_state['values']['sludge_2k'] : NULL, 
+			'sludge_20k' => $form_state['values']['sludge_20k'] ? $form_state['values']['sludge_20k'] : NULL, 
+			'sludge_200k' => $form_state['values']['sludge_200k'] ? $form_state['values']['sludge_200k'] : NULL, 
+			'max_bod' => $form_state['values']['max_bod'] ? $form_state['values']['max_bod'] : NULL, 
+			'max_tss_p' => $form_state['values']['max_tss_p'] ? $form_state['values']['max_tss_p'] : NULL, 
+			'max_tss_a' => $form_state['values']['max_tss_a'] ? $form_state['values']['max_tss_a'] : NULL, 
+			'max_n_p' => $form_state['values']['max_n_p'] ? $form_state['values']['max_n_p'] : NULL, 
+			'max_n_a' => $form_state['values']['max_n_a'] ? $form_state['values']['max_n_a'] : NULL, 
+			'max_p_a' => $form_state['values']['max_p_a'] ? $form_state['values']['max_p_a'] : NULL, 
+			'complex' => $form_state['values']['complex'] ? $form_state['values']['complex'] : NULL, 
+			'req_land' => $form_state['values']['req_land'] ? $form_state['values']['req_land'] : NULL, 
+			'req_chem' => $form_state['values']['req_chem'] ? $form_state['values']['req_chem'] : NULL,  
+			'req_energy' => $form_state['values']['req_energy'] ? $form_state['values']['req_energy'] : NULL, 
+			'om' => $form_state['values']['om'] ? $form_state['values']['om'] :  NULL, 
+			'shock' => $form_state['values']['shock'] ? $form_state['values']['shock'] : NULL, 
+			'flows' => $form_state['values']['flows'] ? $form_state['values']['flows'] :  NULL, 
+			'toxic' => $form_state['values']['toxic'] ? $form_state['values']['toxic'] : NULL, 
+			'sludge' => $form_state['values']['sludge'] ? $form_state['values']['sludge'] : NULL,
+		  ))
+		  ->condition('tid',$form_state['values']['tid'] , '=')
+		  ->execute();
+  }
+
+  drupal_set_message(t('The technology has been saved.'));
+  $form_state['redirect'] = 'admin/config/wamex/technology';
+  return;
+}
+
+
+function wamex_technology_delete_confirm($form, $form_state, $tid) {
+		
+  $name = db_select('wamex_technology', 'wt')
+				->fields('wt', array('name'))
+				->condition('tid', $tid)
+				->execute()
+				->fetchField();
+				
+				
+  if (user_access('administer wamex technology')) {
+	$form['tid'] = array('#type' => 'hidden', '#value' => $tid);
+    $output = confirm_form($form,
+      t('Are you sure you want to delete %name?', array('%name' => $name)),
+      isset($_GET['destination']) ? $_GET['destination'] : 'admin/config/wamex/technology');
+  }
+  return $output;
+}
+
+/**
+ * Execute URL alias deletion
+ */
+function wamex_technology_delete_confirm_submit($form, &$form_state) {
+  if ($form_state['values']['confirm']) {
+    	
+	db_delete('wamex_technology')
+	  ->condition('tid', $form_state['values']['tid'])
+	  ->execute();
+	
+	drupal_set_message(t('The technology has been deleted.'));
+    $form_state['redirect'] = 'admin/config/wamex/technology';
+    return;
+  }
+}

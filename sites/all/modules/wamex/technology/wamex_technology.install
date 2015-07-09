@@ -1,0 +1,309 @@
+<?php
+// $Id$
+/**
+ * @file wamex_technology.install
+ * Contains install and update functions for wamex_technology.
+ */
+
+function wamex_technology_install() {
+  drupal_set_message('Installing Wamex Technology.');
+  drupal_install_schema('wamex_technology');
+}
+
+function wamex_technology_uninstall() {
+  drupal_uninstall_schema('wamex_technology');
+}
+
+/**
+ * wamex_technology's initial schema.
+ */
+function wamex_technology_schema() {
+  $schema['wamex_technology'] = array(
+    'description' => 'List of Wamex Technology.',
+    'fields' => array(
+      'tid' => array(
+        'description' => 'A unique id and title identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+		
+      'name' => array(
+        'description' => 'Technology name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+
+		'capex_1' => array(
+        'description' => 'CAPEX PE > 1',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_10' => array(
+        'description' => 'CAPEX PE > 10',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_200' => array(
+        'description' => 'CAPEX PE > 200',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_2ka' => array(
+        'description' => 'CAPEX PE > 2000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_2kb' => array(
+        'description' => 'CAPEX PE > 2000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_20ka' => array(
+        'description' => 'CAPEX PE > 20000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+				
+		'capex_20kb' => array(
+        'description' => 'CAPEX PE > 20000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_200ka' => array(
+        'description' => 'CAPEX PE > 200000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_200kb' => array(
+        'description' => 'CAPEX PE > 200000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'capex_600ka' => array(
+        'description' => 'CAPEX PE > 600000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_600kb' => array(
+        'description' => 'CAPEX PE > 600000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_1200ka' => array(
+        'description' => 'CAPEX PE > 1200000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'capex_1200kb' => array(
+        'description' => 'CAPEX PE > 1200000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'opex_1' => array(
+        'description' => 'OPEX PE > 1',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_10' => array(
+        'description' => 'OPEX PE > 10',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_200' => array(
+        'description' => 'OPEX PE > 200',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_2ka' => array(
+        'description' => 'OPEX PE > 2000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_2kb' => array(
+        'description' => 'OPEX PE > 2000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'opex_20ka' => array(
+        'description' => 'OPEX PE > 20000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_20kb' => array(
+        'description' => 'OPEX PE > 20000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_200ka' => array(
+        'description' => 'OPEX PE > 200000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_200kb' => array(
+        'description' => 'OPEX PE > 200000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'opex_600ka' => array(
+        'description' => 'OPEX PE > 600000 A',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'opex_600kb' => array(
+        'description' => 'OPEX PE > 600000 B',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'land_200' => array(
+        'description' => 'Land Requirement > 200',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'land_1k' => array(
+        'description' => 'Land Requirement > 1000',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'sludge_10' => array(
+        'description' => 'Sludge Treatment > 10',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'sludge_2k' => array(
+        'description' => 'Sludge Treatment > 2000',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'sludge_20k' => array(
+        'description' => 'Sludge Treatment > 20000',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'sludge_200k' => array(
+        'description' => 'Sludge Treatment > 200000',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'max_bod' => array(
+        'description' => 'BOD Treatment max',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'max_tss_p' => array(
+        'description' => 'TSS Removal %',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'max_tss_a' => array(
+        'description' => 'TSS Removal max',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'max_n_p' => array(
+        'description' => 'N Removal %',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'max_n_a' => array(
+        'description' => 'N Removal max',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'max_p_a' => array(
+        'description' => 'P Removal',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'complex' => array(
+        'description' => 'Complexity Level',
+        'type' => 'int'),
+
+		'req_land' => array(
+        'description' => 'Land Requirement',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'req_chem' => array(
+        'description' => 'Chemical Requirement',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'req_energy' => array(
+        'description' => 'Energy Requirement',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'om' => array(
+        'description' => 'Operation and Maintenance Simplicity',
+        'type' => 'float',
+        'size' => 'normal'),
+
+		'shock' => array(
+        'description' => 'Shock Resistance',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'flows' => array(
+        'description' => 'Flow Resistance',
+        'type' => 'float',
+        'size' => 'normal'),
+	
+		'toxic' => array(
+        'description' => 'Toxicity Resistance',
+        'type' => 'float',
+        'size' => 'normal'),
+		
+		'sludge' => array(
+        'description' => 'Sludge Handling',
+        'type' => 'float',
+        'size' => 'normal'),
+
+      ),
+    'indexes' => array(
+      'wamex_techonology_name' => array('name'),
+      ),
+    'primary key' => array('tid'),
+  );
+
+  return $schema;
+}
+
+/*
+function wamex_technology_update_7000() {
+  $ret = array();
+  $paths = array('about', 'countries', 'countries/afghanistan', 'countries/armenia',
+                 'countries/azerbaijan', 'countries/bangladesh', 'countries/bhutan',
+                 'countries/cambodia', 'countries/prc', 'countries/cook-islands',
+                 'countries/fiji', 'countries/georgia', 'countries/india',
+                 'countries/indonesia', 'countries/kazakhstan', 'countries/kiribati',
+                 'countries/kyrgyz-republic', 'countries/lao-pdr', 'countries/malaysia',
+                 'countries/maldives', 'countries/marshall-islands',
+                 'countries/micronesia', 'countries/mongolia', 'countries/myanmar',
+                 'countries/nauru', 'countries/nepal', 'countries/pakistan',
+                 'countries/palau', 'countries/papua-new-guinea', 'countries/philippines',
+                 'countries/samoa', 'countries/solomon-islands', 'countries/sri-lanka',
+                 'countries/tajikistan', 'countries/thailand', 'countries/timor-leste',
+                 'countries/tonga', 'countries/turkmenistan', 'countries/tuvalu',
+                 'countries/uzbekistan', 'countries/vanuatu', 'countries/viet-nam',
+                 'countries/subregional-programs', 'data', 'key-indicators/2011',
+                 'news', 'offices/europe', 'offices/japan', 'offices/north-america',
+                 'offices/pacific', 'offices/south-pacific', 'projects', 'projects/safeguards',
+                 'publications', 'sectors/agriculture', 'sectors/education', 'sectors/req_energy',
+                 'secotrs/finance', 'sectors/health', 'sectors/ict', 'sectors/industry-and-trade',
+                 'sectors/social-protection', 'sectors/transport', 'sectors/water',
+                 'site/accountability-mechanism', 'site/adf', 'site/business-opportunities',
+                 'site/careers', 'site/cofinancing', 'site/development-effectiveness',
+                 'site/disclosure', 'site/funds', 'site/integrity', 'site/investors',
+                 'site/knowledge-management', 'site/ngos', 'site/private-sector-financing',
+                 'site/public-sector-financing', 'themes/capacity-development',
+                 'themes/climate-change', 'themes/economic-growth', 'themes/environment',
+                 'themes/gender', 'themes/governance', 'themes/poverty',
+                 'themes/private-sector-development', 'themes/regional-coopertion',
+                 'themes/social-development', 'themes/urban-development');
+
+  foreach ($paths as $path) {
+    $ret[] = update_sql("UPDATE {wamex_technology_paths_titles} SET section_title=1 WHERE path='$path'");
+  }
+  return $ret;
+}
+*/

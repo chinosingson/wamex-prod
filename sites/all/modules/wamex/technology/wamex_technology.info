@@ -1,0 +1,5 @@
+; $Id$
+name = Wamex Technology Module
+description = Wamex Technology
+package = wamex
+core = 7.x
