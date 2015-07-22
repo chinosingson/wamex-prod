@@ -1,5 +1,6 @@
 ; $Id$
-name = Wamex Technology Module
-description = Wamex Technology
+name = WaMEx Technology Module
+description = Loads the WaMEx Technology Database into your WaMEx distribution
 package = wamex
+version = 7.x-1.0
 core = 7.x

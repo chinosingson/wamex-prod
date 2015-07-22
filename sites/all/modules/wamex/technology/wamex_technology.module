@@ -13,18 +13,18 @@ function wamex_technology_help($path, $arg) {
   switch ($path) {
 
     case 'admin/help#wamex_technology':
-      return '<p>'. t('Technology Module for Wamex.') .'</p>';
+      return '<p>'. t('WaMex technologies module.') .'</p>';
   }
 }
 
 /**
-* Implementation of hook_help().
+* Implementation of hook_permission().
 */
 function wamex_technology_permission() {
   return array(
     'access simple page' => array(
       'title' => t('administer wamex technology'),
-      'description' => t('Allow users to access Wamex Technology page'),
+      'description' => t('Allow users to access WaMEx Technology page'),
     ),
   );
 }
@@ -37,10 +37,10 @@ function wamex_technology_menu() {
   $items = array();
 	
   $items['admin/config/wamex/technology'] = array(
-    'title' => 'Wamex Technology',
-    'description' => "Wamex Technology",
+    'title' => 'WaMEx Technology',
+    'description' => "WaMEx Technology",
     'page callback' => 'wamex_technology_list',
-    'access arguments' => array('administer wamex technology'),
+    'access arguments' => array('administer WaMEx technology'),
   );
   $items['admin/config/wamex/technology/add'] = array(
     'title' => 'Add Technology',
