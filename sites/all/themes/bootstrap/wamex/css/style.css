@@ -1,0 +1,32 @@
+/**
+ * This file should get overwritten if Method 1 is used. If Method 2 is chosen,
+ * remove this comment and start adding your styles to this file.
+ */
+ 
+#project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
+#edit-body-und-0-format {
+	display: none;
+}
+
+#project-node-form .form-group {
+	border: 0px dotted green;
+	display: inline-block;
+	width: 100% !important;
+}
+
+#project-node-form  label {
+	/*border: 1px dotted red;*/
+	/*width: 25%;*/
+	/*float: left;*/
+	min-width: 160px;
+	display: inline-block;
+}
+
+#project-node-form input,
+#project-node-form textarea
+{
+	/*border: 1px dotted blue;*/
+	width: 70%;
+	/*float: right;*/
+	display: inline-block;
+}
