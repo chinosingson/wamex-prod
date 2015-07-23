@@ -8,12 +8,14 @@
 	display: none;
 }
 
+#project-node-form .row,
 #project-node-form .form-group {
 	border: 0px dotted green;
 	display: inline-block;
 	width: 100% !important;
 }
 
+#body-add-more-wrapper .form-textarea-wrapper textarea,
 #project-node-form  label {
 	/*border: 1px dotted red;*/
 	/*width: 25%;*/
@@ -23,10 +25,24 @@
 }
 
 #project-node-form input,
-#project-node-form textarea
+#project-node-form select
 {
 	/*border: 1px dotted blue;*/
-	width: 70%;
+	width: 60%;
 	/*float: right;*/
 	display: inline-block;
+}
+
+/*#edit-body-und-0-value
+{
+	border: 1px dotted blue;
+	width: 50% !important;
+}*/
+
+#body-add-more-wrapper .form-textarea-wrapper {
+	display: inline-block;
+}
+
+#edit-body label {
+	vertical-align: top;
 }

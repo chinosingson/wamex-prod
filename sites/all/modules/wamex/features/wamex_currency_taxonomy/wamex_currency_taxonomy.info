@@ -1,0 +1,16 @@
+name = Currency
+description = Currency taxonomy vocabulary
+core = 7.x
+package = Taxonomy
+version = 7.x-1.0
+dependencies[] = features
+dependencies[] = number
+dependencies[] = taxonomy
+dependencies[] = text
+features[features_api][] = api:2
+features[taxonomy][] = currency
+features_exclude[field_base][field_exchange_rate] = field_exchange_rate
+features_exclude[field_base][field_currency_code] = field_currency_code
+features_exclude[field_instance][taxonomy_term-currency-field_currency_code] = taxonomy_term-currency-field_currency_code
+features_exclude[field_instance][taxonomy_term-currency-field_exchange_rate] = taxonomy_term-currency-field_exchange_rate
+project path = sites/all/modules/wamex/features

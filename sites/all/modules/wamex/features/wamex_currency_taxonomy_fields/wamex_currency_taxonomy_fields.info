@@ -1,0 +1,14 @@
+name = Currency Fields
+description = Currency taxonomy vocabulary fields
+core = 7.x
+package = Taxonomy
+version = 7.x-1.0
+dependencies[] = features
+dependencies[] = number
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = field_currency_code
+features[field_base][] = field_exchange_rate
+features[field_instance][] = taxonomy_term-currency-field_currency_code
+features[field_instance][] = taxonomy_term-currency-field_exchange_rate
+project path = sites/all/modules/wamex/features

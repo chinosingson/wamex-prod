@@ -1,0 +1,10 @@
+﻿<?php
+
+/*
+ * Install updates to wamex_project_fields
+ */
+
+function wamex_project_fields_update_7011(&$sandbox) {
+	features_revert_module('wamex_project_fields');
+}
+?>
