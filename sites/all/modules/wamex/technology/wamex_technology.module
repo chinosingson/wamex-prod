@@ -92,7 +92,8 @@ function wamex_technology_list($keys = NULL) {
   } */
   
   $header = array(
-    array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
+    array('data' => t('Tech ID'), 'field' => 'tid', 'sort' => 'asc'), 
+    array('data' => t('Name'), 'field' => 'name') ,
 	array('data' => t('CAPEX PE > 1'), 'field' => 'capex_1'),
     array('data' => t('CAPEX PE > 10'), 'field' => 'capex_10'),
     array('data' => t('CAPEX PE > 200'), 'field' => 'capex_200'),
@@ -155,6 +156,7 @@ function wamex_technology_list($keys = NULL) {
    $destination = drupal_get_destination();
    foreach ($results as $val) {
     $rows[] = array(
+      $val->tid,
       $val->name,
 	  $val->capex_1, 
 	  $val->capex_10, 
