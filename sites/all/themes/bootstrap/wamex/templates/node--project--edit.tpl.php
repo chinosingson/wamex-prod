@@ -2,8 +2,22 @@
 	$node = menu_get_object(); 
 	@$nid = $node->nid;
 
-	//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($form['body'],1)."</pre>";
-
+	$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
+	$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
+	//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
+	
+	$currency_tids = array();
+	foreach($currency_taxonomy_tree as $term) {
+		//echo print_r($term,1)."<br/>";
+		$currency_tids[] = $term->tid;
+	}
+	
+	$currency_terms = taxonomy_term_load_multiple($currency_tids);
+	//$currency_terms_json = drupal_json_encode($currency_terms);
+	//echo "<pre style='height: 500px; overflow-y: scroll'>".$currency_taxonomy_tree_json."</pre>";
+	
+	//drupal_add_js('','inline');
+	drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
 ?>
 
 	<div id="project-forms-container" class="form-container container-fluid">
