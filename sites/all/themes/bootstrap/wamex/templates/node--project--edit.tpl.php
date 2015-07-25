@@ -2,21 +2,20 @@
 	$node = menu_get_object(); 
 	@$nid = $node->nid;
 
+	// load taxonomy tree for currency
 	$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
 	$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
 	//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
-	
+	// get all term ids
 	$currency_tids = array();
 	foreach($currency_taxonomy_tree as $term) {
-		//echo print_r($term,1)."<br/>";
 		$currency_tids[] = $term->tid;
 	}
-	
+	// load all terms
 	$currency_terms = taxonomy_term_load_multiple($currency_tids);
-	//$currency_terms_json = drupal_json_encode($currency_terms);
-	//echo "<pre style='height: 500px; overflow-y: scroll'>".$currency_taxonomy_tree_json."</pre>";
 	
-	//drupal_add_js('','inline');
+	// add terms to Drupal.settings
+	// access in JS via Drupal.settings.taxonomy.currency
 	drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
 ?>
 
