@@ -13,8 +13,19 @@
 			// currency info pre-load
 			function loadExchangeRate(terms,tid) {
 				// get exchange rate from json-encoded taxonomy term
-				exchRate = terms[tid].field_exchange_rate['und'][0].value;
-				$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
+				//console.log ('tid: '+tid);
+				if (terms[tid]){
+					//console.log(terms[tid]);
+					exchRate = terms[tid].field_exchange_rate['und'][0].value;
+					currCode = terms[tid].field_currency_code['und'][0].value;
+					//console.log('exchRate: '+exchRate);
+					//console.log('currCode: '+currCode);
+					$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
+					if (currCode == 'USD'){
+						$('#field-exchange-rate-to-usd-add-more-wrapper').hide();
+						//$('#field-exchange-rate-to-usd-add-more-wrapper').css('display','none');
+					}
+				}
 			}
 			
 			var currencyTerms = Drupal.settings.taxonomy.currency;
