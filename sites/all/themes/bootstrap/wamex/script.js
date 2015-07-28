@@ -4,7 +4,7 @@
 	Drupal.behaviors.display = {
 		attach: function (context, settings) {
 			// alter project input field types
-			if ($('body.page-node-add-project, body.page-node-edit-project').length > 0) {
+			if ($('body.page-node-add-project, body.page-node-edit.node-type-project').length > 0) {
 			
 				$('#edit-field-population-und-0-value').attr('type','number');
 				$('#edit-field-discount-rate-und-0-value').attr('type','number');
