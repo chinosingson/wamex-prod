@@ -16,6 +16,12 @@ function wamex_theme($variables) {
 			//'path' => base_path().drupal_get_path('theme','gms').'/templates',
 			'path' => drupal_get_path('theme','wamex').'/templates',
 			'template' => 'node--project--edit'),
+		'loading_node_form' => array(
+			'arguments' => array('form' => NULL),
+			'render element' => 'form',
+			//'path' => base_path().drupal_get_path('theme','gms').'/templates',
+			'path' => drupal_get_path('theme','wamex').'/templates',
+			'template' => 'node--loading--edit'),
 	);
 }
 
@@ -33,6 +39,13 @@ function wamex_form_alter(&$form, &$form_state, $form_id) {
 		hide($form['body'][LANGUAGE_NONE][0]['summary']);
 		//hide($form['body'][LANGUAGE_NONE][0]['format']);
 		//$form['body'][LANGUAGE_NONE][0]['format']['#access'] = FALSE;
+	}
+	
+	if($form_id == 'loading_node_form'){
+		$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
+		$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
+		hide($form['body'][LANGUAGE_NONE][0]['summary']);
+	
 	}
 	return $form;
 }

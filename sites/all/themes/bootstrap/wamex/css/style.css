@@ -4,18 +4,22 @@
  */
  
 #project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
+#loading-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #edit-body-und-0-format {
 	display: none;
 }
 
 #project-node-form .row,
-#project-node-form .form-group {
+#loading-node-form .row,
+#project-node-form .form-group,
+#loading-node-form .form-group {
 	border: 0px dotted green;
 	display: inline-block;
 	width: 100% !important;
 }
 
 #body-add-more-wrapper .form-textarea-wrapper textarea,
+#loading-node-form  label,
 #project-node-form  label {
 	/*border: 1px dotted red;*/
 	/*width: 25%;*/
@@ -25,7 +29,9 @@
 }
 
 #project-node-form input,
-#project-node-form select
+#loading-node-form input,
+#project-node-form select,
+#loading-node-form select
 {
 	/*border: 1px dotted blue;*/
 	width: 60%;
