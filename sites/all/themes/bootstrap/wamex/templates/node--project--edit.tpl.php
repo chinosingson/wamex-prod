@@ -17,6 +17,15 @@
 	// add terms to Drupal.settings
 	// access in JS via Drupal.settings.taxonomy.currency
 	drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
+	//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
+	if ($node){
+		$exchRate = field_get_items('node',$node,'field_exchange_rate_to_usd');
+		if (isset($exchRate)){
+			drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>$node->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value']))),'setting');
+		}
+	} else {
+			drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
+	}
 ?>
 
 	<div id="project-forms-container" class="form-container container-fluid">
@@ -43,7 +52,8 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-6"><?php print drupal_render($form['field_currency']); ?></div>
-			<div class="col-sm-6"><?php print drupal_render($form['field_exchange_rate_to_usd']); ?></div>
+			<div class="col-sm-6"><?php print drupal_render($form['field_exchange_rate_to_usd']); ?>
+			</div>
 		</div>
 		<div id="project-forms-buttons" class="row"><?php print drupal_render_children($form); ?></div>
 	</div>

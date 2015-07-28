@@ -9,6 +9,7 @@
 	display: none;
 }
 
+
 #project-node-form .row,
 #loading-node-form .row,
 #project-node-form .form-group,
@@ -18,9 +19,14 @@
 	width: 100% !important;
 }
 
+#project-node-form .row .form-item-title {
+	margin-bottom: 15px;
+}
+
+
 #body-add-more-wrapper .form-textarea-wrapper textarea,
-#loading-node-form  label,
-#project-node-form  label {
+#loading-node-form label,
+#project-node-form label {
 	/*border: 1px dotted red;*/
 	/*width: 25%;*/
 	/*float: left;*/
@@ -51,4 +57,12 @@
 
 #edit-body label {
 	vertical-align: top;
+}
+
+#edit-field-exchange-rate-to-usd-und-0-value {
+	width: 20% !important;
+}
+
+#reset-exchange-rate {
+	margin-left: 10px;
 }

@@ -13,17 +13,24 @@
 				$('#edit-field-exchange-rate-to-usd-und-0-value').attr('step',0.01);
 				
 				// currency info pre-load
-				function loadExchangeRate(tid) {
+				var currencyTerms = Drupal.settings.taxonomy.currency;
+				var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
+				function loadExchangeRate(tid,reset) {
 					// get exchange rate from json-encoded taxonomy term
 					//console.log ('tid: '+tid);
-					var currencyTerms = Drupal.settings.taxonomy.currency;
 					if (currencyTerms[tid]){
 						//console.log(terms[tid]);
 						exchRate = currencyTerms[tid].field_exchange_rate['und'][0].value;
 						currCode = currencyTerms[tid].field_currency_code['und'][0].value;
 						//console.log('exchRate: '+exchRate);
 						//console.log('currCode: '+currCode);
-						$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
+						//console.log(Drupal.settings.node.values.field_exchange_rate_to_usd);
+						if (nodeExchRate==0 || nodeExchRate==null || reset){
+							$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
+						} else {
+							console.log('nodeExchRate: '+nodeExchRate);
+							$('#edit-field-exchange-rate-to-usd-und-0-value').val(nodeExchRate);
+						}
 						if (currCode == 'USD'){
 							$('#field-exchange-rate-to-usd-add-more-wrapper').hide();
 						} else {
@@ -33,19 +40,34 @@
 						$('#field-exchange-rate-to-usd-add-more-wrapper').show();
 						$('#edit-field-exchange-rate-to-usd-und-0-value').val(null);
 					}
+					//console.log($('#edit-field-exchange-rate-to-usd-und-0-value').val());
 				}
 				
 				//var currencyTIds = new Array();
 				//$('#project-node-form').ready(loadExchangeRate($('#edit-field-currency-und').val()));
 				//$('#project-node-form').ready(loadExchangeRate($('#edit-field-currency-und').val()));
 				$('#project-node-form').ready(function(){
-					loadExchangeRate($('#edit-field-currency-und').val());
-					$('#edit-field-currency-und').change(function(){
-						var termId = $(this).val();
-						loadExchangeRate(termId);
-					});
+					// load default value on form ready
+					loadExchangeRate($('#edit-field-currency-und').val(),0);
+					
 				});
 				
+				$('#reset-exchange-rate').on('click',function(){
+					//console.log('reset');
+					loadExchangeRate($('#edit-field-currency-und').val(),1);
+					
+				});
+				
+				// field_currency behavior
+				$('#edit-field-currency-und').change(function(){
+					//console.log('currency changed');
+					//console.log('nodeExchRate: '+nodeExchRate);
+					var termId = $(this).val();
+					//if (nodeExchRate==0 || nodeExchRate==null){
+						//console.log('ITO');
+						loadExchangeRate(termId,1);
+					//}
+				});
 			}
 		}
 	};
