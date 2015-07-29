@@ -273,7 +273,7 @@ function wamex_technology_schema() {
 /**
  * Adding predefined technology.
  */
-function wamex_technology_update_7010() {
+function wamex_technology_update_7001() {
   $ret = "Successfully imported 58 technologies";
     
   $values = array(

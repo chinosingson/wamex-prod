@@ -15,7 +15,7 @@ function wamex_project_fields_field_default_field_instances() {
     'bundle' => 'project',
     'default_value' => NULL,
     'deleted' => 0,
-    'description' => '',
+    'description' => 'Enter a brief description for your WaMEx project',
     'display' => array(
       'default' => array(
         'label' => 'hidden',
@@ -36,17 +36,18 @@ function wamex_project_fields_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'body',
-    'label' => 'Body',
-    'required' => FALSE,
+    'label' => 'Project Description',
+    'required' => 0,
     'settings' => array(
-      'display_summary' => TRUE,
+      'display_summary' => 0,
       'text_processing' => 1,
       'user_register_form' => FALSE,
     ),
     'widget' => array(
+      'active' => 1,
       'module' => 'text',
       'settings' => array(
-        'rows' => 20,
+        'rows' => 5,
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
@@ -357,13 +358,14 @@ function wamex_project_fields_field_default_field_instances() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Author');
-  t('Body');
   t('CI Cost');
   t('Currency');
   t('Discount Rate');
+  t('Enter a brief description for your WaMEx project');
   t('Exchange Rate to USD');
   t('Location');
   t('Population');
+  t('Project Description');
 
   return $field_instances;
 }

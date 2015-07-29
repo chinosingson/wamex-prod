@@ -1,6 +1,7 @@
 ; $Id$
 name = WaMEx Technology Module
 description = Loads the WaMEx Technology Database into your WaMEx distribution
-package = wamex
+package = WaMex
 version = 7.x-1.0
 core = 7.x
+configure = admin/config/wamex/technology

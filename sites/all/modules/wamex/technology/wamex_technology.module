@@ -41,26 +41,27 @@ function wamex_technology_menu() {
     'description' => "WaMEx Technology",
     'page callback' => 'wamex_technology_list',
     'access arguments' => array('administer WaMEx technology'),
+    'menu_name' => 'menu-wamex_technology'
   );
   $items['admin/config/wamex/technology/add'] = array(
     'title' => 'Add Technology',
 	'page callback' => 'drupal_get_form',
 	'page arguments' => array('wamex_technology_form'),
-    'access arguments' => array('administer wamex technology'),
+    'access arguments' => array('administer WaMEx technology'),
     'type' => MENU_LOCAL_TASK,
   );  
   $items['admin/config/wamex/technology/edit/%'] = array(
     'title' => 'Edit Technology',
 	'page callback' => 'drupal_get_form',
 	'page arguments' => array('wamex_technology_form', 5),
-    'access arguments' => array('administer wamex technology'),
+    'access arguments' => array('administer WaMEx technology'),
     'type' => MENU_CALLBACK,
   );
   $items['admin/config/wamex/technology/delete/%'] = array(
     'title' => 'Delete Technology',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('wamex_technology_delete_confirm', 5),
-    'access arguments' => array('administer wamex technology'),
+    'access arguments' => array('administer WaMEx technology'),
     'type' => MENU_CALLBACK,
   );
   $items['admin/config/wamex/technology/list'] = array(
