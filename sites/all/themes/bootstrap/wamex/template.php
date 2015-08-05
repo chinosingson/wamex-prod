@@ -25,21 +25,27 @@ function wamex_theme($variables) {
 
 
 function wamex_form_alter(&$form, &$form_state, $form_id) {
-	if ($form_id == 'project_node_form'){
-		$form['title']['#title'] = t('Project Name');
-		$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
-		$form['body'][LANGUAGE_NONE][0]['#format'] = 'plain_text';
-		$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
-		
-		hide($form['body'][LANGUAGE_NONE][0]['summary']);
+	switch($form_id){
+		case 'project_node_form':
+			$form['title']['#title'] = t('Project Name');
+			$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
+			$form['body'][LANGUAGE_NONE][0]['#format'] = 'plain_text';
+			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
+			
+			hide($form['body'][LANGUAGE_NONE][0]['summary']);
+			break;
+		case 'loading_node_form':
+			$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
+			if (isset($form['field_loading_project'])) { 
+				drupal_set_title('Create Loading - '.$form['field_loading_project']['und']['#options'][1]);
+			}
+			$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
+			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
+			hide($form['body'][LANGUAGE_NONE][0]['summary']);
+			break;
+	
 	}
 	
-	if($form_id == 'loading_node_form'){
-		$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
-		$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
-		hide($form['body'][LANGUAGE_NONE][0]['summary']);
-	
-	}
 	return $form;
 }
 
@@ -78,8 +84,9 @@ $element = &$variables ['element'];
   $prefix = isset($element ['#field_prefix']) ? '<span class="field-prefix">' . $element ['#field_prefix'] . '</span> ' : '';
   $suffix = isset($element ['#field_suffix']) ? ' <span class="field-suffix">' . $element ['#field_suffix'] . '</span>' : '';
 
+	// theme the exchange rate field
 	if($element['#id'] == 'edit-field-exchange-rate-to-usd-und-0-value'){
-		//$output .= "[".$element ['#id']."]";
+		// add a 'Refresh' button
 		$suffix = '<a class="btn btn-primary" id="reset-exchange-rate" title="Reset exchange rate to default value">Refresh</a>';
 	}
 
@@ -108,4 +115,28 @@ $element = &$variables ['element'];
 
   $output .= "</div>\n";
 	return $output;
+}
+
+function wamex_loading_submit_handler($form, &$form_state) {
+  if ($form_state['node']->nid) {
+  
+    
+    //popup_element(t(''), t("Your project has been submitted"));
+	
+	drupal_set_message(t($form_state['redirect']));
+
+	$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	drupal_set_message(t(print_r($form_state['redirect'])));
+	
+					$path =  array(
+						t('thank-you'),
+						array(
+							'query' => array(
+							'destination' => t('node'),
+							),
+						),
+					);
+	
+	//$form_state['redirect'] = $path;
+  }
 }

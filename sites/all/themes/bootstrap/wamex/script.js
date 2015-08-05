@@ -65,10 +65,24 @@
 					var termId = $(this).val();
 					//if (nodeExchRate==0 || nodeExchRate==null){
 						//console.log('ITO');
-						loadExchangeRate(termId,1);
+						loadExchangeRate(termId,0);
 					//}
 				});
 			}
+			
+			if($('body.page-node, body.node-type-project').length > 0){
+				console.log('view project');
+				//var nid = Drupal.settings.node.values.nid;
+				$('#add-loading').on('click',function(){
+					//$('#loading-form-container').load('add/loading/');
+					//$('#loading-form-container').html('display node/add/loading here: ' + nid);
+				});
+				
+				$('#refresh-loading-list').on('click', function(){
+					$('#loading-list-container').html('display refreshed loading list here');
+				});
+			}
+			
 		}
 	};
 }(jQuery));

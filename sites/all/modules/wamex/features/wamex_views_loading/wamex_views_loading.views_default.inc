@@ -28,8 +28,7 @@ function wamex_views_loading_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'some';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '5';
+  $handler->display->display_options['pager']['type'] = 'none';
   $handler->display->display_options['style_plugin'] = 'table';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
@@ -37,6 +36,19 @@ function wamex_views_loading_views_default_views() {
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  /* Field: Content: Loading Attributes */
+  $handler->display->display_options['fields']['field_loading_attributes']['id'] = 'field_loading_attributes';
+  $handler->display->display_options['fields']['field_loading_attributes']['table'] = 'field_data_field_loading_attributes';
+  $handler->display->display_options['fields']['field_loading_attributes']['field'] = 'field_loading_attributes';
+  $handler->display->display_options['fields']['field_loading_attributes']['label'] = '';
+  $handler->display->display_options['fields']['field_loading_attributes']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_loading_attributes']['hide_alter_empty'] = FALSE;
+  $handler->display->display_options['fields']['field_loading_attributes']['type'] = 'field_collection_fields';
+  $handler->display->display_options['fields']['field_loading_attributes']['settings'] = array(
+    'view_mode' => 'full',
+  );
+  $handler->display->display_options['fields']['field_loading_attributes']['group_rows'] = FALSE;
+  $handler->display->display_options['fields']['field_loading_attributes']['delta_offset'] = '0';
   /* Field: Content: Edit link */
   $handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
   $handler->display->display_options['fields']['edit_node']['table'] = 'views_entity_node';
@@ -73,6 +85,9 @@ function wamex_views_loading_views_default_views() {
 
   /* Display: Block */
   $handler = $view->new_display('block', 'Block', 'block');
+  $handler->display->display_options['defaults']['pager'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
   $export['loading'] = $view;
 
   return $export;

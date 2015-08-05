@@ -19,7 +19,8 @@
 	width: 100% !important;
 }
 
-#project-node-form .row .form-item-title {
+#project-node-form .row .form-item-title,
+#loading-node-form .row .form-item-title {
 	margin-bottom: 15px;
 }
 
@@ -66,3 +67,30 @@
 #reset-exchange-rate {
 	margin-left: 10px;
 }
+
+.field-multiple-drag {
+	display: none;
+}
+
+/*#field-loading-attributes-values--2 > tbody > tr.draggable.odd > td:nth-child,
+#field-loading-attributes-values--2 > tbody > tr > td > div,
+#edit-field-loading-attributes
+*/
+table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.form-group button,
+table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.form-group,
+#field-loading-attributes-values  tbody > tr > td  .form-wrapper.form-group button,
+#field-loading-attributes-values  tbody > tr > td  .form-wrapper.form-group {
+	/*border: 1px dotted red;*/
+	display: inline-block;
+	max-width: 100px !important;
+}
+
+table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.form-group label,
+#field-loading-attributes-values  tbody > tr > td  .form-wrapper.form-group label {
+	display: none;
+}
+
+
+/*#field-loading-attributes-values > tbody > tr > td > .form-wrapper.form-group label {
+	border: 1px dotted blue;
+}*/
