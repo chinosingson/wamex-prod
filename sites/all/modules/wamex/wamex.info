@@ -1,0 +1,8 @@
+; $Id$
+name = WaMEx Module
+description = Custom code for WaMEx
+package = wamex
+version = 7.x-0.1
+core = 7.x
+
+;scripts[] = wamex.js

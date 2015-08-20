@@ -27,12 +27,15 @@ function wamex_theme($variables) {
 function wamex_form_alter(&$form, &$form_state, $form_id) {
 	switch($form_id){
 		case 'project_node_form':
+		case 'project_node_form_ajax':
+			$form['actions']['submit']['#submit'][] = 'wamex_project_submit_handler';
 			$form['title']['#title'] = t('Project Name');
 			$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
 			$form['body'][LANGUAGE_NONE][0]['#format'] = 'plain_text';
 			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
 			
 			hide($form['body'][LANGUAGE_NONE][0]['summary']);
+			//echo '<pre>'.print_r($form,1).'</pre>';
 			break;
 		case 'loading_node_form':
 			$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
@@ -51,7 +54,7 @@ function wamex_form_alter(&$form, &$form_state, $form_id) {
 
 
 function wamex_form_element($variables) {
-$element = &$variables ['element'];
+	$element = &$variables ['element'];
 
   // This function is invoked as theme wrapper, but the rendered form element
   // may not necessarily have been processed by form_builder().
@@ -133,6 +136,31 @@ function wamex_loading_submit_handler($form, &$form_state) {
 						array(
 							'query' => array(
 							'destination' => t('node'),
+							),
+						),
+					);
+	
+	//$form_state['redirect'] = $path;
+  }
+}
+
+function wamex_project_submit_handler($form, &$form_state) {
+  if ($form_state['node']->nid) {
+  
+    
+    //popup_element(t(''), t("Your project has been submitted"));
+	
+	drupal_set_message(t($form_state['redirect']));
+
+	//$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	$form_state['redirect'] = 'dashboard';
+	drupal_set_message(t(print_r($form_state['redirect'])));
+	
+					$path =  array(
+						t('thank-you'),
+						array(
+							'query' => array(
+							'destination' => t('dashboard'),
 							),
 						),
 					);

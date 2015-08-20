@@ -1,0 +1,257 @@
+<?php
+// $Id$
+
+/**
+ * @file   WaMEx module.
+ */
+function wamex_currency_selectbox_contents($vid) {
+  $terms = taxonomy_get_tree($vid);
+	$output = array();
+  foreach ($terms as $data) {
+    $output[$data->tid] = $data->name;
+  }
+
+  return $output;
+}
+
+
+
+function project_node_form_ajax() {
+	$form = array();
+	$currency_vocab = taxonomy_vocabulary_machine_name_load('currency');
+	//$currency_opts  = taxonomy_allowed_values(field_info_field('field_currency'));
+	$currency_terms  = wamex_currency_selectbox_contents($currency_vocab->vid);
+	echo print_r($currency_opts,1)."<br/>";
+	$ary_none = array('_none'=>t('- None -'));
+	$currency_opts = $ary_none+$currency_terms;
+	//echo $currency_vocab->vid;
+	
+	$form['#attributes']['class'][] = 'form-container';
+	$form['#attributes']['class'][] = 'container-fluid';
+	$form['title'] = array(
+		'#type' => 'textfield',
+		'#required' => 1,
+		'#title' => 'Project Name',
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_location'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Location',
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_population'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Population',
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['body'] = array(
+		'#type' => 'textarea',
+		'#title' => 'Description',
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_author'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Author',
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_discount_rate'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Discount Rate',
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_ci_cost'] = array(
+		'#type' => 'textfield',
+		'#title' => 'CI Cost',
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+
+	$form['field_currency_und'] = array(
+		'#title' => 'Currency',
+		'#type' => 'select',
+		'#options' => $currency_opts,
+		/*array(
+			'_none' => t('- None -'),
+		),*/
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div>',
+	);
+	//$form['field_currency']['#options'][] = $currency_opts;
+	
+	$form['field_exchange_rate_to_usd_und_0_value'] = array(
+		'#title' => 'Exchange Rate to USD',
+		'#type' => 'textfield',
+		'#prefix' => '<div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => 'Save Project',
+		'#ajax' => array(
+			'callback' => 'form_project_add_callback',
+			'progress' => array('type' => 'throbber'),
+		),
+	);
+	return $form;
+	
+}
+
+function form_project_add_callback ($form, $form_state){
+	if(!form_get_errors()){
+		global $user;
+		$newnode = new stdClass();
+		$newnode->title = $form_state['input']['title'];
+		$newnode->language = LANGUAGE_NONE;
+		$newnode->type = 'project';
+		$newnode->uid = $user->uid;
+		$newnode->body[LANGUAGE_NONE][0]['value'] = $form_state['input']['body'];
+		//$newnode->field_ = $form_state[][];
+		$newnode->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
+		$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population'];
+		$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
+		$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate'];
+		$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost'];
+		$newnode->field_currency[LANGUAGE_NONE] = $form_state['input']['field_currency'];
+		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd'];
+		//$newnode->field_ = $form_state['input'][];
+		$newnode = node_submit($newnode);
+		node_save($newnode);
+		if (isset($newnode->nid)){
+			$nodeview = node_view($newnode->title);
+			$commands[] = ajax_command_prepend('.views-table tbody', '<tr><td>'.drupal_render($nodeview).'</td></tr>');
+			return array('#type' => 'ajax', '#commands' => $commands);
+		}
+	}
+}
+
+ 
+function wamex_preprocess_page(&$variables){
+	$arg = arg();
+	//echo "HELLO!W@";
+	if ($arg[0] == 'dashboard'){
+		// load taxonomy tree for currency
+		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
+		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
+		//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
+		// get all term ids
+		$currency_tids = array();
+		foreach($currency_taxonomy_tree as $term) {
+			$currency_tids[] = $term->tid;
+		}
+		// load all terms
+		$currency_terms = taxonomy_term_load_multiple($currency_tids);
+		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
+		
+		// add terms to Drupal.settings
+		// access in JS via Drupal.settings.taxonomy.currency
+		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
+
+
+	//echo "HELLO!";
+		//echo print_r(drupal_get_form('_form_project_add'),1);
+		//$variables['page']['content']['system_main']['form_add_project']['#markup'] = drupal_render(drupal_get_form('project_node_form_ajax'));
+		$form = drupal_get_form('project_node_form_ajax');
+		//array_unshift($variables['page']['content']['system_main'], $form);
+		array_push($variables['page']['content']['system_main'], $form);
+	}
+}
+ 
+ /**
+ * Implements hook_menu().
+ */
+function gms_misc_menu() {
+
+  $items = array();
+  
+  /*
+    $items['gms_misc_map/%'] = array(
+	'title' => t('GMS Map Coordinates'),
+    'page callback' => 'gms_misc_map_location',
+	'page arguments' => array(1),
+    'access arguments' => array('access content'), 
+	'type' => MENU_CALLBACK,
+  );
+  */
+  
+    $items['gms_misc_map'] = array(
+	'title' => t('GMS Map Coordinates'),
+    'page callback' => 'gms_misc_map_location',
+    'access arguments' => array('access content'), 
+	'type' => MENU_CALLBACK,
+  );
+  
+  return $items;
+}
+
+
+/*function gms_misc_map_location() {
+	
+  global $mydata;	
+	
+  $data = $_POST;
+  
+	//$data['myVar'] = 'hello';
+	//$data['formState'] = $form_state;
+
+  //$form_state['values']['title'] = $data['name'];
+  
+  
+  drupal_json_output($data);
+  exit();
+
+}
+
+
+function gms_misc_node_presave($node) {
+  if ($node->type == "project") {
+	// when saving the a project node
+
+  //if (isset($node->body['und'][0]['value'])) {
+	// json decode the value of the node body
+	// (previously set by map.js)
+  $json = $node->body['und'][0]['value'];
+  
+  $data = json_decode($json);
+ 
+  $ctr = 0;
+  
+	print_r($data);
+	// set the values of the json string to discrete values in field_project_locations
+	$node->field_project_locations['und'] = null;
+  foreach ($data as $val) {  
+		$lat = $val->geometry->coordinates[1];
+		$lng = $val->geometry->coordinates[0];
+		$node->field_project_locations['und'][$ctr]['lat'] = $lat;
+		$node->field_project_locations['und'][$ctr]['lng'] = $lng;
+		$node->field_project_locations['und'][$ctr]['lat_sin'] = sin(deg2rad($lat));
+		$node->field_project_locations['und'][$ctr]['lat_cos'] = cos(deg2rad($lat));
+		$node->field_project_locations['und'][$ctr]['lng_rad'] = deg2rad($lng);  
+    $ctr++;
+  }
+  
+  //dpm($node);
+  //}
+  
+  }
+}*/
+
+
+function wamex_user_login(&$edit, $account)
+{
+  // Your logic will set $redirection to the desired location
+  $redirection = 'dashboard';
+  
+// Unless there is already a redirection going, or the user is trying to reset his password, we redirect to $redirection.
+  if (empty($_GET['destination'])
+    && !is_null($redirection)
+    && (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset'))
+  {
+    $_GET['destination'] = $redirection; // Should we use $edit['redirect'] instead..?
+  }
+}

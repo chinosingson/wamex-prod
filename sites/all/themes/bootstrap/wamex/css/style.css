@@ -4,6 +4,7 @@
  */
  
 #project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
+#project-node-form-ajax div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #loading-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #edit-body-und-0-format {
 	display: none;
@@ -11,8 +12,10 @@
 
 
 #project-node-form .row,
+#project-node-form-ajax .row,
 #loading-node-form .row,
 #project-node-form .form-group,
+#project-node-form-ajax .form-group,
 #loading-node-form .form-group {
 	border: 0px dotted green;
 	display: inline-block;
@@ -20,13 +23,18 @@
 }
 
 #project-node-form .row .form-item-title,
+#project-node-form-ajax .row .form-item-title,
+#project-node-form-ajax .row .form-item,
 #loading-node-form .row .form-item-title {
 	margin-bottom: 15px;
 }
 
 
 #body-add-more-wrapper .form-textarea-wrapper textarea,
+#project-node-form-ajax > div > div:nth-child(4) > div > div > div,
+#project-node-form-ajax > div > div:nth-child(4) > div > div > label,
 #loading-node-form label,
+#project-node-form-ajax label,
 #project-node-form label {
 	/*border: 1px dotted red;*/
 	/*width: 25%;*/
@@ -36,8 +44,10 @@
 }
 
 #project-node-form input,
+#project-node-form-ajax input,
 #loading-node-form input,
 #project-node-form select,
+#project-node-form-ajax select,
 #loading-node-form select
 {
 	/*border: 1px dotted blue;*/
@@ -56,6 +66,7 @@
 	display: inline-block;
 }
 
+#project-node-form-ajax > div > div:nth-child(4) > div > div > label,
 #edit-body label {
 	vertical-align: top;
 }
