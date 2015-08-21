@@ -21,7 +21,7 @@ function project_node_form_ajax() {
 	$currency_vocab = taxonomy_vocabulary_machine_name_load('currency');
 	//$currency_opts  = taxonomy_allowed_values(field_info_field('field_currency'));
 	$currency_terms  = wamex_currency_selectbox_contents($currency_vocab->vid);
-	echo print_r($currency_opts,1)."<br/>";
+	//echo print_r($currency_terms,1)."<br/>";
 	$ary_none = array('_none'=>t('- None -'));
 	$currency_opts = $ary_none+$currency_terms;
 	//echo $currency_vocab->vid;
@@ -41,7 +41,7 @@ function project_node_form_ajax() {
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_population'] = array(
+	$form['field_population_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'Population',
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
@@ -59,13 +59,13 @@ function project_node_form_ajax() {
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_discount_rate'] = array(
+	$form['field_discount_rate_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'Discount Rate',
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_ci_cost'] = array(
+	$form['field_ci_cost_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'CI Cost',
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
@@ -113,18 +113,18 @@ function form_project_add_callback ($form, $form_state){
 		$newnode->body[LANGUAGE_NONE][0]['value'] = $form_state['input']['body'];
 		//$newnode->field_ = $form_state[][];
 		$newnode->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
-		$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population'];
+		$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 		$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
-		$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate'];
-		$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost'];
-		$newnode->field_currency[LANGUAGE_NONE] = $form_state['input']['field_currency'];
-		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd'];
+		$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
+		$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
+		$newnode->field_currency[LANGUAGE_NONE] = $form_state['input']['field_currency_und'];
+		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 		//$newnode->field_ = $form_state['input'][];
 		$newnode = node_submit($newnode);
 		node_save($newnode);
 		if (isset($newnode->nid)){
-			$nodeview = node_view($newnode->title);
-			$commands[] = ajax_command_prepend('.views-table tbody', '<tr><td>'.drupal_render($nodeview).'</td></tr>');
+			//$nodeview = node_view($newnode);
+			$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td>'.$newnode->title.'</td></tr>');
 			return array('#type' => 'ajax', '#commands' => $commands);
 		}
 	}

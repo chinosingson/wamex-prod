@@ -23,13 +23,13 @@
 					//console.log ('tid: '+tid);
 					//console.log ('reset: '+reset);
 					if (currencyTerms[tid]){
-						console.log(currencyTerms[tid]);
+						//console.log(currencyTerms[tid]);
 						exchRate = currencyTerms[tid].field_exchange_rate['und'][0].value;
 						currCode = currencyTerms[tid].field_currency_code['und'][0].value;
 						//console.log('exchRate: '+exchRate);
 						//console.log('currCode: '+currCode);
 						//console.log(Drupal.settings.node.values.field_exchange_rate_to_usd);
-						console.log('nodeExchRate: '+nodeExchRate);
+						//console.log('nodeExchRate: '+nodeExchRate);
 						if (nodeExchRate==0 || nodeExchRate==null || reset){
 							$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
 						} else {
