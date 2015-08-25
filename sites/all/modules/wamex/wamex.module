@@ -30,7 +30,7 @@ function project_node_form_ajax() {
 	$form['#attributes']['class'][] = 'container-fluid';
 	$form['title'] = array(
 		'#type' => 'textfield',
-		'#required' => 1,
+		'#required' => TRUE,
 		'#title' => 'Project Name',
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
 		'#suffix' => '</div></div>',
@@ -44,6 +44,7 @@ function project_node_form_ajax() {
 	$form['field_population_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'Population',
+		'#default_value' => 0,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
@@ -62,12 +63,14 @@ function project_node_form_ajax() {
 	$form['field_discount_rate_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'Discount Rate',
+		'#default_value' => 0.0,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_ci_cost_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => 'CI Cost',
+		'#default_value' => 0.0,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
@@ -97,12 +100,15 @@ function project_node_form_ajax() {
 			'callback' => 'form_project_add_callback',
 			'progress' => array('type' => 'throbber'),
 		),
+		'#submit' => array('form_project_add_callback'),
 	);
 	return $form;
 	
 }
 
 function form_project_add_callback ($form, $form_state){
+	//krumo($form_state);
+	//echo ($form_state['input']['field_exchange_rate_to_usd_und_0_value']);
 	if(!form_get_errors()){
 		global $user;
 		$newnode = new stdClass();
@@ -111,13 +117,14 @@ function form_project_add_callback ($form, $form_state){
 		$newnode->type = 'project';
 		$newnode->uid = $user->uid;
 		$newnode->body[LANGUAGE_NONE][0]['value'] = $form_state['input']['body'];
+		$newnode->body[LANGUAGE_NONE][0]['format'] = 'plain_text';
 		//$newnode->field_ = $form_state[][];
 		$newnode->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
 		$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 		$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
 		$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
 		$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
-		$newnode->field_currency[LANGUAGE_NONE] = $form_state['input']['field_currency_und'];
+		$newnode->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
 		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 		//$newnode->field_ = $form_state['input'][];
 		$newnode = node_submit($newnode);

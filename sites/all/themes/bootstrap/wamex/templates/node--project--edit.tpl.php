@@ -1,6 +1,9 @@
 ﻿<?php 
 	$node = menu_get_object(); 
 	@$nid = $node->nid;
+	//if ($node){
+	//	krumo($node);
+	//}
 
 	// load taxonomy tree for currency
 	$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');

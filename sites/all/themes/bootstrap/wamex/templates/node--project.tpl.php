@@ -1,7 +1,8 @@
 ﻿<?php
 
 if ($node){
-	echo "<pre style='display: none; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
+	//echo "<pre style='display: none; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
+	krumo($node);
 	//$nid = field_get_items('node',$node,'nid');
 	$nid = $node->nid;
 	if (isset($nid)){
@@ -17,6 +18,9 @@ $field_discount_rate = field_get_items('node',$node,'field_discount_rate');
 $field_currency = field_get_items('node',$node,'field_currency');
 $field_exchange_rate_to_usd = field_get_items('node',$node,'field_exchange_rate_to_usd');
 
+
+//krumo($field_currency);
+
 $view_loading = views_get_view('loading');
 $view_loading->set_display('block');
 
@@ -31,7 +35,7 @@ $view_loading->set_display('block');
 		<div class="row">
 			<div class="col-sm-2 project-info"><h4>Author</h4><?php print (isset($field_author) ? print_r($field_author[0]['value'],1) : "wala"); ?></div>
 			<div class="col-sm-2 project-info"><h4>Location</h4><?php print (isset($field_location) ? print_r($field_location[0]['value'],1): "wala"); ?></div>
-			<div class="col-sm-8 project-info"><h4>Description</h4><?php print $body[0]['value']; ?></div>
+			<div class="col-sm-8 project-info"><h4>Description</h4><?php print $node->body['und'][0]['value']; ?></div>
 		</div>
 		<div class="row">
 			<div class="col-sm-2 project-info"><h4>Population</h4><?php print (isset($field_population) ? print_r($field_population[0]['value'],1): "wala"); ?></div>
