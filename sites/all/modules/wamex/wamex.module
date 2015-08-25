@@ -28,55 +28,60 @@ function project_node_form_ajax() {
 	
 	$form['#attributes']['class'][] = 'form-container';
 	$form['#attributes']['class'][] = 'container-fluid';
+	$form['#prefix'] = '<div id="view-wamex-projects-canvas">';
+	$form['#suffix'] = '</div>';
 	$form['title'] = array(
 		'#type' => 'textfield',
 		'#required' => TRUE,
-		'#title' => 'Project Name',
+		'#title' => t('Project Name'),
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_location'] = array(
 		'#type' => 'textfield',
-		'#title' => 'Location',
+		'#title' => t('Location'),
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_population_und_0_value'] = array(
 		'#type' => 'textfield',
-		'#title' => 'Population',
+		'#title' => t('Population'),
 		'#default_value' => 0,
+		'#element_validate' => array('_node_field_is_number'),
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 	$form['body'] = array(
 		'#type' => 'textarea',
-		'#title' => 'Description',
+		'#title' => t('Description'),
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_author'] = array(
 		'#type' => 'textfield',
-		'#title' => 'Author',
+		'#title' => t('Author'),
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_discount_rate_und_0_value'] = array(
 		'#type' => 'textfield',
-		'#title' => 'Discount Rate',
+		'#title' => t('Discount Rate'),
 		'#default_value' => 0.0,
+		'#element_validate' => array('_node_field_is_number'),
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_ci_cost_und_0_value'] = array(
 		'#type' => 'textfield',
-		'#title' => 'CI Cost',
+		'#title' => t('CI Cost'),
 		'#default_value' => 0.0,
+		'#element_validate' => array('_node_field_is_number'),
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 
 	$form['field_currency_und'] = array(
-		'#title' => 'Currency',
+		'#title' => t('Currency'),
 		'#type' => 'select',
 		'#options' => $currency_opts,
 		/*array(
@@ -129,13 +134,45 @@ function form_project_add_callback ($form, $form_state){
 		//$newnode->field_ = $form_state['input'][];
 		$newnode = node_submit($newnode);
 		node_save($newnode);
+		$msgs = drupal_get_messages();
 		if (isset($newnode->nid)){
 			//$nodeview = node_view($newnode);
 			$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td>'.$newnode->title.'</td></tr>');
 			return array('#type' => 'ajax', '#commands' => $commands);
+		} else {
+			//drupal_set_message($msgs);
+			print theme('status_messages');
 		}
 	}
 }
+
+function _node_field_is_number($element, &$form_state) {
+	if (!is_numeric($element['#value'])){
+		form_error($element, t('The "!name" option must be a numeric value.', array('!name' => t($element['#title']))));
+	}
+}
+
+/*function _file_generic_settings_max_filesize($element, &$form_state) {
+  if (!empty($element['#value']) && !is_numeric(parse_size($element['#value']))) {
+    form_error($element, t('The "!name" option must contain a valid value. You may either leave the text field empty or enter a string like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes).', array('!name' => t($element['title']))));
+  }
+} */
+
+function wamex_button($variables){
+  $element = $variables ['element'];
+  $element ['#attributes']['type'] = 'button';
+  element_set_attributes($element, array('id', 'name', 'value'));
+
+  //$element ['#attributes']['class'][] = 'form-' . $element ['#button_type'];
+  $element ['#attributes']['class'][] = 'btn';
+  $element ['#attributes']['class'][] = 'btn-default';
+  if (!empty($element ['#attributes']['disabled'])) {
+    $element ['#attributes']['class'][] = 'form-button-disabled';
+  }
+
+  return '<input' . drupal_attributes($element ['#attributes']) . ' />';
+}
+
 
  
 function wamex_preprocess_page(&$variables){
@@ -165,6 +202,7 @@ function wamex_preprocess_page(&$variables){
 		//$variables['page']['content']['system_main']['form_add_project']['#markup'] = drupal_render(drupal_get_form('project_node_form_ajax'));
 		$form = drupal_get_form('project_node_form_ajax');
 		//array_unshift($variables['page']['content']['system_main'], $form);
+		//array_push($variables['page']['content']['system_main'], wamex_button(null));
 		array_push($variables['page']['content']['system_main'], $form);
 	}
 }

@@ -102,8 +102,10 @@
 			}
 			
 			if($('body.page-dashboard').length > 0){
+				$('#view-wamex-projects-canvas').hide();
 				$('#add-project').on('click',function(){
-					$('#view-wamex-projects-canvas').load('node/add/project');
+					$('#view-wamex-projects-canvas').show();
+					//$('#view-wamex-projects-canvas').load('node/add/project');
 					//$('#view-wamex-projects-canvas').html('display node/add/project here.');
 				});
 			}

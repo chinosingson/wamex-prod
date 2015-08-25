@@ -82,11 +82,11 @@
   <?php endif; ?>
 	
 	<div id="view-wamex-projects-actions">
-		<a class="btn btn-default" id="add-project" >Add New Project</a>
+		<a class="btn btn-primary" id="add-project" >Add New Project</a>
 	</div>
-	<div id="view-wamex-projects-canvas">
+	<!--div id="view-wamex-projects-canvas">
 		<?php //print drupal_render(drupal_get_form('project_node_form')); ?>
-	</div>
+	</div-->
 
   <?php if ($feed_icon): ?>
     <div class="feed-icon">
