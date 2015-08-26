@@ -2,7 +2,7 @@
 
 if ($node){
 	//echo "<pre style='display: none; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
-	krumo($node);
+	//krumo($node);
 	//$nid = field_get_items('node',$node,'nid');
 	$nid = $node->nid;
 	if (isset($nid)){
