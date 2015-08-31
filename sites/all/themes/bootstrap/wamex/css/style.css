@@ -43,8 +43,12 @@
 	display: inline-block;
 }
 
-#project-node-form input,
-#project-node-form-ajax input,
+.form-item-body > .form-textarea-wrapper {
+	width: 60%;
+}
+
+#project-node-form input.form-control,
+#project-node-form-ajax input.form-control,
 #loading-node-form input,
 #project-node-form select,
 #project-node-form-ajax select,

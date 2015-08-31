@@ -102,11 +102,24 @@
 			}
 			
 			if($('body.page-dashboard').length > 0){
+				var textShowForm = 'Add New Project';
+				var textHideForm = 'Cancel';
+				$('#add-project').html(textShowForm);
 				$('#view-wamex-projects-canvas').hide();
 				$('#add-project').on('click',function(){
-					$('#view-wamex-projects-canvas').show();
+					$('#view-wamex-projects-canvas').toggle();
+					document.getElementById('view-wamex-projects-canvas').scrollIntoView();
+					//console.log('toggle');
 					//$('#view-wamex-projects-canvas').load('node/add/project');
 					//$('#view-wamex-projects-canvas').html('display node/add/project here.');
+				});
+				
+				$('#view-wamex-projects-canvas').on('show', function(){
+					console.log('#view-wamex-projects-canvas SHOWN');
+				});
+
+				$('#view-wamex-projects-canvas').on('hide', function(){
+					console.log('#view-wamex-projects-canvas HIDDEN');
 				});
 			}
 			

@@ -93,20 +93,30 @@ function project_node_form_ajax() {
 	//$form['field_currency']['#options'][] = $currency_opts;
 	
 	$form['field_exchange_rate_to_usd_und_0_value'] = array(
-		'#title' => 'Exchange Rate to USD',
+		'#title' => t('Exchange Rate to USD'),
 		'#type' => 'textfield',
 		'#prefix' => '<div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
-	$form['submit'] = array(
+
+	$form['actions']['submit']['#type'] = 'submit' ;
+	$form['actions']['submit']['#value'] = t('Save Project') ;
+	//$form['actions']['submit']['#submit'][] = 'form_project_add_callback';
+	$form['actions']['submit']['#ajax']['callback'] =  'form_project_add_callback';
+	$form['actions']['submit']['#ajax']['progress']['type'] =  'bar';
+	$form['actions']['submit']['#ajax']['progress']['message'] =  'Saving new project...';
+	/*= array(
 		'#type' => 'submit',
-		'#value' => 'Save Project',
+		'#value' => t('Save Project'),
 		'#ajax' => array(
 			'callback' => 'form_project_add_callback',
 			'progress' => array('type' => 'throbber'),
 		),
+		//'#executes_submit_callback' => TRUE,
 		'#submit' => array('form_project_add_callback'),
-	);
+	);*/
+	
+	//krumo($form);
 	return $form;
 	
 }
@@ -114,6 +124,7 @@ function project_node_form_ajax() {
 function form_project_add_callback ($form, $form_state){
 	//krumo($form_state);
 	//echo ($form_state['input']['field_exchange_rate_to_usd_und_0_value']);
+	$base_path = base_path();
 	if(!form_get_errors()){
 		global $user;
 		$newnode = new stdClass();
@@ -136,9 +147,15 @@ function form_project_add_callback ($form, $form_state){
 		node_save($newnode);
 		$msgs = drupal_get_messages();
 		if (isset($newnode->nid)){
+			$nid = $newnode->nid;
+			$node_title = '<a href="'.$base_path.'node/'.$nid.'">'.$newnode->title.'</a>';
+			$node_edit = '<a href="'.$base_path.'node/'.$nid.'/edit?destination=dashboard">Edit</a>';
+			$node_delete = '<a href="'.$base_path.'node/'.$nid.'/delete?destination=dashboard">Delete</a>';
 			//$nodeview = node_view($newnode);
-			$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td>'.$newnode->title.'</td></tr>');
+			$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td class="views-field views-field-title">'.$node_title.'</td><td class="views-field views-field-edit-node">'.$node_edit.'</td><td class="views-field views-field-delete-node">'.$node_delete.'</td></tr>');
+			//$commands[] = ajax_command_invoke('.view-dom-id-0996d1926fbde4ce157598795c7794f', 'html', array('123'));
 			return array('#type' => 'ajax', '#commands' => $commands);
+			//$form_state['redirect'] = 'dashboard';
 		} else {
 			//drupal_set_message($msgs);
 			print theme('status_messages');
@@ -166,6 +183,7 @@ function wamex_button($variables){
   //$element ['#attributes']['class'][] = 'form-' . $element ['#button_type'];
   $element ['#attributes']['class'][] = 'btn';
   $element ['#attributes']['class'][] = 'btn-default';
+  $element ['#attributes']['class'][] = 'use-ajax';
   if (!empty($element ['#attributes']['disabled'])) {
     $element ['#attributes']['class'][] = 'form-button-disabled';
   }
