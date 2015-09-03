@@ -30,7 +30,7 @@
 			drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
 	}
 ?>
-
+	<?php //print $messages; ?>
 	<div id="project-forms-container" class="form-container container-fluid">
 		<div class="row">
 			<div class="col-sm-12"><?php print drupal_render($form['title']); ?></div>

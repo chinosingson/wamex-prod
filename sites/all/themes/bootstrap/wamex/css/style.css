@@ -116,3 +116,7 @@ table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.f
 /*#field-loading-attributes-values > tbody > tr > td > .form-wrapper.form-group label {
 	border: 1px dotted blue;
 }*/
+
+#view-wamex-projects-canvas {
+	display: none;
+}

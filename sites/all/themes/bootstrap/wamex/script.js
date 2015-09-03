@@ -37,8 +37,10 @@
 						}
 						if (currCode == 'USD'){
 							$('#field-exchange-rate-to-usd-add-more-wrapper').hide();
+							$('#form-item-field-exchange-rate-to-usd-und-0-value').hide();
 						} else {
 							$('#field-exchange-rate-to-usd-add-more-wrapper').show();
+							$('#form-item-field-exchange-rate-to-usd-und-0-value').show();
 						}
 					} else {
 						$('#field-exchange-rate-to-usd-add-more-wrapper').show();
@@ -102,25 +104,43 @@
 			}
 			
 			if($('body.page-dashboard').length > 0){
-				var textShowForm = 'Add New Project';
-				var textHideForm = 'Cancel';
-				$('#add-project').html(textShowForm);
-				$('#view-wamex-projects-canvas').hide();
-				$('#add-project').on('click',function(){
-					$('#view-wamex-projects-canvas').toggle();
+				//var textShowForm = 'Add New Project';
+				//var textHideForm = 'Cancel';
+				//$('#add-project').html(textShowForm);
+				//$('#view-wamex-projects-canvas').hide();
+				$('#add-project').on('click',function(event){
+					//console.log(event);
+					$('#view-wamex-projects-canvas').removeClass('hidden');
+					$('#view-wamex-projects-canvas').show();
+					$('#add-project').addClass('disabled');
+					$('#cancel-project').removeClass('hidden');
+					//console.log($('#view-wamex-projects-canvas').css('display'));
 					document.getElementById('view-wamex-projects-canvas').scrollIntoView();
 					//console.log('toggle');
 					//$('#view-wamex-projects-canvas').load('node/add/project');
 					//$('#view-wamex-projects-canvas').html('display node/add/project here.');
 				});
 				
-				$('#view-wamex-projects-canvas').on('show', function(){
+				$('#cancel-project').on('click',function(event){
+					$('#view-wamex-projects-canvas').addClass('hidden');
+					$('#view-wamex-projects-canvas').hide();
+					$('#add-project').removeClass('disabled');
+					$('#cancel-project').addClass('hidden');
+				});
+				
+				/*if ($('#view-wamex-projects-canvas').is(':hidden')){
+					console.log('#view-wamex-projects-canvas HIDDEN');
+				} else {
+					console.log('#view-wamex-projects-canvas SHOWN');
+				}
+				
+				$('#view-wamex-projects-canvas').on('show', function(event){
 					console.log('#view-wamex-projects-canvas SHOWN');
 				});
 
-				$('#view-wamex-projects-canvas').on('hide', function(){
+				$('#view-wamex-projects-canvas').on('hide', function(event){
 					console.log('#view-wamex-projects-canvas HIDDEN');
-				});
+				});*/
 			}
 			
 			

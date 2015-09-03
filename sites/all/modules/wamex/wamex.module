@@ -14,7 +14,65 @@ function wamex_currency_selectbox_contents($vid) {
   return $output;
 }
 
+function wamex_preprocess_page(&$variables){
+	$arg = arg();
+	//echo "HELLO!W@";
+	if ($arg[0] == 'dashboard'){
+		// load taxonomy tree for currency
+		$variables['show_messages'] = FALSE;
+		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
+		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
+		//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
+		// get all term ids
+		$currency_tids = array();
+		foreach($currency_taxonomy_tree as $term) {
+			$currency_tids[] = $term->tid;
+		}
+		// load all terms
+		$currency_terms = taxonomy_term_load_multiple($currency_tids);
+		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
+		
+		// add terms to Drupal.settings
+		// access in JS via Drupal.settings.taxonomy.currency
+		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
 
+
+	//echo "HELLO!";
+		//echo print_r(drupal_get_form('_form_project_add'),1);
+		//$variables['page']['content']['system_main']['form_add_project']['#markup'] = drupal_render(drupal_get_form('project_node_form_ajax'));
+		$form = drupal_get_form('project_node_form_ajax');
+		//array_unshift($variables['page']['content']['system_main'], $form);
+		//array_push($variables['page']['content']['system_main'], wamex_button(null));
+		array_push($variables['page']['content']['system_main'], $form);
+	}
+}
+
+//function wamex_views_pre_render(&$view){
+
+//}
+
+function ajax_command_callback($form, $form_state) {
+  // Collect error.
+  $error = form_get_errors();
+  // Clear error for all the cases.
+  drupal_get_messages();
+ // Logic behind error.
+	if (!empty($error) && $error['title']) {
+   $form_state['rebuild'] = TRUE;
+    // Create place holder to display error(class name / ID).
+    $selector = '.error_place_holder';
+    // Java script function to process error.
+    $commands[] = ajax_command_invoke(NULL, "error_javascript_call");
+    $commands[] = ajax_command_replace($selector, '<div class="error_place_holder"><div class = "error-msgs">' .    $error['title'] . '</div></div>');
+    return array('#type' => 'ajax', '#commands' => $commands);
+  }
+  else {
+    // Same thing you can do it for success.
+    // Passing dynamic value to java script.
+    $commands[] = ajax_command_invoke(NULL, "success_javascript_call", array(array('url'=>url('some_url_to_redirect_on_success'))));
+    return array('#type' => 'ajax', '#commands' => $commands);
+  }
+}
 
 function project_node_form_ajax() {
 	$form = array();
@@ -28,7 +86,8 @@ function project_node_form_ajax() {
 	
 	$form['#attributes']['class'][] = 'form-container';
 	$form['#attributes']['class'][] = 'container-fluid';
-	$form['#prefix'] = '<div id="view-wamex-projects-canvas">';
+	//$form['#validate'] = array('validate_callback');
+	$form['#prefix'] = '<div id="view-wamex-projects-canvas" class="hidden">';
 	$form['#suffix'] = '</div>';
 	$form['title'] = array(
 		'#type' => 'textfield',
@@ -83,6 +142,7 @@ function project_node_form_ajax() {
 	$form['field_currency_und'] = array(
 		'#title' => t('Currency'),
 		'#type' => 'select',
+		'#default_value' => 2,	// set to USD
 		'#options' => $currency_opts,
 		/*array(
 			'_none' => t('- None -'),
@@ -95,6 +155,7 @@ function project_node_form_ajax() {
 	$form['field_exchange_rate_to_usd_und_0_value'] = array(
 		'#title' => t('Exchange Rate to USD'),
 		'#type' => 'textfield',
+		'#default_value' => 1, // set to USD
 		'#prefix' => '<div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
@@ -103,8 +164,11 @@ function project_node_form_ajax() {
 	$form['actions']['submit']['#value'] = t('Save Project') ;
 	//$form['actions']['submit']['#submit'][] = 'form_project_add_callback';
 	$form['actions']['submit']['#ajax']['callback'] =  'form_project_add_callback';
-	$form['actions']['submit']['#ajax']['progress']['type'] =  'bar';
-	$form['actions']['submit']['#ajax']['progress']['message'] =  'Saving new project...';
+	$form['actions']['submit']['#ajax']['progress']['type'] =  'throbber';
+	//$form['actions']['submit']['#ajax']['progress']['message'] =  'Saving new project...';
+	
+	//$form['actions']['cancel']['#type'] = 'submit';
+	//$form['actions']['cancel']['#value'] = t('Cancel');
 	/*= array(
 		'#type' => 'submit',
 		'#value' => t('Save Project'),
@@ -122,10 +186,24 @@ function project_node_form_ajax() {
 }
 
 function form_project_add_callback ($form, $form_state){
-	//krumo($form_state);
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$error = form_get_errors();
+	drupal_get_messages();
+	//krumo($error['title']);
+	//ctools_ajax_render_error(print_r($error,1));
 	//echo ($form_state['input']['field_exchange_rate_to_usd_und_0_value']);
 	$base_path = base_path();
-	if(!form_get_errors()){
+	if(!empty($error)) { // && $error['title']){
+		//$form_state['rebuild'] = TRUE;
+		//$commands[] = ajax_command_pr('#view-dashboard-messages', theme('status_messages'));
+		$selector = '#view-dashboard-messages';
+		drupal_set_message(print_r($error,1));
+    //$commands[] = ajax_command_invoke(NULL, "error_javascript_call");
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	} 
+	else {
 		global $user;
 		$newnode = new stdClass();
 		$newnode->title = $form_state['input']['title'];
@@ -144,21 +222,34 @@ function form_project_add_callback ($form, $form_state){
 		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 		//$newnode->field_ = $form_state['input'][];
 		$newnode = node_submit($newnode);
-		node_save($newnode);
-		$msgs = drupal_get_messages();
-		if (isset($newnode->nid)){
-			$nid = $newnode->nid;
-			$node_title = '<a href="'.$base_path.'node/'.$nid.'">'.$newnode->title.'</a>';
-			$node_edit = '<a href="'.$base_path.'node/'.$nid.'/edit?destination=dashboard">Edit</a>';
-			$node_delete = '<a href="'.$base_path.'node/'.$nid.'/delete?destination=dashboard">Delete</a>';
+		//node_save($newnode);
+		//$msgs = drupal_get_messages();
+		
+		try {
+			node_save($newnode);
+			$success = TRUE;
+			drupal_set_message('New project saved!');
+		} 
+		catch (Exception $e) {
+			// Do your error handling here.
+			$success = FALSE;
+			drupal_set_message($e->getMessage().'<br/>New project not saved!');
+		}
+		
+		$commands = array();
+		if ($success){
+			//$nid = $newnode->nid;
+			//$node_title = '<a href="'.$base_path.'node/'.$nid.'">'.$newnode->title.'</a>';
+			//$node_edit = '<a href="'.$base_path.'node/'.$nid.'/edit?destination=dashboard">Edit</a>';
+			//$node_delete = '<a href="'.$base_path.'node/'.$nid.'/delete?destination=dashboard">Delete</a>';
 			//$nodeview = node_view($newnode);
-			$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td class="views-field views-field-title">'.$node_title.'</td><td class="views-field views-field-edit-node">'.$node_edit.'</td><td class="views-field views-field-delete-node">'.$node_delete.'</td></tr>');
+			//$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td class="views-field views-field-title">'.$node_title.'</td><td class="views-field views-field-edit-node">'.$node_edit.'</td><td class="views-field views-field-delete-node">'.$node_delete.'</td></tr>');
 			//$commands[] = ajax_command_invoke('.view-dom-id-0996d1926fbde4ce157598795c7794f', 'html', array('123'));
+			//$path = 'dashboard';
+			//$commands[] = ajax_command_invoke(NULL, "success_javascript_call", array(array('url'=>url('dashboard'))));
+			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
 			//$form_state['redirect'] = 'dashboard';
-		} else {
-			//drupal_set_message($msgs);
-			print theme('status_messages');
 		}
 	}
 }
@@ -169,62 +260,31 @@ function _node_field_is_number($element, &$form_state) {
 	}
 }
 
+/*function wamex_button($variables){
+  $element = $variables ['element'];
+	$element ['#attributes']['type'] = 'button';
+	element_set_attributes($element, array('id', 'name', 'value'));
+
+	if ($element['#value'] == 'Save Project'){
+		krumo($variables);
+		//$element ['#attributes']['class'][] = 'form-' . $element ['#button_type'];
+		$element ['#attributes']['class'][] = 'btn';
+		$element ['#attributes']['class'][] = 'btn-default';
+		$element ['#attributes']['class'][] = 'use-ajax';
+		if (!empty($element ['#attributes']['disabled'])) {
+			$element ['#attributes']['class'][] = 'form-button-disabled';
+		}
+	}
+
+  return '<input' . drupal_attributes($element ['#attributes']) . ' />';
+}*/
+
 /*function _file_generic_settings_max_filesize($element, &$form_state) {
   if (!empty($element['#value']) && !is_numeric(parse_size($element['#value']))) {
     form_error($element, t('The "!name" option must contain a valid value. You may either leave the text field empty or enter a string like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes).', array('!name' => t($element['title']))));
   }
 } */
 
-function wamex_button($variables){
-  $element = $variables ['element'];
-  $element ['#attributes']['type'] = 'button';
-  element_set_attributes($element, array('id', 'name', 'value'));
-
-  //$element ['#attributes']['class'][] = 'form-' . $element ['#button_type'];
-  $element ['#attributes']['class'][] = 'btn';
-  $element ['#attributes']['class'][] = 'btn-default';
-  $element ['#attributes']['class'][] = 'use-ajax';
-  if (!empty($element ['#attributes']['disabled'])) {
-    $element ['#attributes']['class'][] = 'form-button-disabled';
-  }
-
-  return '<input' . drupal_attributes($element ['#attributes']) . ' />';
-}
-
-
- 
-function wamex_preprocess_page(&$variables){
-	$arg = arg();
-	//echo "HELLO!W@";
-	if ($arg[0] == 'dashboard'){
-		// load taxonomy tree for currency
-		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
-		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
-		//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
-		// get all term ids
-		$currency_tids = array();
-		foreach($currency_taxonomy_tree as $term) {
-			$currency_tids[] = $term->tid;
-		}
-		// load all terms
-		$currency_terms = taxonomy_term_load_multiple($currency_tids);
-		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
-		
-		// add terms to Drupal.settings
-		// access in JS via Drupal.settings.taxonomy.currency
-		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
-
-
-	//echo "HELLO!";
-		//echo print_r(drupal_get_form('_form_project_add'),1);
-		//$variables['page']['content']['system_main']['form_add_project']['#markup'] = drupal_render(drupal_get_form('project_node_form_ajax'));
-		$form = drupal_get_form('project_node_form_ajax');
-		//array_unshift($variables['page']['content']['system_main'], $form);
-		//array_push($variables['page']['content']['system_main'], wamex_button(null));
-		array_push($variables['page']['content']['system_main'], $form);
-	}
-}
- 
  /**
  * Implements hook_menu().
  */

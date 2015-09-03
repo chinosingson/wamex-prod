@@ -23,6 +23,16 @@ function wamex_theme($variables) {
 	);
 }
 
+function wamex_preprocess_views_view(&$variables) {
+	$view = $variables['view'];
+	//if (
+	if($view->name == 'list_of_projects'){
+		$variables['messages'] = theme('status_messages');
+		//krumo($variables['messages']);
+	}
+}
+
+
 
 function wamex_form_alter(&$form, &$form_state, $form_id) {
 	switch($form_id){
