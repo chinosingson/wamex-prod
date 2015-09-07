@@ -36,20 +36,8 @@ function wamex_preprocess_page(&$variables){
 		// access in JS via Drupal.settings.taxonomy.currency
 		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
 
-
-	//echo "HELLO!";
-		//echo print_r(drupal_get_form('_form_project_add'),1);
-		//$variables['page']['content']['system_main']['form_add_project']['#markup'] = drupal_render(drupal_get_form('project_node_form_ajax'));
-		$form = drupal_get_form('project_node_form_ajax');
-		//array_unshift($variables['page']['content']['system_main'], $form);
-		//array_push($variables['page']['content']['system_main'], wamex_button(null));
-		array_push($variables['page']['content']['system_main'], $form);
 	}
 }
-
-//function wamex_views_pre_render(&$view){
-
-//}
 
 function ajax_command_callback($form, $form_state) {
   // Collect error.
@@ -94,6 +82,7 @@ function project_node_form_ajax() {
 		'#required' => TRUE,
 		'#title' => t('Project Name'),
 		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		//'#default_value' => ($node->title ? $node->title : NULL),
 		'#suffix' => '</div></div>',
 	);
 	$form['field_location'] = array(
@@ -162,25 +151,9 @@ function project_node_form_ajax() {
 
 	$form['actions']['submit']['#type'] = 'submit' ;
 	$form['actions']['submit']['#value'] = t('Save Project') ;
-	//$form['actions']['submit']['#submit'][] = 'form_project_add_callback';
 	$form['actions']['submit']['#ajax']['callback'] =  'form_project_add_callback';
 	$form['actions']['submit']['#ajax']['progress']['type'] =  'throbber';
-	//$form['actions']['submit']['#ajax']['progress']['message'] =  'Saving new project...';
-	
-	//$form['actions']['cancel']['#type'] = 'submit';
-	//$form['actions']['cancel']['#value'] = t('Cancel');
-	/*= array(
-		'#type' => 'submit',
-		'#value' => t('Save Project'),
-		'#ajax' => array(
-			'callback' => 'form_project_add_callback',
-			'progress' => array('type' => 'throbber'),
-		),
-		//'#executes_submit_callback' => TRUE,
-		'#submit' => array('form_project_add_callback'),
-	);*/
-	
-	//krumo($form);
+
 	return $form;
 	
 }
@@ -188,17 +161,18 @@ function project_node_form_ajax() {
 function form_project_add_callback ($form, $form_state){
 	ctools_include('ajax');
 	ctools_add_js('ajax-responder');
-	$error = form_get_errors();
+	$errors = form_get_errors();
 	drupal_get_messages();
-	//krumo($error['title']);
-	//ctools_ajax_render_error(print_r($error,1));
-	//echo ($form_state['input']['field_exchange_rate_to_usd_und_0_value']);
+
 	$base_path = base_path();
-	if(!empty($error)) { // && $error['title']){
-		//$form_state['rebuild'] = TRUE;
-		//$commands[] = ajax_command_pr('#view-dashboard-messages', theme('status_messages'));
+	if(!empty($errors)) { 
 		$selector = '#view-dashboard-messages';
-		drupal_set_message(print_r($error,1));
+		$error_variables = array(
+			'items'=> $errors,
+			'title'=> 'Add New Project Errors',
+			'type'=> 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
     //$commands[] = ajax_command_invoke(NULL, "error_javascript_call");
     $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
 		return array('#type' => 'ajax', '#commands' => $commands);
@@ -222,34 +196,22 @@ function form_project_add_callback ($form, $form_state){
 		$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 		//$newnode->field_ = $form_state['input'][];
 		$newnode = node_submit($newnode);
-		//node_save($newnode);
-		//$msgs = drupal_get_messages();
 		
 		try {
 			node_save($newnode);
 			$success = TRUE;
-			drupal_set_message('New project saved!');
+			drupal_set_message(t('<b>'.$newnode->title.'</b> saved!'));
 		} 
 		catch (Exception $e) {
 			// Do your error handling here.
 			$success = FALSE;
-			drupal_set_message($e->getMessage().'<br/>New project not saved!');
+			drupal_set_message(t($e->getMessage().'<br/>New project not saved!'),'error');
 		}
 		
 		$commands = array();
 		if ($success){
-			//$nid = $newnode->nid;
-			//$node_title = '<a href="'.$base_path.'node/'.$nid.'">'.$newnode->title.'</a>';
-			//$node_edit = '<a href="'.$base_path.'node/'.$nid.'/edit?destination=dashboard">Edit</a>';
-			//$node_delete = '<a href="'.$base_path.'node/'.$nid.'/delete?destination=dashboard">Delete</a>';
-			//$nodeview = node_view($newnode);
-			//$commands[] = ajax_command_prepend('#block-system-main > div > div > table > tbody', '<tr><td class="views-field views-field-title">'.$node_title.'</td><td class="views-field views-field-edit-node">'.$node_edit.'</td><td class="views-field views-field-delete-node">'.$node_delete.'</td></tr>');
-			//$commands[] = ajax_command_invoke('.view-dom-id-0996d1926fbde4ce157598795c7794f', 'html', array('123'));
-			//$path = 'dashboard';
-			//$commands[] = ajax_command_invoke(NULL, "success_javascript_call", array(array('url'=>url('dashboard'))));
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
-			//$form_state['redirect'] = 'dashboard';
 		}
 	}
 }
@@ -260,110 +222,39 @@ function _node_field_is_number($element, &$form_state) {
 	}
 }
 
-/*function wamex_button($variables){
-  $element = $variables ['element'];
-	$element ['#attributes']['type'] = 'button';
-	element_set_attributes($element, array('id', 'name', 'value'));
-
-	if ($element['#value'] == 'Save Project'){
-		krumo($variables);
-		//$element ['#attributes']['class'][] = 'form-' . $element ['#button_type'];
-		$element ['#attributes']['class'][] = 'btn';
-		$element ['#attributes']['class'][] = 'btn-default';
-		$element ['#attributes']['class'][] = 'use-ajax';
-		if (!empty($element ['#attributes']['disabled'])) {
-			$element ['#attributes']['class'][] = 'form-button-disabled';
-		}
-	}
-
-  return '<input' . drupal_attributes($element ['#attributes']) . ' />';
-}*/
-
-/*function _file_generic_settings_max_filesize($element, &$form_state) {
-  if (!empty($element['#value']) && !is_numeric(parse_size($element['#value']))) {
-    form_error($element, t('The "!name" option must contain a valid value. You may either leave the text field empty or enter a string like "512" (bytes), "80 KB" (kilobytes) or "50 MB" (megabytes).', array('!name' => t($element['title']))));
-  }
-} */
 
  /**
  * Implements hook_menu().
  */
-function gms_misc_menu() {
+function wamex_menu() {
 
   $items = array();
-  
-  /*
-    $items['gms_misc_map/%'] = array(
-	'title' => t('GMS Map Coordinates'),
-    'page callback' => 'gms_misc_map_location',
-	'page arguments' => array(1),
-    'access arguments' => array('access content'), 
-	'type' => MENU_CALLBACK,
-  );
-  */
-  
-    $items['gms_misc_map'] = array(
-	'title' => t('GMS Map Coordinates'),
-    'page callback' => 'gms_misc_map_location',
-    'access arguments' => array('access content'), 
-	'type' => MENU_CALLBACK,
-  );
-  
+	$items['get/ajax'] = array(
+    'page callback' => 'wamex_ajax_get_ajax', // Render HTML
+    //'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+    'delivery callback' => 'wamex_ajax_callback',  // Magic goes here
+  );  
+	
   return $items;
 }
 
-
-/*function gms_misc_map_location() {
-	
-  global $mydata;	
-	
-  $data = $_POST;
-  
-	//$data['myVar'] = 'hello';
-	//$data['formState'] = $form_state;
-
-  //$form_state['values']['title'] = $data['name'];
-  
-  
-  drupal_json_output($data);
-  exit();
-
+function wamex_ajax_get_ajax() {
+	// The function will receive the array of arguments after the "get/ajax" prefix
+	//krumo(func_get_args());
+  $path = implode('/', func_get_args());
+  $render_string = menu_execute_active_handler($path, FALSE);
+  return $render_string;
 }
 
-
-function gms_misc_node_presave($node) {
-  if ($node->type == "project") {
-	// when saving the a project node
-
-  //if (isset($node->body['und'][0]['value'])) {
-	// json decode the value of the node body
-	// (previously set by map.js)
-  $json = $node->body['und'][0]['value'];
-  
-  $data = json_decode($json);
- 
-  $ctr = 0;
-  
-	print_r($data);
-	// set the values of the json string to discrete values in field_project_locations
-	$node->field_project_locations['und'] = null;
-  foreach ($data as $val) {  
-		$lat = $val->geometry->coordinates[1];
-		$lng = $val->geometry->coordinates[0];
-		$node->field_project_locations['und'][$ctr]['lat'] = $lat;
-		$node->field_project_locations['und'][$ctr]['lng'] = $lng;
-		$node->field_project_locations['und'][$ctr]['lat_sin'] = sin(deg2rad($lat));
-		$node->field_project_locations['und'][$ctr]['lat_cos'] = cos(deg2rad($lat));
-		$node->field_project_locations['und'][$ctr]['lng_rad'] = deg2rad($lng);  
-    $ctr++;
-  }
-  
-  //dpm($node);
-  //}
-  
-  }
-}*/
-
+function wamex_ajax_callback($page_callback_result) {
+	// Only render content and validates return
+  $content = is_string($page_callback_result) ? $page_callback_result : drupal_render($page_callback_result);
+  //$html = '<html><head><title></title>' . drupal_get_css() . drupal_get_js() . '</head><body class="jquery-ajax-load">' . $content . '</body></html>';
+  print $content;
+  //drupal_page_footer();
+}
 
 function wamex_user_login(&$edit, $account)
 {

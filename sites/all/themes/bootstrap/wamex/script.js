@@ -15,9 +15,9 @@
 				
 				// currency info pre-load
 				var currencyTerms = Drupal.settings.taxonomy.currency;
-				//console.log(currencyTerms);
+				console.log(currencyTerms);
 				var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
-				//console.log(nodeExchRate);
+				console.log(nodeExchRate);
 				function loadExchangeRate(tid,reset) {
 					// get exchange rate from json-encoded taxonomy term
 					//console.log ('tid: '+tid);
@@ -73,7 +73,7 @@
 				
 				// field_currency behavior
 				$('#edit-field-currency-und').change(function(){
-					//console.log('currency changed');
+					console.log('currency changed');
 					//console.log('nodeExchRate: '+nodeExchRate);
 					var termId = $(this).val();
 					//if (nodeExchRate==0 || nodeExchRate==null){
@@ -108,18 +108,19 @@
 				//var textHideForm = 'Cancel';
 				//$('#add-project').html(textShowForm);
 				//$('#view-wamex-projects-canvas').hide();
-				$('#add-project').on('click',function(event){
-					//console.log(event);
-					$('#view-wamex-projects-canvas').removeClass('hidden');
-					$('#view-wamex-projects-canvas').show();
-					$('#add-project').addClass('disabled');
-					$('#cancel-project').removeClass('hidden');
+				/*$('#add-project').on('click',function(event){
+					console.log(event);
+					$('#view-wamex-projects-canvas').load('/get/ajax/node/add/project');
+					//$('#view-wamex-projects-canvas').removeClass('hidden');
+					//$('#view-wamex-projects-canvas').show();
+					//$('#add-project').addClass('disabled');
+					//$('#cancel-project').removeClass('hidden');
 					//console.log($('#view-wamex-projects-canvas').css('display'));
-					document.getElementById('view-wamex-projects-canvas').scrollIntoView();
+					//document.getElementById('view-wamex-projects-canvas').scrollIntoView();
 					//console.log('toggle');
 					//$('#view-wamex-projects-canvas').load('node/add/project');
 					//$('#view-wamex-projects-canvas').html('display node/add/project here.');
-				});
+				});*/
 				
 				$('#cancel-project').on('click',function(event){
 					$('#view-wamex-projects-canvas').addClass('hidden');
@@ -142,7 +143,6 @@
 					console.log('#view-wamex-projects-canvas HIDDEN');
 				});*/
 			}
-			
 			
 		}
 	};

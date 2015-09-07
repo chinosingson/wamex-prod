@@ -26,6 +26,12 @@
  *
  * @ingroup views_templates
  */
+	drupal_add_js(" 				function wamex_ajax_load(){
+					console.log('wamex_ajax_load');
+					jQuery('#view-wamex-projects-canvas').load('/wamex/get/ajax/node/1/edit');
+				}
+
+				",'inline');
 ?>
 <div class="<?php print $classes; ?>">
   <?php print render($title_prefix); ?>
@@ -82,10 +88,11 @@
   <?php endif; ?>
 	
 	<div id="view-wamex-projects-actions">
-		<a class="btn btn-primary" id="add-project" >Add New Project</a>
+		<a class="btn btn-primary" href="#" id="add-project" onClick="wamex_ajax_load()" >Add New Project</a>
 		<a class="btn btn-default hidden" id="cancel-project" >Cancel</a>
 	</div>
 	<div id="view-dashboard-messages"><?php print $messages; ?></div>
+	<div id="view-wamex-projects-canvas"></div>
 
   <?php if ($feed_icon): ?>
     <div class="feed-icon">
