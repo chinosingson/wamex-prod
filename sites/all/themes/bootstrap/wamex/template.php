@@ -136,10 +136,10 @@ function wamex_loading_submit_handler($form, &$form_state) {
     
     //popup_element(t(''), t("Your project has been submitted"));
 	
-	drupal_set_message(t($form_state['redirect']));
+	//drupal_set_message(t('1'.$form_state['redirect']));
 
 	$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
-	drupal_set_message(t(print_r($form_state['redirect'])));
+	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
 	
 					$path =  array(
 						t('thank-you'),
@@ -160,11 +160,11 @@ function wamex_project_submit_handler($form, &$form_state) {
     
     //popup_element(t(''), t("Your project has been submitted"));
 	
-	drupal_set_message(t($form_state['redirect']));
+	//drupal_set_message(t($form_state['redirect']));
 
 	//$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
 	$form_state['redirect'] = 'dashboard';
-	drupal_set_message(t(print_r($form_state['redirect'])));
+	//drupal_set_message(t('3.'.print_r($form_state['redirect'])));
 	
 					$path =  array(
 						t('thank-you'),

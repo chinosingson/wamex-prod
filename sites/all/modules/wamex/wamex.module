@@ -16,7 +16,6 @@ function wamex_currency_selectbox_contents($vid) {
 
 function wamex_preprocess_page(&$variables){
 	$arg = arg();
-	//echo "HELLO!W@";
 	if ($arg[0] == 'dashboard'){
 		// load taxonomy tree for currency
 		$variables['show_messages'] = FALSE;
@@ -37,29 +36,6 @@ function wamex_preprocess_page(&$variables){
 		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
 
 	}
-}
-
-function ajax_command_callback($form, $form_state) {
-  // Collect error.
-  $error = form_get_errors();
-  // Clear error for all the cases.
-  drupal_get_messages();
- // Logic behind error.
-	if (!empty($error) && $error['title']) {
-   $form_state['rebuild'] = TRUE;
-    // Create place holder to display error(class name / ID).
-    $selector = '.error_place_holder';
-    // Java script function to process error.
-    $commands[] = ajax_command_invoke(NULL, "error_javascript_call");
-    $commands[] = ajax_command_replace($selector, '<div class="error_place_holder"><div class = "error-msgs">' .    $error['title'] . '</div></div>');
-    return array('#type' => 'ajax', '#commands' => $commands);
-  }
-  else {
-    // Same thing you can do it for success.
-    // Passing dynamic value to java script.
-    $commands[] = ajax_command_invoke(NULL, "success_javascript_call", array(array('url'=>url('some_url_to_redirect_on_success'))));
-    return array('#type' => 'ajax', '#commands' => $commands);
-  }
 }
 
 function project_node_form_ajax() {

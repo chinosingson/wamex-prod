@@ -6,6 +6,7 @@
 			// alter project input field types
 			if ($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard').length > 0) {
 				//console.log('check');
+				//console.log($('body.page-dashboard').length);
 			
 				$('#edit-field-population-und-0-value').attr('type','number');
 				$('#edit-field-discount-rate-und-0-value').attr('type','number');
@@ -15,9 +16,8 @@
 				
 				// currency info pre-load
 				var currencyTerms = Drupal.settings.taxonomy.currency;
-				console.log(currencyTerms);
+				//console.log(currencyTerms);
 				var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
-				console.log(nodeExchRate);
 				function loadExchangeRate(tid,reset) {
 					// get exchange rate from json-encoded taxonomy term
 					//console.log ('tid: '+tid);
@@ -64,7 +64,6 @@
 					
 				});
 
-				
 				$('#reset-exchange-rate').on('click',function(){
 					//console.log('reset');
 					loadExchangeRate($('#edit-field-currency-und').val(),1);
@@ -72,6 +71,7 @@
 				});
 				
 				// field_currency behavior
+				//console.log('nodeExchRate: '+nodeExchRate);
 				$('#edit-field-currency-und').change(function(){
 					console.log('currency changed');
 					//console.log('nodeExchRate: '+nodeExchRate);
@@ -108,40 +108,24 @@
 				//var textHideForm = 'Cancel';
 				//$('#add-project').html(textShowForm);
 				//$('#view-wamex-projects-canvas').hide();
-				/*$('#add-project').on('click',function(event){
-					console.log(event);
-					$('#view-wamex-projects-canvas').load('/get/ajax/node/add/project');
-					//$('#view-wamex-projects-canvas').removeClass('hidden');
-					//$('#view-wamex-projects-canvas').show();
-					//$('#add-project').addClass('disabled');
-					//$('#cancel-project').removeClass('hidden');
-					//console.log($('#view-wamex-projects-canvas').css('display'));
-					//document.getElementById('view-wamex-projects-canvas').scrollIntoView();
-					//console.log('toggle');
-					//$('#view-wamex-projects-canvas').load('node/add/project');
-					//$('#view-wamex-projects-canvas').html('display node/add/project here.');
-				});*/
+				$('#add-project').on('click',function(event){
+					//console.log('wamex_ajax_load');
+					$('#cancel-project').removeClass('hidden');
+					// load the node/add/project form, and attach ajax behaviors to the container
+					$('#view-wamex-projects-canvas').empty().html('<img src="/wamex/misc/throbber-active.gif" style="margin-left:50%;"/>');
+					$('#view-wamex-projects-canvas').load('/wamex/get/ajax/node/add/project','ajax=1',function(){
+						Drupal.attachBehaviors('#view-wamex-projects-canvas');
+					});
+				});
 				
 				$('#cancel-project').on('click',function(event){
-					$('#view-wamex-projects-canvas').addClass('hidden');
-					$('#view-wamex-projects-canvas').hide();
+					//$('#view-wamex-projects-canvas').addClass('hidden');
+					//$('#view-wamex-projects-canvas').hide();
+					$('#view-wamex-projects-canvas').empty();
 					$('#add-project').removeClass('disabled');
 					$('#cancel-project').addClass('hidden');
 				});
 				
-				/*if ($('#view-wamex-projects-canvas').is(':hidden')){
-					console.log('#view-wamex-projects-canvas HIDDEN');
-				} else {
-					console.log('#view-wamex-projects-canvas SHOWN');
-				}
-				
-				$('#view-wamex-projects-canvas').on('show', function(event){
-					console.log('#view-wamex-projects-canvas SHOWN');
-				});
-
-				$('#view-wamex-projects-canvas').on('hide', function(event){
-					console.log('#view-wamex-projects-canvas HIDDEN');
-				});*/
 			}
 			
 		}

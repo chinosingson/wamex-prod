@@ -120,3 +120,7 @@ table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.f
 /*#view-wamex-projects-canvas {
 	display: none;
 }*/
+
+body.page-dashboard div.vertical-tabs-panes {
+	display: none;
+}
