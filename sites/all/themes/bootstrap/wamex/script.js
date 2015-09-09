@@ -73,7 +73,7 @@
 				// field_currency behavior
 				//console.log('nodeExchRate: '+nodeExchRate);
 				$('#edit-field-currency-und').change(function(){
-					console.log('currency changed');
+					//console.log('currency changed');
 					//console.log('nodeExchRate: '+nodeExchRate);
 					var termId = $(this).val();
 					//if (nodeExchRate==0 || nodeExchRate==null){
