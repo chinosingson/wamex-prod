@@ -10,6 +10,7 @@ if ($node){
 	}
 }
 
+$field_body = field_get_items('node',$node,'body');
 $field_author = field_get_items('node',$node,'field_author');
 $field_location = field_get_items('node',$node,'field_location');
 $field_population = field_get_items('node',$node,'field_population');
@@ -33,16 +34,16 @@ $view_loading->set_display('block');
 			<div class="col-sm-12"><h3 class="project-section-title">Project Information</h3></div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2 project-info"><h4>Author</h4><?php print (isset($field_author) ? print_r($field_author[0]['value'],1) : "wala"); ?></div>
-			<div class="col-sm-2 project-info"><h4>Location</h4><?php print (isset($field_location) ? print_r($field_location[0]['value'],1): "wala"); ?></div>
-			<div class="col-sm-8 project-info"><h4>Description</h4><?php print $node->body['und'][0]['value']; ?></div>
+			<div class="col-sm-2 project-info"><h4>Author</h4><?php print (isset($field_author) ? print_r($field_author[0]['value'],1) : "No info."); ?></div>
+			<div class="col-sm-2 project-info"><h4>Location</h4><?php print (isset($field_location) ? print_r($field_location[0]['value'],1): "No info."); ?></div>
+			<div class="col-sm-8 project-info"><h4>Description</h4><?php print (isset($field_body) ? print_r($field_body[0]['value'],1) : "No info.");  /*$node->body['und'][0]['value'];*/ ?></div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2 project-info"><h4>Population</h4><?php print (isset($field_population) ? print_r($field_population[0]['value'],1): "wala"); ?></div>
-			<div class="col-sm-2 project-info"><h4>CI Cost</h4><?php print (isset($field_ci_cost) ? print_r($field_ci_cost[0]['value'],1): "wala"); ?></div>
-			<div class="col-sm-2 project-info"><h4>Discount Rate</h4><?php print (isset($field_discount_rate) ? print_r($field_discount_rate[0]['value'],1): "wala"); ?></div>
-			<div class="col-sm-2 project-info"><h4>Currency</h4><?php print (isset($field_currency) ? print_r($field_currency[0]['taxonomy_term']->name,1): "wala"); ?></div>
-			<div class="col-sm-2 project-info"><h4>Exchange Rate</h4><?php print (isset($field_exchange_rate_to_usd) ? print_r($field_exchange_rate_to_usd[0]['value'],1): "wala"); ?></div>
+			<div class="col-sm-2 project-info"><h4>Population</h4><?php print (isset($field_population) ? print_r($field_population[0]['value'],1): "No info."); ?></div>
+			<div class="col-sm-2 project-info"><h4>CI Cost</h4><?php print (isset($field_ci_cost) ? print_r($field_ci_cost[0]['value'],1): "No info."); ?></div>
+			<div class="col-sm-2 project-info"><h4>Discount Rate</h4><?php print (isset($field_discount_rate) ? print_r($field_discount_rate[0]['value'],1): "No info."); ?></div>
+			<div class="col-sm-2 project-info"><h4>Currency</h4><?php print (isset($field_currency) ? print_r($field_currency[0]['taxonomy_term']->name,1): "No info."); ?></div>
+			<div class="col-sm-2 project-info"><h4>Exchange Rate</h4><?php print (isset($field_exchange_rate_to_usd) ? print_r($field_exchange_rate_to_usd[0]['value'],1): "No info."); ?></div>
 		</div>
 	</div>
 	<hr/>
@@ -58,7 +59,7 @@ $view_loading->set_display('block');
 		</div>
 		<div class="row">
 			<div class="col-sm-12">
-				<a class="btn btn-default" href="add/loading<?php print "/".$nid; ?>" id="add-loading">Add Loading</a>
+				<a class="btn btn-default disabled" href="add/loading<?php print "/".$nid; ?>" id="add-loading">Add Loading</a>
 				<a class="btn btn-default disabled" id="refresh-loading-list">Reload List</a>
 			</div>
 		</div>
