@@ -110,6 +110,18 @@
 					});
 				});
 				
+				$('.dashboard-node-delete-btn').unbind('click').on('click',function(event){
+					// load the /project/edit/% custom form, and attach ajax behaviors to the container
+					var btnId = $(this).attr('id');
+					var idTokens = btnId.split("-");
+					var nodeId = idTokens[2];
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/delete/'+nodeId;
+					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#dashboard-projects-viewport');
+					});
+				});
+				
 				$('#cancel-project').unbind("click").on('click',function(event){
 					viewport.empty();
 					$('#add-project').removeClass('disabled');

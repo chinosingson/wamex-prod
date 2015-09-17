@@ -31,20 +31,20 @@ function wamex_menu() {
     'type' => MENU_LOCAL_TASK,
 	);
 	
-	$items['project/add'] = array(
-    'title' => 'Add Project',
-		'page callback' => 'drupal_get_form',
-		'page arguments' => array('wamex_project_form'),
-    'access arguments' => array('Create new content'),
-    'type' => MENU_LOCAL_TASK,
-	);
-	
 	$items['project/edit/%'] = array(
     'title' => 'Edit Project',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_project_form',2),
     'access arguments' => array('Edit own content'),
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_CALLBACK,
+	);
+	
+	$items['project/delete/%'] = array(
+    'title' => 'Delete Project',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_project_delete_confirm',2),
+    'access arguments' => array('Delete own content'),
+    'type' => MENU_CALLBACK,
 	);
 	
   return $items;
@@ -251,7 +251,7 @@ function wamex_project_form_submit($form, &$form_state){
 			try {
 				node_save($newnode);
 				$success = TRUE;
-				drupal_set_message(t('Projet <b>'.$newnode->title.'</b> created.'));
+				drupal_set_message(t('Project <b>'.$newnode->title.'</b> created.'));
 			} 
 			catch (Exception $e) {
 				// Do your error handling here.
@@ -292,6 +292,38 @@ function wamex_project_form_submit($form, &$form_state){
 		} 
 	}
 	//return;
+}
+
+function wamex_project_delete_confirm($form, $form_state, $nid){
+	$node = node_load($nid);
+	$project_name = $node->title;
+  if (user_access('Delete own content')) {
+		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
+    $output = confirm_form($form,
+      t('Are you sure you want to delete %title?', array('%title' => $project_name)),
+      isset($_GET['destination']) ? $_GET['destination'] : 'dashboard',
+			t('Are you sure you want to delete %title? This action cannot be undone.', array('%title' => $project_name)),
+			t('Yes, Delete'),
+			t('Cancel'));
+  }
+  return $output;
+}
+
+function wamex_project_delete_confirm_submit($form, &$form_state){
+  if ($form_state['values']['confirm']) {
+		try{
+			node_delete($form_state['values']['nid']);
+			$success = TRUE;
+			drupal_set_message(t('The project has been deleted.'),'status');
+		}
+		catch (Exception $e){
+			$success = FALSE;
+			drupal_set_message(t('Could not delete the project.'),'error');
+		}
+	
+    $form_state['redirect'] = 'dashboard';
+    return;
+  }
 }
 
 function wamex_ajax_get_ajax() {
