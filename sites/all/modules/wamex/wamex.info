@@ -5,4 +5,7 @@ package = wamex
 version = 7.x-0.1
 core = 7.x
 
-;scripts[] = wamex.js
+stylesheets[all][] = bootstrapvalidator/css/bootstrapValidator.min.css
+
+scripts[] = bootstrapvalidator/js/bootstrapValidator.min.js
+scripts[] = wamex.js

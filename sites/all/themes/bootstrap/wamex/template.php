@@ -32,13 +32,23 @@ function wamex_preprocess_views_view(&$variables) {
 	}
 }
 
-
+function wamex_link($variables) {
+	$output = '';
+	/*$args = func_get_args();
+	if ($variables['text'] == 'Edit' && $args[0]['options']['query']['destination'] == 'dashboard'){
+		$output  .= "<pre>".print_r($args,1)."</pre>";
+		$variables['options']['attributes']['class'][] = 'dashboard-edit-link';
+		$variables['options']['attributes']['id'][] = 'dashboard-edit-link-';
+		$output  .= print_r($variables['options']['attributes'],1);
+	}*/
+	$output .= '<a href="' . check_plain(url($variables ['path'], $variables ['options'])) . '"' . drupal_attributes($variables ['options']['attributes']) . '>' . ($variables ['options']['html'] ? $variables ['text'] : check_plain($variables ['text'])) . '</a>';
+  return $output;
+}
 
 function wamex_form_alter(&$form, &$form_state, $form_id) {
 	switch($form_id){
 		case 'project_node_form':
-		case 'project_node_form_ajax':
-			$form['actions']['submit']['#submit'][] = 'wamex_project_submit_handler';
+		case 'wamex_project_form':
 			$form['title']['#title'] = t('Project Name');
 			$form['body'][LANGUAGE_NONE][0]['#title'] = t('Description');
 			$form['body'][LANGUAGE_NONE][0]['#format'] = 'plain_text';
@@ -48,7 +58,7 @@ function wamex_form_alter(&$form, &$form_state, $form_id) {
 			//echo '<pre>'.print_r($form,1).'</pre>';
 			break;
 		case 'loading_node_form':
-			$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
+			//$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
 			if (isset($form['field_loading_project'])) { 
 				drupal_set_title('Create Loading - '.$form['field_loading_project']['und']['#options'][1]);
 			}
@@ -146,31 +156,6 @@ function wamex_loading_submit_handler($form, &$form_state) {
 						array(
 							'query' => array(
 							'destination' => t('node'),
-							),
-						),
-					);
-	
-	//$form_state['redirect'] = $path;
-  }
-}
-
-function wamex_project_submit_handler($form, &$form_state) {
-  if ($form_state['node']->nid) {
-  
-    
-    //popup_element(t(''), t("Your project has been submitted"));
-	
-	//drupal_set_message(t($form_state['redirect']));
-
-	//$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
-	$form_state['redirect'] = 'dashboard';
-	//drupal_set_message(t('3.'.print_r($form_state['redirect'])));
-	
-					$path =  array(
-						t('thank-you'),
-						array(
-							'query' => array(
-							'destination' => t('dashboard'),
 							),
 						),
 					);

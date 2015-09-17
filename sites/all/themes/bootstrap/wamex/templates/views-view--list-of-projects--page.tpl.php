@@ -31,6 +31,7 @@
 	//				jQuery('#view-wamex-projects-canvas').load('/wamex/get/ajax/node/add/project');
 	//			}
 	//			",'inline');
+	
 ?>
 <div class="<?php print $classes; ?>">
   <?php print render($title_prefix); ?>
@@ -43,6 +44,7 @@
       <?php print $header; ?>
     </div>
   <?php endif; ?>
+	<div id="dashboard-messages"><?php print $messages; ?></div>
 
   <?php if ($exposed): ?>
     <div class="view-filters">
@@ -86,12 +88,11 @@
     </div>
   <?php endif; ?>
 	
-	<div id="view-wamex-projects-actions">
+	<div id="dashboard-projects-actions">
 		<a class="btn btn-primary" href="#" id="add-project" >Add New Project</a>
 		<a class="btn btn-default hidden" id="cancel-project" >Cancel</a>
 	</div>
-	<div id="view-dashboard-messages"><?php print $messages; ?></div>
-	<div id="view-wamex-projects-canvas"></div>
+	<div id="dashboard-projects-viewport"></div>
 
   <?php if ($feed_icon): ?>
     <div class="feed-icon">

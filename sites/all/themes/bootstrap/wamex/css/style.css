@@ -3,6 +3,7 @@
  * remove this comment and start adding your styles to this file.
  */
  
+#wamex-project-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #project-node-form-ajax div.tabbable.tabs-left.vertical-tabs.clearfix, 
 #loading-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
@@ -11,9 +12,11 @@
 }
 
 
+#wamex-project-form .row,
 #project-node-form .row,
 #project-node-form-ajax .row,
 #loading-node-form .row,
+#wamex-project-form .form-group,
 #project-node-form .form-group,
 #project-node-form-ajax .form-group,
 #loading-node-form .form-group {
@@ -29,12 +32,19 @@
 	margin-bottom: 15px;
 }
 
+#wamex-project-form .row .form-item-title,
+#wamex-project-form .form-item.form-type-textarea,
+#wamex-project-form .form-item.form-type-textfield {
+    margin-bottom: 10px;
+}
+
 
 #body-add-more-wrapper .form-textarea-wrapper textarea,
 #project-node-form-ajax > div > div:nth-child(4) > div > div > div,
 #project-node-form-ajax > div > div:nth-child(4) > div > div > label,
 #loading-node-form label,
 #project-node-form-ajax label,
+#wamex-project-form label,
 #project-node-form label {
 	/*border: 1px dotted red;*/
 	/*width: 25%;*/
@@ -43,13 +53,23 @@
 	display: inline-block;
 }
 
+#wamex-project-form .form-item-body > .form-textarea-wrapper {
+	display: inline-block;
+}
+
+#wamex-project-form .form-item-body > label {
+	vertical-align: top;
+}
+
 .form-item-body > .form-textarea-wrapper {
 	width: 60%;
 }
 
+#wamex-project-form input.form-control,
 #project-node-form input.form-control,
 #project-node-form-ajax input.form-control,
 #loading-node-form input,
+#wamex-project-form select,
 #project-node-form select,
 #project-node-form-ajax select,
 #loading-node-form select
@@ -123,4 +143,9 @@ table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.f
 
 body.page-dashboard div.vertical-tabs-panes {
 	display: none;
+}
+
+
+#dashboard-projects-actions {
+	margin-bottom: 10px;
 }

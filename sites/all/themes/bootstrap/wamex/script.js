@@ -5,9 +5,6 @@
 		attach: function (context, settings) {
 			// alter project input field types
 			if ($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard').length > 0) {
-				//console.log('check');
-				//console.log($('body.page-dashboard').length);
-			
 				$('#edit-field-population-und-0-value').attr('type','number');
 				$('#edit-field-discount-rate-und-0-value').attr('type','number');
 				$('#edit-field-ci-cost-und-0-value').attr('type','number');
@@ -20,16 +17,9 @@
 				var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
 				function loadExchangeRate(tid,reset) {
 					// get exchange rate from json-encoded taxonomy term
-					//console.log ('tid: '+tid);
-					//console.log ('reset: '+reset);
 					if (currencyTerms[tid]){
-						//console.log(currencyTerms[tid]);
 						exchRate = currencyTerms[tid].field_exchange_rate['und'][0].value;
 						currCode = currencyTerms[tid].field_currency_code['und'][0].value;
-						//console.log('exchRate: '+exchRate);
-						//console.log('currCode: '+currCode);
-						//console.log(Drupal.settings.node.values.field_exchange_rate_to_usd);
-						//console.log('nodeExchRate: '+nodeExchRate);
 						if (nodeExchRate==0 || nodeExchRate==null || reset){
 							$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
 						} else {
@@ -44,14 +34,11 @@
 						}
 					} else {
 						$('#field-exchange-rate-to-usd-add-more-wrapper').show();
-						$('#edit-field-exchange-rate-to-usd-und-0-value').val(null);
+						//$('#edit-field-exchange-rate-to-usd-und-0-value').val(null);
 					}
 					//console.log($('#edit-field-exchange-rate-to-usd-und-0-value').val());
 				}
 				
-				//var currencyTIds = new Array();
-				//$('#project-node-form').ready(loadExchangeRate($('#edit-field-currency-und').val()));
-				//$('#project-node-form').ready(loadExchangeRate($('#edit-field-currency-und').val()));
 				$('#project-node-form').ready(function(){
 					// load default value on form ready
 					loadExchangeRate($('#edit-field-currency-und').val(),0);
@@ -82,12 +69,6 @@
 					//}
 				});
 				
-				/*$('#edit-field-currency').change(function(){
-					console.log('efc changed');
-					var termId = $(this).val();
-					console.log(termId);
-					loadExchangeRate(termId,0);
-				});*/
 			}
 			
 			if($('body.page-node, body.node-type-project').length > 0){
@@ -104,29 +85,39 @@
 			}
 			
 			if($('body.page-dashboard').length > 0){
-				//var textShowForm = 'Add New Project';
-				//var textHideForm = 'Cancel';
-				//$('#add-project').html(textShowForm);
-				//$('#view-wamex-projects-canvas').hide();
-				$('#add-project').on('click',function(event){
-					//console.log('wamex_ajax_load');
+				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
+				var viewport = $('#dashboard-projects-viewport');
+				$('#add-project').unbind("click").on('click',function(event){
 					$('#cancel-project').removeClass('hidden');
-					// load the node/add/project form, and attach ajax behaviors to the container
-					$('#view-wamex-projects-canvas').empty().html('<img src="/wamex/misc/throbber-active.gif" style="margin-left:50%;"/>');
-					$('#view-wamex-projects-canvas').load('/wamex/get/ajax/node/add/project','ajax=1',function(){
-						Drupal.attachBehaviors('#view-wamex-projects-canvas');
+					// load the /project/add custom form, and attach ajax behaviors to the container
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/add';
+					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#dashboard-projects-viewport');
 					});
 				});
 				
-				$('#cancel-project').on('click',function(event){
-					//$('#view-wamex-projects-canvas').addClass('hidden');
-					//$('#view-wamex-projects-canvas').hide();
-					$('#view-wamex-projects-canvas').empty();
+				$('.dashboard-node-edit-btn').unbind("click").on('click',function(event){
+					$('#cancel-project').removeClass('hidden');
+					// load the /project/edit/% custom form, and attach ajax behaviors to the container
+					var btnId = $(this).attr('id');
+					var idTokens = btnId.split("-");
+					var nodeId = idTokens[2];
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/edit/'+nodeId;
+					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#dashboard-projects-viewport');
+					});
+				});
+				
+				$('#cancel-project').unbind("click").on('click',function(event){
+					viewport.empty();
 					$('#add-project').removeClass('disabled');
 					$('#cancel-project').addClass('hidden');
 				});
 				
 			}
+
 			
 		}
 	};
