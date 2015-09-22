@@ -23,6 +23,7 @@ function wamex_menu() {
     'delivery callback' => 'wamex_ajax_callback',  // Magic goes here
   );  
 	
+	// project functions
 	$items['project/add'] = array(
     'title' => 'Add Project',
 		'page callback' => 'drupal_get_form',
@@ -47,11 +48,222 @@ function wamex_menu() {
     'type' => MENU_CALLBACK,
 	);
 	
+	
+	// loading functions
+	$items['loading/add'] = array(
+		'title' => 'Add Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_form'),
+		'access arguments' => array('Create new content'),
+		'type' => MENU_LOCAL_TASK,
+	);
+	$items['loading/edit/%'] = array(
+		'title' => 'Edit Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_form',2),
+		'access arguments' => array('Edit own content'),
+		'type' => MENU_CALLBACK,
+	);
+	$items['loading/delete/%'] = array(
+		'title' => 'Delete Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_delete_confirm'),
+		'access arguments' => array('Delete own content'),
+		'type' => MENU_CALLBACK,
+	);
+	
   return $items;
 }
 
+function wamex_loading_form($form, &$form_state, $nid = null){
+	if ($nid){
+		$node = node_load($nid);
+		$title = $node->title;
+		$body = $node->body;
+		$project_nid = $node->field_loading_project;
+		$type = $node->field_loading_type;
+		$adwf = $node->field_loading_adwf;
+		$cod = $node->field_loading_cod;
+		$bod5 = $node->field_loading_bod5;
+		$totn = $node->field_loading_totn;
+		$totp = $node->field_loading_totp;
+		$tss = $node->field_loading_tss;
+		$weight = $node->field_loading_weight;
+	} else {
+		$node = NULL;
+		$title = '';
+		$body = '';
+		$project_nid = 106;
+		$type = '_none';
+		$adwf = 0;
+		$cod = 0;
+		$bod5 = 0;
+		$totn = 0;
+		$totp = 0;
+		$tss = 0;
+		$weight = 0;
+	}
+	
+	$form = array();
+	$form['#attributes']['class'][] = 'form-container';
+	$form['#attributes']['class'][] = 'container-fluid';
+	
+	$form['title'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t('Loading Name'),
+		'#default_value' => $title,
+		//'#prefix' => '<div class="row"><div class="col-sm-12">',
+		//'#suffix' => '</div></div>',
+	);
+	$form['body'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Description'),
+		'#default_value' => $body,
+		//'#prefix' => '<div class="row"><div class="col-sm-12">',
+		//'#suffix' => '</div></div>',
+	);
+	
+	$form['field_loading_project_und'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Project'),
+		'#default_value' => $project_nid,
+		'#attributes' => array(
+			'disabled' => NULL,
+			'class' => array(
+				'disabled'
+			)
+		)
+	);
+	
+	$form['loading_type_options'] = array(
+		'#type' => 'value',
+		'#value'=> array(
+			'_none' => t('- None -'),
+			'Combined Sewage' => t('Combined Sewage'),
+			'Black Water' => t('Black Water'),
+			'Yellow Water' => t('Yellow Water'),
+			'Grey Water' => t('Grey Water'),
+			'Sanitary Sewage' => t('Sanitary Sewage'),
+			'Industrial' => t('Industrial'),
+			'Septage' => t('Septage')),
+	);
+	
+	module_load_include('inc', 'field_collection', 'field_collection.pages');
+	module_load_include('inc', 'field_collection', 'field_collection.pages');
+	$field_collection_item = entity_create('field_collection_item', array('field_name' => 'field_loading_attributes'));
+	field_attach_form('field_collection_item', $field_collection_item, $form['participant'], $form_state);
+	
+	
+	/*$form['field_loading_type'] = array(
+		'#type' => 'select',
+		'#title' => 'Loading Type',
+		'#options' => $form['loading_type_options']['#value'],
+		'#default_value' => $type,
+		'#prefix' => '<div class="col-sm-5">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_adwf'] = array(
+		'#type' => 'textfield',
+		'#title' => t('ADWF'),
+		'#default_value' => $adwf,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_cod'] = array(
+		'#type' => 'textfield',
+		'#title' => t('COD'),
+		'#default_value' => $cod,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_bod5'] = array(
+		'#type' => 'textfield',
+		'#title' => t('BOD5'),
+		'#default_value' => $bod5,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_totn'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Tot N'),
+		'#default_value' => $totn,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_totp'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Tot P'),
+		'#default_value' => $totp,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_tss'] = array(
+		'#type' => 'textfield',
+		'#title' => t('TSS'),
+		'#default_value' => $tss,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	
+	$form['field_loading_weight'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Weight'),
+		'#default_value' => $weight,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);*/
+	
+	return $form;
 
-function wamex_currency_selectbox_contents($vid) {
+}
+
+function wamex_loading_form_submit($form, &$form_state){
+
+	$node->field_loading_attributes[LANGUAGE_NONE][0]['field_loading_'][LANGUAGE_NONE] = $form_state['input']['field_loading_'];
+}
+
+function wamex_loading_submit_handler($form, &$form_state) {
+  if ($form_state['node']->nid) {
+  
+    
+    //popup_element(t(''), t("Your project has been submitted"));
+	
+	//drupal_set_message(t('1'.$form_state['redirect']));
+
+	$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
+	
+					$path =  array(
+						t('thank-you'),
+						array(
+							'query' => array(
+							'destination' => t('node'),
+							),
+						),
+					);
+	
+	//$form_state['redirect'] = $path;
+  }
+}
+
+
+function wamex_loading_delete_confirm($form, &$form_state, $nid){
+
+}
+
+function wamex_loading_delete_confirm_submit($form, &$form_state){
+
+}
+
+
+function wamex_get_selectbox_contents($vid) {
   $terms = taxonomy_get_tree($vid);
 	$output = array();
   foreach ($terms as $data) {
@@ -106,14 +318,14 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_author = '';
 		$field_discount_rate = 0;
 		$field_ci_cost = 0;
-		$field_currency = NULL;
-		$field_exchange_rate_to_usd = NULL;
+		$field_currency = 2;	// default to tid of US Dollar
+		$field_exchange_rate_to_usd = 1.0;
 	}
 
 	$form = array();
 	$currency_vocab = taxonomy_vocabulary_machine_name_load('currency');
 	//$currency_opts  = taxonomy_allowed_values(field_info_field('field_currency'));
-	$currency_terms  = wamex_currency_selectbox_contents($currency_vocab->vid);
+	$currency_terms  = wamex_get_selectbox_contents($currency_vocab->vid);
 	$ary_none = array('_none'=>t('- None -'));
 	$currency_opts = $ary_none+$currency_terms;
 
@@ -181,7 +393,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('Exchange Rate to USD'),
 		'#type' => 'textfield',
 		'#default_value' => $field_exchange_rate_to_usd,
-		'#prefix' => '<div class="col-sm-6" id="field-exchange-rate-to-usd-add-more-wrapper">',
+		'#prefix' => '<div class="col-sm-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
 		'#suffix' => '</div></div>',
 	);
 
@@ -303,8 +515,8 @@ function wamex_project_delete_confirm($form, $form_state, $nid){
       t('Are you sure you want to delete %title?', array('%title' => $project_name)),
       isset($_GET['destination']) ? $_GET['destination'] : 'dashboard',
 			t('Are you sure you want to delete %title? This action cannot be undone.', array('%title' => $project_name)),
-			t('Yes, Delete'),
-			t('Cancel'));
+			t('Yes'),
+			t('No'));
   }
   return $output;
 }

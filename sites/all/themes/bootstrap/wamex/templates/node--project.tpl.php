@@ -1,7 +1,7 @@
 ﻿<?php
 $node = menu_get_object(); 
 if ($node):
-	print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
+	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
 	//krumo($node);
 	//$nid = field_get_items('node',$node,'nid');
 	$nid = $node->nid;

@@ -132,15 +132,7 @@ table[id^="field-loading-attributes-values--"]  tbody > tr > td  .form-wrapper.f
 	width: 100%;
 }
 
-
-/*#field-loading-attributes-values > tbody > tr > td > .form-wrapper.form-group label {
-	border: 1px dotted blue;
-}*/
-
-/*#view-wamex-projects-canvas {
-	display: none;
-}*/
-
+body.page-dashboard #edit-cancel,
 body.page-dashboard div.vertical-tabs-panes {
 	display: none;
 }
@@ -148,4 +140,10 @@ body.page-dashboard div.vertical-tabs-panes {
 
 #dashboard-projects-actions {
 	margin-bottom: 10px;
+}
+
+body.page-dashboard #edit-cancel {
+	display: inline;
+	padding-top: 7px;
+	padding-bottom: 7px;
 }

@@ -13,7 +13,6 @@
 				
 				// currency info pre-load
 				var currencyTerms = Drupal.settings.taxonomy.currency;
-				//console.log(currencyTerms);
 				var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
 				function loadExchangeRate(tid,reset) {
 					// get exchange rate from json-encoded taxonomy term
@@ -25,12 +24,14 @@
 						} else {
 							$('#edit-field-exchange-rate-to-usd-und-0-value').val(nodeExchRate);
 						}
-						if (currCode == 'USD'){
-							$('#field-exchange-rate-to-usd-add-more-wrapper').hide();
-							$('#form-item-field-exchange-rate-to-usd-und-0-value').hide();
-						} else {
+						if (tid != 2){
+							$('#field-exchange-rate-to-usd-add-more-wrapper').removeClass('hidden');
 							$('#field-exchange-rate-to-usd-add-more-wrapper').show();
 							$('#form-item-field-exchange-rate-to-usd-und-0-value').show();
+						} else {
+							$('#field-exchange-rate-to-usd-add-more-wrapper').addClass('hidden');
+							$('#field-exchange-rate-to-usd-add-more-wrapper').hide();
+							$('#form-item-field-exchange-rate-to-usd-und-0-value').hide();
 						}
 					} else {
 						$('#field-exchange-rate-to-usd-add-more-wrapper').show();
@@ -59,14 +60,9 @@
 				
 				// field_currency behavior
 				//console.log('nodeExchRate: '+nodeExchRate);
-				$('#edit-field-currency-und').change(function(){
-					console.log('currency changed');
-					//console.log('nodeExchRate: '+nodeExchRate);
+				$('#edit-field-currency-und').unbind('change').change(function(){
 					var termId = $(this).val();
-					//if (nodeExchRate==0 || nodeExchRate==null){
-						//console.log('ITO');
-						loadExchangeRate(termId,0);
-					//}
+					loadExchangeRate(termId,0);
 				});
 				
 			}
@@ -128,6 +124,11 @@
 					$('#cancel-project').addClass('hidden');
 				});
 				
+				$('#edit-submit').addClass('btn-sm');
+				
+				$('#edit-cancel').addClass('btn');
+				$('#edit-cancel').addClass('btn-default');
+				$('#edit-cancel').addClass('btn-sm');
 			}
 
 			
