@@ -13,6 +13,7 @@
 	//drupal_set_title ('123');
 	//print "title: ".$title;
 	//} 
+	print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
 
 ?><?php //print_r($variables); //['title']; ?>
 	<div id="project-forms-container" class="form-container container-fluid"><?php //print $nid; ?>

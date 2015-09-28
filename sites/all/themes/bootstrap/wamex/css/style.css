@@ -147,3 +147,73 @@ body.page-dashboard #edit-cancel {
 	padding-top: 7px;
 	padding-bottom: 7px;
 }
+
+body.node-type-project td.views-field.views-field-nothing,
+body.node-type-project td.views-field.views-field-nothing-1,
+body.page-dashboard td.views-field.views-field-nothing,
+body.page-dashboard td.views-field.views-field-nothing-1 {
+	width: 50px;
+}
+
+.help-block {
+	display: inline-block;
+	color: #dd0000;
+	padding-bottom: 10px;
+	margin-top: 0px;
+}
+
+.project-info-value {
+	margin-top: 10px;
+}
+
+body.node-type-project input.form-loading-attribute {
+	padding: 2px 2px 2px 2px !important;
+}
+
+body.node-type-project #wamex-loading-form-fields, 
+body.node-type-project #wamex-loading-form-actions 
+{
+	margin-top: 15px;
+}
+
+#view-project-loadings tfoot td.average-loading {
+	font-weight: bold;
+}
+
+/*#view-project-loadings tbody #form-wrapper-div
+#view-project-loadings div.form-item-title label,
+#view-project-loadings div.form-item-field-loading-type label 
+ */
+#view-project-loadings thead th.views-field-nid,
+#view-project-loadings tbody td.views-field-nid
+{
+	display: none;
+}
+
+#view-project-loadings select#edit-field-loading-type {
+	border: 1px dotted red;
+	width: 190px;
+}
+
+#loading-view-container {
+	margin: -17px;
+}
+
+#loading-actions-container {
+	padding-left: 15px;
+}
+
+/*#loading-form-container {
+	padding: 0px;
+}*/
+
+/*#form-wrapper-div div.col-sm-1,
+#form-wrapper-div div.col-sm-2 {
+	padding-left: 0px;
+}*/
+
+
+#form-wrapper-div input,
+#form-wrapper-div select {
+	padding: 0px;
+}

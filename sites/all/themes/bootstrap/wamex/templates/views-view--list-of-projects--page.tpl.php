@@ -89,8 +89,8 @@
   <?php endif; ?>
 	
 	<div id="dashboard-projects-actions">
-		<a class="btn btn-primary" href="#" id="add-project" >Add New Project</a>
-		<a class="btn btn-default hidden" id="cancel-project" >Cancel</a>
+		<button class="btn btn-primary" id="add-project" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Add New Project</button>
+		<button class="btn btn-default hidden" id="cancel-project" >Cancel</button>
 	</div>
 	<div id="dashboard-projects-viewport"></div>
 

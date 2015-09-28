@@ -43,14 +43,16 @@
  *
  * @ingroup themeable
  */
+ $ary_classes = explode(' ',$classes);
+ if (in_array('field-name-field-loading-type',$ary_classes)){
+	$ary_classes[] = 'col-sm-3';
+ } else {
+	$ary_classes[] = 'col-sm-1';
+ }
+ $classes = implode(' ', $ary_classes);
+ 
 ?>
-<!--
-THIS FILE IS NOT USED AND IS HERE AS A STARTING POINT FOR CUSTOMIZATION ONLY.
-See http://api.drupal.org/api/function/theme_field/7 for details.
-After copying this file to your theme's folder and customizing it, remove this
-HTML comment.
--->
-<div class="loading-attribute <?php print $classes; ?> col-sm-1"<?php print $attributes; ?>>
+<div class="loading-attribute <?php print $classes; ?>"<?php print $attributes; ?>>
   <?php if (!$label_hidden): ?>
     <div class="field-label loading-attribute-field-label "<?php print $title_attributes; ?>><?php print $label ?>:&nbsp;</div>
   <?php endif; ?>
