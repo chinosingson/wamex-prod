@@ -138,14 +138,17 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$loading_type_vocab = taxonomy_vocabulary_machine_name_load('loading_type');
 	$loading_type_terms  = wamex_get_selectbox_contents($loading_type_vocab->vid);
-	$loading_type_opts = array('*Required')+$loading_type_terms;
+	$loading_type_opts = $loading_type_terms;
+	//array(''=>t('*Required'))+
 	
 	$form['field_loading_type'] = array(
 		'#type' => 'select',
 		'#title' => t('Type'),
 		'#required' => TRUE,
+		//'#empty_option' => t('- Select -'),
+		//'#empty_value' => 0,
 		'#options' => $loading_type_opts,
-		'#default_value' => $type,
+		//'#default_value' => $type,
 		'#prefix' => '<div class="col-sm-2">',
 		'#suffix' => '</div>',
 	);
@@ -215,17 +218,21 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	);
 	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
 	
-	$form['actions']['submit']['#prefix'] = '<div class="row" id="wamex-loading-form-actions"><div class="col-sm-12">';
-	$form['actions']['submit']['#suffix'] = '</div></div>';
-	
-	//$form['actions']['submit']['#prefix'] = '<td class="view-field view-field-edit" colspan="2">';
-	//$form['actions']['submit']['#suffix'] = '<button class="btn btn-xs btn-default edit-loading-cancel" id="'.$cancel_btn_id.'">Cancel</button></td>';
+	$form['actions']['submit']['#prefix'] = '<div class="col-sm-1">';
+	$form['actions']['submit']['#suffix'] = '</div>';
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_loading_form_submit';
 	$form['actions']['submit']['#attributes']['class'][] = 'btn-xs';
-	
-	
+	$form['actions']['cancel']['#prefix'] = '<div class="col-sm-1">';
+	$form['actions']['cancel']['#suffix'] = '</div>';
+	$form['actions']['cancel']['#type'] = 'button';
+	$form['actions']['cancel']['#value'] = t('Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'cancel-loading';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+
 	if ($nid){
 		// edit existing
 		$form['nid']['#type'] = 'hidden';
@@ -416,8 +423,11 @@ function wamex_get_selectbox_contents($vid) {
 
 function wamex_preprocess_page(&$variables){
 	$arg = arg();
+	if ($arg[0] == 'dashboard' || @is_object($variables['node']) && $variables['node']->type == 'project'){
 	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
 	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+	//drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+	}
 	if ($arg[0] == 'dashboard'){
 		// load taxonomy tree for currency
 		$variables['show_messages'] = FALSE;
@@ -469,6 +479,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
 		$field_currency = $node->field_currency['und'][0]['tid'];
 		$field_exchange_rate_to_usd = $node->field_exchange_rate_to_usd['und'][0]['value'];
+		$field_effluent_standard = $node->field_effluent_standard['und'][0]['tid'];
 	} else {
 		$node = NULL;
 		$title = '';
@@ -480,6 +491,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_ci_cost = 0;
 		$field_currency = 2;	// default to tid of US Dollar
 		$field_exchange_rate_to_usd = 1.0;
+		$field_effluent_standard = '';
 	}
 
 	$form = array();
@@ -558,10 +570,30 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="col-sm-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
 		'#suffix' => '</div></div>',
 	);
+	
+	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
+	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
+	$effluent_opts = $effluent_terms;
+	
+	$form['field_effluent_standard'] = array(
+		'#title' => t('Effluent Standard'),
+		'#type' => 'select',
+		'#options' => $effluent_opts,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div>',
+	);
 
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_form_submit';
+	//$form['actions']['cancel']['#prefix'] = '<div class="col-sm-1">';
+	//$form['actions']['cancel']['#suffix'] = '</div>';
+	$form['actions']['cancel']['#type'] = 'button';
+	$form['actions']['cancel']['#value'] = t('Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'cancel-project';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
+	//$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
 	
 	if ($nid){
 		// edit existing

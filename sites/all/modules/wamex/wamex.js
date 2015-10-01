@@ -3,24 +3,7 @@
 	Drupal.behaviors.wamex = {
 		attach: function (context, settings) {
 			if($('body.page-dashboard').length > 0){
-				var projectValidatorOptions = {
-					framework: 'bootstrap',
-					icon: {
-							valid: 'glyphicon glyphicon-ok',
-							invalid: 'glyphicon glyphicon-remove',
-							validating: 'glyphicon glyphicon-refresh'
-					},
-					fields: {
-						title: {
-							trigger: 'focus blur keyup',
-							validators: {
-								notEmpty: {
-									message: 'The project title is required and cannot be empty.'
-								}
-							}
-						}
-					}
-				};
+				//var projectValidatorOptions = ;
 				
 				$('#wamex-project-form').ready(function(){
 					$('#edit-title').trigger('focus');
@@ -29,14 +12,44 @@
 						console.log('init_form_fv');
 						data.fv.disableSubmitButtons(true);
 					})
-					.formValidation(projectValidatorOptions);
+					.formValidation({
+						framework: 'bootstrap',
+						icon: {
+								valid: 'glyphicon glyphicon-ok',
+								invalid: 'glyphicon glyphicon-remove',
+								validating: 'glyphicon glyphicon-refresh'
+						},
+						fields: {
+							title: {
+								trigger: 'focus blur keyup',
+								validators: {
+									notEmpty: {
+										message: 'The project title is required and cannot be empty.'
+									}
+								}
+							}
+						}
+					})
+					.formValidation('validate');
 				});
 			}
 		
 			if($('body.node-type-project').length > 0){
 				$('#wamex-loading-form').ready(function(){
-					var loadingValidatorOptions = {
+					//$('#edit-title').focus();
+					$('#edit-title').trigger('focus');
+					//$(this).blur();
+					$('#wamex-loading-form')
+						.find('[name="field_loading_type"]')
+							//.selectpicker()
+							.change(function(e) {
+								// revalidate the language when it is changed
+								$('#wamex-loading-form').formValidation('revalidateField', 'field_loading_type');
+							})
+							.end()
+						.formValidation({
 							framework: 'bootstrap',
+							/*excluded: ':disabled',*/
 							icon: {
 									valid: 'glyphicon glyphicon-ok',
 									invalid: 'glyphicon glyphicon-remove',
@@ -44,25 +57,21 @@
 							},
 							fields: {
 								title: {
-									trigger: 'focus keyup',
 									validators: {
 										notEmpty: {
 											message: 'Name required'
 										}
 									}
 								},
-								field_loading_type : {
-									trigger: 'focus change',
+								field_loading_type: {
+									trigger: 'focus blur',
 									validators: {
-										greaterThan: {
-											value: 0,
-											inclusive: false,
+										notEmpty: {
 											message: 'Type required'
 										}
 									}
 								},
-								field_loading_weight : {
-									trigger: 'focus keyup',
+								field_loading_weight: {
 									validators: {
 										between: {
 											min: 1,
@@ -73,23 +82,8 @@
 									}
 								}
 							}
-					};
-					
-					$('#edit-title').trigger('focus');
-					//$(this).blur();
-					$('#wamex-loading-form')
-					.on('init.form.fv', function (e, data){
-						console.log('init.form.fv');
-						data.fv.disableSubmitButtons(true);
-					})
-					/*.on('init.field.bv', function (e, data){
-						if((data.field == 'title' || data.field == 'field_loading_type') && (data.element[0].value == "" || data.element[0].value == "0")) { 
-							console.log(data.field + ':')
-							console.log(data.element);
-							data.bv.disableSubmitButtons(true);
-						}
-					})*/
-					.formValidation(loadingValidatorOptions);
+						})
+						.formValidation('validate');
 					/*.on('success.field.bv', function(e, data) {
 						console.log('success.field.bv');
 						console.log(data.field);

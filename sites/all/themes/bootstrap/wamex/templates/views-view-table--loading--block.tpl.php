@@ -19,6 +19,9 @@ $node = menu_get_object();
  *   field id, then row number. This matches the index in $rows.
  * @ingroup views_templates
  */
+ 
+ //print '<pre>'.$classes.'</pre>';
+ $classes .= ' table-hover table-responsive';
 ?>
 <table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
    <?php if (!empty($title) || !empty($caption)) : ?>

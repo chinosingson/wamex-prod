@@ -166,6 +166,12 @@
 
 				$('#view-project-loadings').ready(function(){
 					var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight');
+					var weight_sum = 0;
+					
+					weight_values.each(function(){
+						weight_sum += parseInt($(this).text());
+					});
+					$('#tot_weight').html(weight_sum)
 				
 					var adwf_avg = 0;
 					var adwf_values = $('#view-project-loadings tbody td.views-field-field-loading-adwf');

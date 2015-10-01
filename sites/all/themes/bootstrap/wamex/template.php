@@ -23,8 +23,13 @@ function wamex_theme($variables) {
 }
 
 function wamex_preprocess_html(&$variables){
-	drupal_add_js(drupal_get_path('theme', 'wamex') .'/script.js');
-	drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+	$node = menu_get_object();
+	$arg = arg();
+	if ($arg[0] == 'dashboard' || (@is_object($node) && ($node->type == 'project' || $node->type == 'loading'))){
+		drupal_add_js(drupal_get_path('theme', 'wamex') .'/script.js');
+		drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+		//drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.css',array('type'=>'file','group'=>CSS_THEME));
+	}
 }
 
 function wamex_preprocess_views_view(&$variables) {

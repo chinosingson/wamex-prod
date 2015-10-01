@@ -230,7 +230,11 @@ body.node-type-project #wamex-loading-form-actions
 }*/
 
 
-#form-wrapper-div input,
-#form-wrapper-div select {
+#view-project-loadings #form-wrapper-div input,
+#view-project-loadings #form-wrapper-div select {
 	padding: 0px;
+}
+
+#loading-form-container #wamex-loading-form #edit-title {
+	min-width: 75px;
 }

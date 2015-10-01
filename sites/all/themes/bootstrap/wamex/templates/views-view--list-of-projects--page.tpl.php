@@ -90,7 +90,7 @@
 	
 	<div id="dashboard-projects-actions">
 		<button class="btn btn-primary" id="add-project" ><span class="glyphicon glyphicon-plus"></span>&nbsp;Add New Project</button>
-		<button class="btn btn-default hidden" id="cancel-project" >Cancel</button>
+		<!--button class="btn btn-default hidden" id="cancel-project" >Cancel</button-->
 	</div>
 	<div id="dashboard-projects-viewport"></div>
 

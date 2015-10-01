@@ -29,44 +29,54 @@ $view_loading->set_display('block');
 <div id="project-page-<?php print $node->nid; ?>">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-sm-12"><h3 class="project-section-title">Project Information</h3></div>
+			<div id="project-information" class="col-sm-5 col-md-5 col-lg-5">
+				<div class="row">
+					<div class="col-sm-12"><h3 class="project-section-title">Project Information</h3></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Project Name</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print $title; ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Author</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_author) ? $field_author[0]['value'] : "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Location</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_location) ? $field_location[0]['value']: "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Description</h4></div>
+					<div class="col-sm-8 project-info-value well well-sm"><?php print (isset($field_body) ? $field_body[0]['value'] : "-");  ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Population</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_population) ? $field_population[0]['value']: "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>CI Cost</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Discount Rate</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Currency</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_currency) ? $node->field_currency['und'][0]['taxonomy_term']->name : "-"); ?></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 project-info-label"><h4>Exchange Rate</h4></div>
+					<div class="col-sm-8 project-info-value"><?php print (isset($field_exchange_rate_to_usd) ? $field_exchange_rate_to_usd[0]['value']: "-"); ?></div>
+				</div>
+			</div>
+			<div id="project-information" class="col-sm-5 col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+				<div class="row">
+					<div class="col-sm-12"><h3 class="project-section-title">Effluent Standards</h3></div>
+				</div>
+			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Project Name</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print $title; ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Author</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_author) ? $field_author[0]['value'] : "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Location</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_location) ? $field_location[0]['value']: "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Description</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_body) ? $field_body[0]['value'] : "-");  /*$node->body['und'][0]['value'];*/ ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Population</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_population) ? $field_population[0]['value']: "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>CI Cost</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Discount Rate</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Currency</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_currency) ? $node->field_currency['und'][0]['taxonomy_term']->name : "-"); ?></div>
-		</div>
-		<div class="row">
-			<div class="col-sm-2 project-info-label"><h4>Exchange Rate</h4></div>
-			<div class="col-sm-10 project-info-value"><?php print (isset($field_exchange_rate_to_usd) ? $field_exchange_rate_to_usd[0]['value']: "-"); ?></div>
-		</div>
+
 	</div>
 	<hr/>
 	<div class="container-fluid">
@@ -81,7 +91,7 @@ $view_loading->set_display('block');
 		</div>
 		<div class="row" id="loading-actions-container">
 			<button class="btn btn-primary btn-add-loading" id="add-loading-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Loading</button>
-			<button class="btn btn-default hidden" id="cancel-loading" >Cancel</button>
+			<!--button class="btn btn-default hidden" id="cancel-loading" >Cancel</button-->
 		</div>
 		<div class="row" id="loading-form-container"></div>
 	</div>
