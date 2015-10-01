@@ -4,7 +4,6 @@
  * @file
  * template.php
  */
-drupal_add_js(drupal_get_path('theme', 'wamex') .'/script.js');
 
  
 function wamex_theme($variables) {
@@ -21,6 +20,11 @@ function wamex_theme($variables) {
 			'path' => drupal_get_path('theme','wamex').'/templates',
 			'template' => 'node--loading--edit'),
 	);
+}
+
+function wamex_preprocess_html(&$variables){
+	drupal_add_js(drupal_get_path('theme', 'wamex') .'/script.js');
+	drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
 }
 
 function wamex_preprocess_views_view(&$variables) {

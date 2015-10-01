@@ -5,7 +5,11 @@ package = wamex
 version = 7.x-0.1
 core = 7.x
 
-stylesheets[all][] = bootstrapvalidator/css/bootstrapValidator.min.css
+;stylesheets[all][] = http://formvalidation.io/vendor/formvalidation/css/formValidation.min.css
+;stylesheets[all][] = bootstrapvalidator/css/bootstrapValidator.min.css
 
-scripts[] = bootstrapvalidator/js/bootstrapValidator.min.js
+;scripts[] = http://formvalidation.io/vendor/formvalidation/js/formValidation.min.js
 scripts[] = wamex.js
+;scripts[] = bootstrapvalidator/js/bootstrapValidator.min.js
+;scripts[] = bootstrapvalidator/js/validator.min.js
+

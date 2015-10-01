@@ -34,9 +34,7 @@
 						}
 					} else {
 						$('#field-exchange-rate-to-usd-add-more-wrapper').show();
-						//$('#edit-field-exchange-rate-to-usd-und-0-value').val(null);
 					}
-					//console.log($('#edit-field-exchange-rate-to-usd-und-0-value').val());
 				}
 				
 				$('#project-node-form').ready(function(){
@@ -52,13 +50,10 @@
 				});
 
 				$('#reset-exchange-rate').on('click',function(){
-					//console.log('reset');
 					loadExchangeRate($('#edit-field-currency-und').val(),1);
-					
 				});
 				
 				// field_currency behavior
-				//console.log('nodeExchRate: '+nodeExchRate);
 				$('#edit-field-currency-und').unbind('change').change(function(){
 					var termId = $(this).val();
 					loadExchangeRate(termId,0);
@@ -107,24 +102,16 @@
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
 					var nodeId = idTokens[2];
-					//var rowViewport = $('#loading-'+nodeId);
 					var rowViewport = $('#loading-form-container');
-					//console.log(rowViewport);
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/edit/'+nodeId;
 					$('#edit-loading-'+nodeId).addClass('disabled');
 					$('#delete-loading-'+nodeId).addClass('disabled');
 					rowStaticHtml = rowViewport.html(); 
-					//rowViewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
-					//$('#loading-'+nodeId+' td.view-field-display').addClass('hidden');
 					rowViewport.append('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					rowViewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
 						$('.edit-loading-cancel').unbind('click').on('click',function(event){
-							//console.log('#loading-'+nodeId);
-							//console.log(rowStaticHtml);
-							//$('#loading-'+nodeId+' td.view-field-edit').addClass('hidden');
 							rowViewport.html(rowStaticHtml);
-							//rowViewport.add(rowStaticHtml);
 							Drupal.attachBehaviors($('#loading-'+nodeId));
 							rowStaticHtml = '';
 						});
@@ -144,11 +131,9 @@
 				$('#edit-cancel').addClass('btn-default');
 
 				$('#edit-field-loading-type').unbind('change').on('change', function(event){
-					//console.log('loading type changed');
+					console.log($(this).val());
 					termIndex = $('#edit-field-loading-type')[0].selectedIndex-1;
-					console.log(termIndex);
 					termObj = Drupal.settings.taxonomy.loadingTypes[termIndex];
-					//console.log(termObj); //.field_loading_adwf['und'][0].value); //[0].value);
 					if (termIndex >= 0){
 						$('#edit-field-loading-adwf').val(termObj.field_loading_adwf['und'][0].value);
 						$('#edit-field-loading-bod5').val(termObj.field_loading_bod5['und'][0].value);
@@ -166,47 +151,50 @@
 					}
 				});
 				
-				//#'view-project-loadings' tbody.views-field-field-loading-adwf
-				function getAvg(selector,weightSelector){
-					var average = 0;
-					selector.each(function(){
-						average = average + parseFloat($(this).text());
-						//console.log(average);
-					});
-					average = average/selector.length;
-					return average.toFixed(2);
+				function getSumProduct(attributes,weights){
+					var sumProduct = 0;
+					attributeCount = attributes.length;
+					weightCount = weights.length;
+					if (attributeCount == weightCount){
+						for(var x = 0; x < attributeCount; x++){
+							sumProduct += parseFloat(attributes[x].innerHTML)*parseFloat(weights[x].innerHTML)*.01;
+						}
+					}
+					return sumProduct.toFixed(1);
 				}
 				
 
 				$('#view-project-loadings').ready(function(){
+					var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight');
+				
 					var adwf_avg = 0;
 					var adwf_values = $('#view-project-loadings tbody td.views-field-field-loading-adwf');
-					adwf_avg = getAvg(adwf_values);
+					adwf_avg = getSumProduct(adwf_values,weight_values);
 					$('#ave_adwf').html(adwf_avg);
 
 					var cod_avg = 0;
 					var cod_values = $('#view-project-loadings tbody td.views-field-field-loading-cod');
-					cod_avg = getAvg(cod_values);
+					cod_avg = getSumProduct(cod_values,weight_values);
 					$('#ave_cod').html(cod_avg);
 
 					var bod5_avg = 0;
 					var bod5_values = $('#view-project-loadings tbody td.views-field-field-loading-bod5');
-					bod5_avg = getAvg(bod5_values);
+					bod5_avg = getSumProduct(bod5_values,weight_values);
 					$('#ave_bod5').html(bod5_avg);
 
 					var totn_avg = 0;
 					var totn_values = $('#view-project-loadings tbody td.views-field-field-loading-totn');
-					totn_avg = getAvg(totn_values);
+					totn_avg = getSumProduct(totn_values,weight_values);
 					$('#ave_totn').html(totn_avg);
 
 					var totp_avg = 0;
 					var totp_values = $('#view-project-loadings tbody td.views-field-field-loading-totp');
-					totp_avg = getAvg(totp_values);
+					totp_avg = getSumProduct(totp_values,weight_values);
 					$('#ave_totp').html(totp_avg);
 
 					var tss_avg = 0;
 					var tss_values = $('#view-project-loadings tbody td.views-field-field-loading-tss');
-					tss_avg = getAvg(tss_values);
+					tss_avg = getSumProduct(tss_values,weight_values);
 					$('#ave_tss').html(tss_avg);
 
 				});

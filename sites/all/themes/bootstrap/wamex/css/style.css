@@ -155,9 +155,30 @@ body.page-dashboard td.views-field.views-field-nothing-1 {
 	width: 50px;
 }
 
-.help-block {
+/*.help-block {
 	display: inline-block;
 	color: #dd0000;
+	padding-bottom: 10px;
+	margin-top: 0px;
+}*/
+
+
+/* Color of invalid field */
+.has-error .control-label,
+.has-error .help-block,
+.has-error .form-control-feedback {
+	display: inline-block;
+    color: #a94442;
+	padding-bottom: 10px;
+	margin-top: 0px;
+}
+
+/* Color of valid field */
+.has-success .control-label,
+.has-success .help-block,
+.has-success .form-control-feedback {
+	display: inline-block;
+    color: #3c763d;
 	padding-bottom: 10px;
 	margin-top: 0px;
 }
@@ -193,10 +214,6 @@ body.node-type-project #wamex-loading-form-actions
 #view-project-loadings select#edit-field-loading-type {
 	border: 1px dotted red;
 	width: 190px;
-}
-
-#loading-view-container {
-	margin: -17px;
 }
 
 #loading-actions-container {
