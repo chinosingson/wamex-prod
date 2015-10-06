@@ -74,6 +74,26 @@ $view_loading->set_display('block');
 				<div class="row">
 					<div class="col-sm-12"><h3 class="project-section-title">Effluent Standards</h3></div>
 				</div>
+				<div class="row" id="effluent-standard-name">
+					<div class="col-sm-6">
+						<?php 
+							$project_form = drupal_get_form('wamex_project_form');
+							$project_form['field_effluent_standard']['#prefix'] = '';
+							$project_form['field_effluent_standard']['#suffix'] = '';
+							$project_form['field_effluent_standard']['#attributes']['id'] = 'project-effluent-standard';
+							$project_form['field_effluent_standard']['#title'] = t('Select a Standard');
+							print drupal_render($project_form['field_effluent_standard']);
+						?>
+					</div>
+				</div>
+				<div class="row" id="effluent-standard-values">
+					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-cod"><label>COD</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-bod5"><label>BOD5</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totn"><label>TotN</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totp"><label>TotP</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-tss"><label>TSS</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+					<div class="col-sm-2"></div>
+				</div>
 			</div>
 		</div>
 
@@ -81,13 +101,10 @@ $view_loading->set_display('block');
 	<hr/>
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-sm-12"><h3 class="project-section-title">Loading/WW Characterisation</h3></div>
+			<div class="col-sm-12"><h3 class="project-section-title" id="loading-list-title">Loading/WW Characterisation</h3></div>
 		</div>
 		<div class="row" id="loading-view-container">
-			<div class="col-sm-12" id="loading-list-container">
-				<?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute();
-				print $view_loading->render(); ?>
-			</div>
+			<div class="col-sm-12" id="loading-list-container"><?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute(); print $view_loading->render(); ?></div>
 		</div>
 		<div class="row" id="loading-actions-container">
 			<button class="btn btn-primary btn-add-loading" id="add-loading-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Loading</button>
@@ -96,12 +113,14 @@ $view_loading->set_display('block');
 		<div class="row" id="loading-form-container"></div>
 	</div>
 	<hr/>
-	<div class="container-fluid">
+	<div class="container-fluid" id="loading-tech-container">
 		<div class="row">
-			<div class="col-sm-12"><h3 class="project-section-title">Suitable Technologies</h3></div>
+			<div class="col-sm-12"><h3 class="project-section-title" id="loading-tech-title">Suitable Technologies</h3>
+				<button class="btn btn-primary btn-show-tech" id="show-tech-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Show Results</button>
+			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-12">technologies</div>
+			<div class="col-sm-12" id="loading-tech-list"></div>
 		</div>
 	</div>
 	<hr/>

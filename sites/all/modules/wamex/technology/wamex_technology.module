@@ -124,6 +124,7 @@ function wamex_technology_list($keys = NULL) {
 	array('data' => t('Sludge Treatment > 2000'), 'field' => 'sludge_2k'),
     array('data' => t('Sludge Treatment > 20000'), 'field' => 'sludge_20k'),
 	array('data' => t('Sludge Treatment > 200000'), 'field' => 'sludge_200k'),
+    array('data' => t('COD'), 'field' => 'cod'),
     array('data' => t('BOD Treatment max'), 'field' => 'max_bod'),
 	array('data' => t('TSS Removal %'), 'field' => 'max_tss_p'),
     array('data' => t('TSS Removal max'), 'field' => 'max_tss_a'),
@@ -149,7 +150,7 @@ function wamex_technology_list($keys = NULL) {
   $select = db_select('wamex_technology', 'wt')->extend('Tablesort');
   $results = $select->fields('wt', array('tid', 'name', 'capex_1', 'capex_10', 'capex_200', 'capex_2ka', 'capex_2kb', 'capex_20ka', 'capex_20kb', 'capex_200ka', 'capex_200kb', 'capex_600ka', 'capex_600kb', 'capex_1200ka', 'capex_1200kb', 
 															  'opex_1', 'opex_10', 'opex_200', 'opex_2ka', 'opex_2kb', 'opex_20ka', 'opex_20kb', 'opex_200ka', 'opex_200kb', 'opex_600ka', 'opex_600kb', 'land_200', 'land_1k', 
-															  'sludge_10', 'sludge_2k', 'sludge_20k', 'sludge_200k', 'max_bod', 'max_tss_p', 'max_tss_a', 'max_n_p', 'max_n_a', 'max_p_a', 'complex', 
+															  'sludge_10', 'sludge_2k', 'sludge_20k', 'sludge_200k', 'cod', 'max_bod', 'max_tss_p', 'max_tss_a', 'max_n_p', 'max_n_a', 'max_p_a', 'complex', 
 															  'req_land', 'req_chem',  'req_energy', 'om', 'shock', 'flows', 'toxic', 'sludge'))->orderByHeader($header)->execute();
   
    $rows = array();
@@ -188,6 +189,7 @@ function wamex_technology_list($keys = NULL) {
 	  $val->sludge_2k, 
 	  $val->sludge_20k, 
 	  $val->sludge_200k, 
+		$val->cod,
 	  $val->max_bod, 
 	  $val->max_tss_p, 
 	  $val->max_tss_a, 
@@ -486,6 +488,14 @@ function wamex_technology_form($form, &$form_state, $tid = NULL) {
     '#description' => t('Sludge Treatment > 200000'),
   );
 
+  $form['cod'] = array(
+    '#type' => 'textfield',
+    '#title' => t('COD'),
+    '#default_value' => $edit['cod'],
+    '#size' => 15,
+    '#description' => t('COD'),
+  );
+
   $form['max_bod'] = array(
     '#type' => 'textfield',
     '#title' => t('BOD Treatment max'),
@@ -668,6 +678,7 @@ function wamex_technology_form_submit($form, &$form_state) {
 				'sludge_2k' => $form_state['values']['sludge_2k'] ? $form_state['values']['sludge_2k'] : NULL, 
 				'sludge_20k' => $form_state['values']['sludge_20k'] ? $form_state['values']['sludge_20k'] : NULL, 
 				'sludge_200k' => $form_state['values']['sludge_200k'] ? $form_state['values']['sludge_200k'] : NULL, 
+				'cod' => $form_state['values']['cod'] ? $form_state['values']['cod'] : NULL, 
 				'max_bod' => $form_state['values']['max_bod'] ? $form_state['values']['max_bod'] : NULL, 
 				'max_tss_p' => $form_state['values']['max_tss_p'] ? $form_state['values']['max_tss_p'] : NULL, 
 				'max_tss_a' => $form_state['values']['max_tss_a'] ? $form_state['values']['max_tss_a'] : NULL, 
@@ -721,6 +732,7 @@ function wamex_technology_form_submit($form, &$form_state) {
 			'sludge_2k' => $form_state['values']['sludge_2k'] ? $form_state['values']['sludge_2k'] : NULL, 
 			'sludge_20k' => $form_state['values']['sludge_20k'] ? $form_state['values']['sludge_20k'] : NULL, 
 			'sludge_200k' => $form_state['values']['sludge_200k'] ? $form_state['values']['sludge_200k'] : NULL, 
+			'cod' => $form_state['values']['cod'] ? $form_state['values']['cod'] : NULL, 
 			'max_bod' => $form_state['values']['max_bod'] ? $form_state['values']['max_bod'] : NULL, 
 			'max_tss_p' => $form_state['values']['max_tss_p'] ? $form_state['values']['max_tss_p'] : NULL, 
 			'max_tss_a' => $form_state['values']['max_tss_a'] ? $form_state['values']['max_tss_a'] : NULL, 

@@ -3,7 +3,7 @@
 	Drupal.behaviors.display = {
 		attach: function (context, settings) {
 			// alter project input field types
-			if ($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard').length > 0) {
+			if($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard').length > 0) {
 				$('#edit-field-population-und-0-value').attr('type','number');
 				$('#edit-field-discount-rate-und-0-value').attr('type','number');
 				$('#edit-field-ci-cost-und-0-value').attr('type','number');
@@ -62,6 +62,36 @@
 			}
 			
 			if($('body.page-node, body.node-type-project').length > 0){
+			
+				$('#project-effluent-standard').unbind('change').on('change',function(event){
+					showEffluentStandardAttributes($(this)[0].selectedIndex);
+				});
+				
+				$('body.node-type-project').ready(function(){
+					showEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex);
+				});
+				
+				function showEffluentStandardAttributes(termIndex){
+					var termObj = Drupal.settings.taxonomy.effluentStandards[termIndex];
+					//console.log(termIndex);
+					//console.log(termObj);
+					if (termIndex >= 0){
+						$('#project-effluent-cod .effluent-value').html((termObj.field_loading_cod.length === 0) ?  'N/A' : termObj.field_loading_cod['und'][0].value);
+						$('#project-effluent-bod5 .effluent-value').html((termObj.field_loading_bod5.length === 0) ?  'N/A' : termObj.field_loading_bod5['und'][0].value);
+						$('#project-effluent-totn .effluent-value').html((termObj.field_loading_totn.length === 0) ?  'N/A' : termObj.field_loading_totn['und'][0].value);
+						$('#project-effluent-totp .effluent-value').html((termObj.field_loading_totp.length === 0) ?  'N/A' : termObj.field_loading_totp['und'][0].value);
+						$('#project-effluent-tss .effluent-value').html((termObj.field_loading_tss.length === 0) ?  'N/A' : termObj.field_loading_tss['und'][0].value);
+					}
+				}
+				
+				$('.btn-show-tech').unbind('click').on('click',function(event){
+					var viewport = $('#loading-tech-list');
+					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
+					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.load(ajaxTechList,'ajax=1',function(){
+						Drupal.attachBehaviors('#loading-tech-list');
+					});
+				});
 			
 				$('.form-loading-attribute').attr('type','number');
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
@@ -131,9 +161,9 @@
 				$('#edit-cancel').addClass('btn-default');
 
 				$('#edit-field-loading-type').unbind('change').on('change', function(event){
-					console.log($(this).val());
-					termIndex = $('#edit-field-loading-type')[0].selectedIndex-1;
-					termObj = Drupal.settings.taxonomy.loadingTypes[termIndex];
+					//console.log($(this).val());
+					var termIndex = $('#edit-field-loading-type')[0].selectedIndex-1;
+					var termObj = Drupal.settings.taxonomy.loadingTypes[termIndex];
 					if (termIndex >= 0){
 						$('#edit-field-loading-adwf').val(termObj.field_loading_adwf['und'][0].value);
 						$('#edit-field-loading-bod5').val(termObj.field_loading_bod5['und'][0].value);
@@ -227,6 +257,8 @@
 					var idTokens = btnId.split("-");
 					var nodeId = idTokens[2];
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/edit/'+nodeId;
+					$('#edit-project-'+nodeId).addClass('disabled');
+					$('#delete-project-'+nodeId).addClass('disabled');
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#dashboard-projects-viewport');
@@ -242,6 +274,8 @@
 					var idTokens = btnId.split("-");
 					var nodeId = idTokens[2];
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/delete/'+nodeId;
+					$('#edit-project-'+nodeId).addClass('disabled');
+					$('#delete-project-'+nodeId).addClass('disabled');
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#dashboard-projects-viewport');
@@ -250,6 +284,8 @@
 				
 				$('#cancel-project').unbind("click").on('click',function(event){
 					viewport.empty();
+					$('.dashboard-edit-project-btn').removeClass('disabled');
+					$('.dashboard-delete-project-btn').removeClass('disabled');
 					$('#add-project').removeClass('disabled');
 					$('#cancel-project').addClass('hidden');
 				});

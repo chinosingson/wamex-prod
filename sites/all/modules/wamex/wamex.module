@@ -72,7 +72,201 @@ function wamex_menu() {
 		'type' => MENU_CALLBACK,
 	);
 	
+	$items['loading/technologies'] = array(
+		'title' => 'Loading Technologies',
+    'page callback' => 'wamex_display_tech',
+		//'page arguments' => array(1,2,3,4,5),
+    'access arguments' => array('administer WaMEx technology'),
+		//'type' => MENU_DEFAULT_LOCAL_TASK,
+	);
+	
+	/*$items['test/table'] = array(
+		'title' => 'Test table',
+		'page callback' => 'wamex_display_table',
+		'access arguments' => array('administer WaMEx technology'),
+		'type' => MENU_CALLBACK,
+	);*/
+	
   return $items;
+}
+
+
+/*function wamex_display_table() {
+	$name = 'chino';
+	$surname = 'singson';
+	$row = array(
+		'title' => array(
+			'data' => $name . ' ' . $surname,
+			'class' => array('myClass')
+		),
+		//'date' => date('Y-m-d', $account->created),
+		'name' => $name . ' ' . $surname,
+	);
+	$output = theme('table',array('header'=>array(),'rows'=>$row));
+
+	return $output;
+}*/
+
+//function wamex_select_tech($loading,$target);
+
+function wamex_display_tech(){
+	//$data = db_query('SELECT * FROM {wamex_technology} WHERE tid = :tid', array(':tid' => $tid))->fetchObject();
+  // Add the filter form above the overview table.
+ // $output = drupal_get_form('dsmisc_path_title_filter_form', $keys);
+
+ /* if ($keys) {
+    // Replace wildcards with MySQL/PostgreSQL wildcards.
+    $keys = preg_replace('!\*+!', '%', $keys);
+    $sql = "SELECT * FROM {wamex_technology} WHERE name LIKE '%%%s%%'";
+  }
+  else {
+    $sql = 'SELECT * FROM {wamex_technology}';
+  } */
+	
+	/* !!!! */
+	//if node->tech_ids_field , display
+	//else wamex_select_tech
+  
+  $header = array(
+    array('data' => t('ID'), 'field' => 'tid', 'sort' => 'asc'), 
+    array('data' => t('Name'), 'field' => 'name') ,
+	
+    array('data' => t('COD'), 'field' => 'cod'),
+    array('data' => t('BOD5'), 'field' => 'max_bod'),
+	array('data' => t('N %'), 'field' => 'max_n_p'),
+    array('data' => t('N max'), 'field' => 'max_n_a'),
+	array('data' => t('P '), 'field' => 'max_p_a	'),
+	array('data' => t('TSS %'), 'field' => 'max_tss_p'),
+    array('data' => t('TSS max'), 'field' => 'max_tss_a'),
+  );
+	
+	$node = menu_get_object();
+	
+	if ($node->field_tech_ids) 
+	{
+		$tech_ids = $node->field_tech_ids;
+	} 
+	else 
+	{
+		//$tids = wamex_select_tech($loadings,$standards);
+		$tech_ids = array(1,2,3,4,5);
+	}
+  
+  //$sql .= tablesort_sql($header);
+  //$result = pager_query($sql, 50, 0 , NULL, $keys);
+
+  $select = db_select('wamex_technology', 'wt')->extend('Tablesort');
+  $results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))->orderByHeader($header)
+									 ->condition('tid', $tech_ids,'IN')
+									 ->execute();
+  
+	
+   $rows = array();
+   $destination = drupal_get_destination();
+   foreach ($results as $val) {
+    $rows[] = array(
+      'id'=>$val->tid,
+      'name'=>$val->name,
+			'COD'=>$val->cod, 
+			'BOD5'=>$val->max_bod, 
+			'N_p'=>$val->max_n_p, 
+			'N_a'=>$val->max_n_a, 
+			'P'=>$val->max_p_a, 
+			'TSS_p'=>$val->max_tss_p, 
+			'TSS_a'=>$val->max_tss_a//, 
+	   //l(t('edit'), "admin/config/wamex/technology/edit/$val->tid", array('query' => $destination)),
+       //l(t('delete'), "admin/config/wamex/technology/delete/$val->tid", array('query' => $destination)),
+      );
+   }
+  
+  if (empty($rows)) {
+    $empty_message = $keys ? t('No URL aliases found.') : t('No URL aliases available.') ;
+    $rows[] = array(array('data' => $empty_message, 'colspan' => 48));
+  }
+
+  $output = theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>array('id'=>'table-loading-tech')));
+	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
+  //$output .= theme('pager', NULL, 50, 0);
+
+  return $output;
+}
+
+
+function wamex_get_selectbox_contents($vid) {
+  $terms = taxonomy_get_tree($vid);
+	$output = array();
+  foreach ($terms as $data) {
+    $output[$data->tid] = $data->name;
+  }
+
+  return $output;
+}
+
+function wamex_preprocess_page(&$variables){
+	$arg = arg();
+	if ($arg[0] == 'dashboard' || @is_object($variables['node']) && $variables['node']->type == 'project'){
+	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+	//drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+	}
+	if ($arg[0] == 'dashboard'){
+		// load taxonomy tree for currency
+		$variables['show_messages'] = FALSE;
+		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
+		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
+		//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
+		// get all term ids
+		$currency_tids = array();
+		foreach($currency_taxonomy_tree as $term) {
+			$currency_tids[] = $term->tid;
+		}
+		// load all terms
+		$currency_terms = taxonomy_term_load_multiple($currency_tids);
+		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
+		
+		// add terms to Drupal.settings
+		// access in JS via Drupal.settings.taxonomy.currency
+		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
+
+	}
+	
+	if (@is_object($variables['node']) && $variables['node']->type == 'project'){
+		//drupal_set_message('message','status');
+		$variables['title'] = FALSE;
+		$variables['tabs'] = FALSE;
+		//$variables['page_title'] =
+
+		$loading_taxonomy = taxonomy_vocabulary_machine_name_load('loading_type');
+		$loading_taxonomy_tree = taxonomy_get_tree($loading_taxonomy->vid,0,NULL,TRUE);
+		$loading_tids = array();
+		//foreach ($loading_taxonomy_tree as $term){
+		//	$loading_types[] = 
+		//}
+		//drupal_set_message('<pre>'.print_r($loading_taxonomy_tree,1).'</pre>','status');
+		drupal_add_js(array('taxonomy' => array('loadingTypes' => $loading_taxonomy_tree)),'setting');
+		//$loading_types = taxonomy_term_load(multiple()
+		$effluent_taxonomy = taxonomy_vocabulary_machine_name_load('effluent_standard');
+		$effluent_taxonomy_tree  = taxonomy_get_tree($effluent_taxonomy->vid,0,NULL,TRUE);
+		//$effluent_opts = $effluent_terms;
+		drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)),'setting');
+
+	}
+}
+
+function wamex_form($variables) {
+  $element = $variables ['element'];
+	$output = '';
+	//drupal_set_message(print_r($variables),'status');
+  if (isset($element ['#action'])) {
+    $element ['#attributes']['action'] = drupal_strip_dangerous_protocols($element ['#action']);
+  }
+  element_set_attributes($element, array('method', 'id'));
+  if (empty($element ['#attributes']['accept-charset'])) {
+    $element ['#attributes']['accept-charset'] = "UTF-8";
+  }
+  // Anonymous DIV to satisfy XHTML compliance.
+  $output .= '<form' . drupal_attributes($element ['#attributes']) . '><div id="form-wrapper-div">' . $element ['#children'] . '</div></form>';
+	return $output;
 }
 
 function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
@@ -249,22 +443,6 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 
 }
 
-function wamex_form($variables) {
-  $element = $variables ['element'];
-	$output = '';
-	//drupal_set_message(print_r($variables),'status');
-  if (isset($element ['#action'])) {
-    $element ['#attributes']['action'] = drupal_strip_dangerous_protocols($element ['#action']);
-  }
-  element_set_attributes($element, array('method', 'id'));
-  if (empty($element ['#attributes']['accept-charset'])) {
-    $element ['#attributes']['accept-charset'] = "UTF-8";
-  }
-  // Anonymous DIV to satisfy XHTML compliance.
-  $output .= '<form' . drupal_attributes($element ['#attributes']) . '><div id="form-wrapper-div">' . $element ['#children'] . '</div></form>';
-	return $output;
-}
-
 function wamex_loading_form_submit($form, &$form_state){
 	ctools_include('ajax');
 	ctools_add_js('ajax-responder');
@@ -375,7 +553,6 @@ function wamex_loading_submit_handler($form, &$form_state) {
   }
 }
 
-
 function wamex_loading_delete_confirm($form, &$form_state, $nid){
 	$node = node_load($nid);
 	$loading_name = $node->title;
@@ -410,62 +587,6 @@ function wamex_loading_delete_confirm_submit($form, &$form_state){
 
 }
 
-
-function wamex_get_selectbox_contents($vid) {
-  $terms = taxonomy_get_tree($vid);
-	$output = array();
-  foreach ($terms as $data) {
-    $output[$data->tid] = $data->name;
-  }
-
-  return $output;
-}
-
-function wamex_preprocess_page(&$variables){
-	$arg = arg();
-	if ($arg[0] == 'dashboard' || @is_object($variables['node']) && $variables['node']->type == 'project'){
-	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
-	drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
-	//drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.js',array('type'=>'file','group'=>JS_DEFAULT));
-	}
-	if ($arg[0] == 'dashboard'){
-		// load taxonomy tree for currency
-		$variables['show_messages'] = FALSE;
-		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
-		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
-		//echo "<pre style='height: 500px; overflow-y: scroll'>".print_r($currency_taxonomy_tree,1)."</pre>";
-		// get all term ids
-		$currency_tids = array();
-		foreach($currency_taxonomy_tree as $term) {
-			$currency_tids[] = $term->tid;
-		}
-		// load all terms
-		$currency_terms = taxonomy_term_load_multiple($currency_tids);
-		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
-		
-		// add terms to Drupal.settings
-		// access in JS via Drupal.settings.taxonomy.currency
-		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
-
-	}
-	
-	if (@is_object($variables['node']) && $variables['node']->type == 'project'){
-		//drupal_set_message('message','status');
-		$variables['title'] = FALSE;
-		$variables['tabs'] = FALSE;
-		//$variables['page_title'] =
-
-		$loading_taxonomy = taxonomy_vocabulary_machine_name_load('loading_type');
-		$loading_taxonomy_tree = taxonomy_get_tree($loading_taxonomy->vid,0,NULL,TRUE);
-		$loading_tids = array();
-		//foreach ($loading_taxonomy_tree as $term){
-		//	$loading_types[] = 
-		//}
-		//drupal_set_message('<pre>'.print_r($loading_taxonomy_tree,1).'</pre>','status');
-		drupal_add_js(array('taxonomy' => array('loadingTypes' => $loading_taxonomy_tree)),'setting');
-		//$loading_types = taxonomy_term_load(multiple()
-	}
-}
 
 function wamex_project_form($form, &$form_state, $nid = null) {
 	if ($nid) {

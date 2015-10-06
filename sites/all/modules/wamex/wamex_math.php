@@ -47,6 +47,13 @@ function wamex_select_tech($loading,$target){
 		'P' => 0.60, 
 		'TSS' => 0.95 
 		);
+		
+	$arrayTechnology[2] = array(
+		'id'=>3,
+		'COD' => x,
+		//'BOD5_max' => value,
+		
+	);
 
 
 	foreach ($arrayTechnology as $tech) {
@@ -62,13 +69,14 @@ function wamex_select_tech($loading,$target){
 	}
 
 
-
+ return $arrayPossibleTech;
 }
 
 
-function wamex_test($source,$coefficient,$output){
+function wamex_test($source,$coefficient,$output,$limit){
 
 	$residue = $source*$coefficient;
+	if ($residue <= $limit) $residue = $limit;
 	if ($residue <= $output) return TRUE;
 
 }

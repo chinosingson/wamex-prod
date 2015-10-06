@@ -197,6 +197,19 @@ body.node-type-project #wamex-loading-form-actions
 	margin-top: 15px;
 }
 
+body.node-type-project #effluent-standard-values .project-effluent-attribute {
+	min-width: 80px;
+}
+
+body.node-type-project #effluent-standard-values .project-effluent-attribute span.effluent-value {
+	width: 90px;
+}
+
+body.node-type-project #effluent-standard-values .project-effluent-attribute label {
+	/*border: 1px dotted blue;*/
+	margin: 10px 10px 10px 0px;
+}
+
 #view-project-loadings tfoot td.average-loading {
 	font-weight: bold;
 }
@@ -237,4 +250,13 @@ body.node-type-project #wamex-loading-form-actions
 
 #loading-form-container #wamex-loading-form #edit-title {
 	min-width: 75px;
+}
+
+#loading-list-title {
+	margin-bottom: 0px;
+}
+
+#loading-tech-title {
+	display: inline;
+	margin-right: 10px;
 }

@@ -1,6 +1,5 @@
 ﻿<?php
-$node = menu_get_object(); 
-
+	$node = menu_get_object(); 
 /**
  * @file
  * Template to display a view as a table.
@@ -19,11 +18,8 @@ $node = menu_get_object();
  *   field id, then row number. This matches the index in $rows.
  * @ingroup views_templates
  */
- 
- //print '<pre>'.$classes.'</pre>';
  $classes .= ' table-hover table-responsive';
-?>
-<table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
+?><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
    <?php if (!empty($title) || !empty($caption)) : ?>
      <caption><?php print $caption . $title; ?></caption>
   <?php endif; ?>
@@ -50,10 +46,6 @@ $node = menu_get_object();
         <?php endforeach; ?>
       </tr>
     <?php endforeach; ?>
-		<!--tr id="loading-form-row">
-			<td colspan="12" id="loading-form-container">
-			</td>
-		</tr-->
   </tbody>
 	<tfoot>
 		<tr id="#average-loadings">
