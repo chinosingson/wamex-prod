@@ -9,7 +9,7 @@
 					$('#edit-title').trigger('focus');
 					$('#wamex-project-form')
 					.on('init.form.fv', function (e, data){
-						console.log('init_form_fv');
+						//console.log('init_form_fv');
 						data.fv.disableSubmitButtons(true);
 					})
 					.formValidation({

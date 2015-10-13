@@ -65,7 +65,14 @@
 	width: 60%;
 }
 
-#wamex-project-form input.form-control,
+#wamex-project-form .project-effluent-attribute {
+	padding-right: 0px;
+	
+}
+#wamex-project-form #effluent-standard-name select#project-effluent-standard,
+#wamex-project-form .project-effluent-attribute input.form-control {
+	width:100%;
+}
 #project-node-form input.form-control,
 #project-node-form-ajax input.form-control,
 #loading-node-form input,
@@ -153,6 +160,11 @@ body.node-type-project td.views-field.views-field-nothing-1,
 body.page-dashboard td.views-field.views-field-nothing,
 body.page-dashboard td.views-field.views-field-nothing-1 {
 	width: 50px;
+}
+
+
+body.page-dashboard #project-effluent-standard-values label {
+	display: inline;
 }
 
 /*.help-block {
