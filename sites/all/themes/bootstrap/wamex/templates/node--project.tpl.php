@@ -92,13 +92,10 @@ $view_loading->set_display('block');
 				</div>
 						<?php 
 							$effl_form = drupal_get_form('wamex_project_effl_form',$nid);
-							//echo '<pre>'.print_r($effl_form['submit'],1).'</pre>';
+							//echo '<pre>'.print_r($effl_form['actions']['submit'],1).'</pre>';
 							//print render($effl_form['submit']);
 							$effl_form_markup = '<div class="row" id="effluent-standard-name">';
 							$effl_form_markup .= drupal_render($effl_form['field_effluent_standard']);
-							if($editPerm){
-								$effl_form_markup .= drupal_render($effl_form['submit']);
-							}
 							$effl_form_markup .= '</div>';
 							$effl_form_markup .= '<div class="row" id="effluent-standard-values">';
 							$effl_form_markup .= drupal_render($effl_form['field_cod']);
@@ -106,6 +103,11 @@ $view_loading->set_display('block');
 							$effl_form_markup .= drupal_render($effl_form['field_totn']);
 							$effl_form_markup .= drupal_render($effl_form['field_totp']);
 							$effl_form_markup .= drupal_render($effl_form['field_tss']);
+							$effl_form_markup .= '</div>';
+							$effl_form_markup .= '<div class="row" id="effluent-standard-actions"><br/>';
+							if($editPerm){
+								$effl_form_markup .= drupal_render($effl_form['actions']['submit']);
+							}
 							$effl_form_markup .= '</div>';
 							$effl_form_markup .= drupal_render($effl_form['form_build_id']);
 							$effl_form_markup .= drupal_render($effl_form['form_id']);

@@ -9,7 +9,7 @@ core = 7.x
 ;stylesheets[all][] = bootstrapvalidator/css/bootstrapValidator.min.css
 
 ;scripts[] = http://formvalidation.io/vendor/formvalidation/js/formValidation.min.js
-scripts[] = wamex.js
+scripts[] = js/wamex.js
 ;scripts[] = bootstrapvalidator/js/bootstrapValidator.min.js
 ;scripts[] = bootstrapvalidator/js/validator.min.js
 

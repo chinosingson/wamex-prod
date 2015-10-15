@@ -126,12 +126,15 @@ function wamex_menu() {
 function wamex_display_tech($techArgs){
 	$output = "";
 	$aryTechArgs = explode('&',$techArgs);
-	
 	$str_loadings  = $aryTechArgs[0];
 	$str_standards = $aryTechArgs[1];
+	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
+	//$output .= "<pre>Standards: ".$str_standards."</pre>";
+	
 	
 	$ary_loadings_init  = explode('|',$str_loadings); 	// check for 6 items
 	$ary_standards_init = explode('|',$str_standards);	// check for 5 items
+	//$output .= "<pre>".print_r($ary_standards_init,1)."</pre>";
 	
 	// set loading and standards arrays
 	$arrayAverageLoad = array(
@@ -152,6 +155,8 @@ function wamex_display_tech($techArgs){
 		'TSS'  => $ary_standards_init[4],
 	);
 	
+	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
+
 	$header = array(
 		array('data' => t('ID'), 'field' => 'tid', 'sort' => 'asc'), 
 		array('data' => t('Name'), 'field' => 'name') ,
@@ -172,6 +177,8 @@ function wamex_display_tech($techArgs){
 		// fetch suitable technologies from database
 		$tech_ids = wamex_select_tech($arrayAverageLoad,$arrayStandards);
 	}
+	
+	//$output .= "<pre>".print_r($tech_ids,1)."</pre>";
 	
 	if (count($tech_ids)>0){
 		//$sql .= tablesort_sql($header);
@@ -231,8 +238,9 @@ function wamex_preprocess_page(&$variables){
 	$effluent_taxonomy_tree  = taxonomy_get_tree($effluent_taxonomy->vid,0,NULL,TRUE);
 
 	if ($arg[0] == 'dashboard' || @is_object($variables['node']) && $variables['node']->type == 'project'){
-		drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
-		drupal_add_js(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		drupal_add_js(drupal_get_path('module','wamex').'/js/x-editable/js/bootstrap-editable.min.js',array('type'=>'file','group'=>JS_DEFAULT));
 	}
 
 	if ($arg[0] == 'dashboard'){
@@ -891,7 +899,8 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	$form['field_tss']['#value'] = $field_tss;
 	$form['field_tss']['#attributes']['disabled'] = 'disabled';
 	$form['actions']['submit']['#prefix'] = '<div class="col-sm-6"><label>&nbsp;</label>';
-	$form['actions']['submit']['#attributes']['id'] = 'edit-efll-submit';
+	$form['actions']['submit']['#type'] = 'button';
+	$form['actions']['submit']['#id'] = 'edit-effl-submit';
 	$form['actions']['submit']['#attributes']['class'][] = 'hidden';
 	$form['actions']['submit']['#value'] = t('Save');
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
@@ -909,8 +918,6 @@ function wamex_project_effl_form_submit($form, &$form_state){
 	$errors = form_get_errors();
 	$commands = array();
 	drupal_get_messages();
-	drupal_set_message('ito','status');
-
 	if(!empty($errors)){
 		$selector = '#effluent-standards-messages';
 		$error_variables = array(
@@ -919,13 +926,41 @@ function wamex_project_effl_form_submit($form, &$form_state){
 			'type' => 'ul',
 		);
 		drupal_set_message(theme_item_list($errors),'error');
-		drupal_set_message('this','error');
+		//drupal_set_message('this','error');
 		//$form_state['redirect'] = 'dashboard';
     $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
 		return array('#type' => 'ajax', '#commands' => $commands);
 	} else {
+		if (!empty($form_state['values']['nid'])){
+			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
+			$node = node_load($form_state['values']['nid']);
+			$node->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];
+			$node->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_cod'];
+			$node->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_bod5'];
+			$node->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
+			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
+			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Project not updated.'),'error');
+			}
+		} else {
+			drupal_set_message('Error saving Project!','error');
+			$success = FALSE;
+		}
 		
-		
+		if ($success){
+			//$form_state['redirect'] = 'dashboard';
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
 	}
 }
 

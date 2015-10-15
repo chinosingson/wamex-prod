@@ -133,8 +133,8 @@ function wamex_get_all_tech(){
 
 function wamex_select_tech($loading,$target){
 
-	global $debug;
-
+	//global $debug;
+	$debug = FALSE;
 	$arrayPossibleTech = array();
 	// Load technology table as array from DB
 	$arrayAllTech = wamex_get_all_tech();
@@ -196,17 +196,25 @@ function wamex_select_tech($loading,$target){
 }
 
 
-function wamex_test($source,$coefficient,$output,$limit=NULL){
+function wamex_test($source,$coefficient,$output,$limit=0){
 	
-	global $debug;
-
+	//global $debug;
+	$debug = FALSE;
+	if (is_null($coefficient)) {
+		$coefficient = -1;
+	}
+	
 	if($output >= 0){
 
 		// Calculate effluent residue after applying tech
-		$residue = $source - ($source*$coefficient);
+		if ($coefficient >= 0){
+			$residue = $source - ($source*$coefficient);
+		} else {
+			$residue = -1;
+		}
 
 		if($debug) {
-			echo "param: $source,$coefficient,$output,$limit";
+			echo "param: SRC:$source, COEFF:$coefficient, OUTPUT:$output, LIMIT:$limit <br/>";
 		}
 
 		// If calculate residue is less than max limit, set residue to the tech limit

@@ -27,7 +27,8 @@ function wamex_preprocess_html(&$variables){
 	$arg = arg();
 	if ($arg[0] == 'dashboard' || (@is_object($node) && ($node->type == 'project' || $node->type == 'loading'))){
 		drupal_add_js(drupal_get_path('theme', 'wamex') .'/script.js');
-		drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+		drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+		drupal_add_css(drupal_get_path('module','wamex').'/js/x-editable/css/bootstrap-editable.css',array('type'=>'file','group'=>CSS_THEME));
 		//drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.css',array('type'=>'file','group'=>CSS_THEME));
 	}
 }
