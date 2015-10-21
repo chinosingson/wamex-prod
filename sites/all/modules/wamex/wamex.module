@@ -7,6 +7,46 @@
 
  require_once DRUPAL_ROOT .'/'. drupal_get_path('module','wamex').'/wamex_math.php';
  
+/**
+* Implementation of hook_permission().
+*/
+function wamex_permission() {
+	$items = array();
+  $items['add project custom'] = array(
+		'title' => t('<em>Project</em>: Add new project.'),
+		'description' => t('Allow users to add new WaMEx projects'),
+	);
+	
+	$items['edit project custom'] = array(
+		'title' => t('<em>Project</em>: Edit existing project.'),
+		'description' => t('Allow users to edit WaMEx projects'),
+	);
+	
+	$items['delete project custom'] = array(
+		'title' => t('<em>Project</em>: Delete existing project.'),
+		'description' => t('Allow users to delete WaMEx projects'),
+	);
+	
+  $items['add loading custom'] = array(
+		'title' => t('<em>Loading</em>: Add new loading.'),
+		'description' => t('Allow users to add new WaMEx loadings'),
+	);
+	
+	$items['edit loading custom'] = array(
+		'title' => t('<em>Loading</em>: Edit existing loading.'),
+		'description' => t('Allow users to edit WaMEx loadings'),
+	);
+
+	$items['delete loading custom'] = array(
+		'title' => t('<em>Loading</em>: Delete existing loading.'),
+		'description' => t('Allow users to delete WaMEx loadings'),
+	);
+	
+	return $items;
+}
+
+ 
+ 
  /**
  * Implements hook_menu().
  */
@@ -29,7 +69,7 @@ function wamex_menu() {
     'title' => 'Add Project',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_project_form'),
-    'access arguments' => array('Create new content'),
+    'access arguments' => array('add project custom'),
     'type' => MENU_LOCAL_TASK,
 	);
 	
@@ -37,7 +77,7 @@ function wamex_menu() {
     'title' => 'Edit Project',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_project_form',2),
-    'access arguments' => array('Edit own content'),
+    'access arguments' => array('edit project custom'),
     'type' => MENU_CALLBACK,
 	);
 	
@@ -45,7 +85,7 @@ function wamex_menu() {
     'title' => 'Delete Project',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_project_delete_confirm',2),
-    'access arguments' => array('Delete own content'),
+    'access arguments' => array('delete project custom'),
     'type' => MENU_CALLBACK,
 	);
 	
@@ -55,21 +95,21 @@ function wamex_menu() {
 		'title' => 'Add Loading',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_loading_form',NULL,2),
-		'access arguments' => array('Create new content'),
+		'access arguments' => array('add loading custom'),
 		'type' => MENU_LOCAL_TASK,
 	);
 	$items['loading/edit/%'] = array(
 		'title' => 'Edit Loading',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_loading_form',2, NULL),
-		'access arguments' => array('Edit own content'),
+		'access arguments' => array('edit loading custom'),
 		'type' => MENU_CALLBACK,
 	);
 	$items['loading/delete/%'] = array(
 		'title' => 'Delete Loading',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_loading_delete_confirm',2,107),
-		'access arguments' => array('Delete own content'),
+		'access arguments' => array('delete loading custom'),
 		'type' => MENU_CALLBACK,
 	);
 	
@@ -171,7 +211,7 @@ function wamex_display_tech($techArgs){
 	
 	// check if there are technology id's saved to the current node
 	$node = menu_get_object();
-	if ($node->field_tech_ids) {
+	if (!is_null($node->field_tech_ids)) {
 		$tech_ids = $node->field_tech_ids;	// needs to be exploded from a delimited list saved in this field
 	} else {
 		// fetch suitable technologies from database
@@ -589,7 +629,7 @@ function wamex_loading_delete_confirm($form, &$form_state, $nid){
 	$node = node_load($nid);
 	$loading_name = $node->title;
 	$project_nid = $node->field_loading_project[LANGUAGE_NONE][0]['target_id'];
-  if (user_access('Delete own content')) {
+  if (user_access('delete loading custom')) {
 		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
     $output = confirm_form($form,
       t('Are you sure you want to delete %title?', array('%title' => $loading_name)),
@@ -663,6 +703,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	$form['#attributes']['class'][] = 'form-container';
 	$form['#attributes']['class'][] = 'container-fluid';
 	$form['#attributes']['name'] = 'wamex-project-form';
+	//$form['#prefix'] = '<div id="project-forms-container" class="container-fluid">';
+	//$form['#suffix'] = '</div>';
+	
 	//$form['#attributes']['data-toggle'] = 'validator';
 	//$form['#attributes']['role'] = 'form';
 	$form['title'] = array(
@@ -818,13 +861,12 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	//drupal_set_message('nid = '.$nid,'status');
 	if ($nid) {
 		$node = node_load($nid);
-		$field_effluent_standard = $node->field_effluent_standard['und'][0]['tid'];
-		//drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard))),'setting');
-		$field_cod = $node->field_loading_cod['und'][0]['value'];
-		$field_bod5 = $node->field_loading_bod5['und'][0]['value'];
-		$field_totn = $node->field_loading_totn['und'][0]['value'];
-		$field_totp = $node->field_loading_totp['und'][0]['value'];
-		$field_tss = $node->field_loading_tss['und'][0]['value'];
+		$field_effluent_standard = (is_null($node->field_effluent_standard) ? NULL : $node->field_effluent_standard['und'][0]['tid']);
+		$field_cod = (is_null($node->field_loading_cod) ? NULL : $node->field_loading_cod['und'][0]['value']);
+		$field_bod5 = (is_null($node->field_loading_bod5) ? NULL : $node->field_loading_bod5['und'][0]['value']);
+		$field_totn = (is_null($node->field_loading_totn) ? NULL : $node->field_loading_totn['und'][0]['value']);
+		$field_totp = (is_null($node->field_loading_totp) ? NULL : $node->field_loading_totp['und'][0]['value']);
+		$field_tss = (is_null($node->field_loading_tss) ? NULL : $node->field_loading_tss['und'][0]['value']);
 	} else {
 		$node = NULL;
 		$field_effluent_standard = '';
@@ -1072,7 +1114,7 @@ function wamex_project_form_submit($form, &$form_state){
 function wamex_project_delete_confirm($form, $form_state, $nid){
 	$node = node_load($nid);
 	$project_name = $node->title;
-  if (user_access('Delete own content')) {
+  if (user_access('delete project custom')) {
 		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
     $output = confirm_form($form,
       t('Are you sure you want to delete %title?', array('%title' => $project_name)),
@@ -1080,7 +1122,9 @@ function wamex_project_delete_confirm($form, $form_state, $nid){
 			t('Are you sure you want to delete %title? This action cannot be undone.', array('%title' => $project_name)),
 			t('Yes'),
 			t('No'));
-  }
+  } else {
+		$output = "Error!";
+	}
   return $output;
 }
 

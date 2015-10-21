@@ -18,7 +18,9 @@ if ($node):
 	$field_effluent_totn = field_get_items('node',$node,'field_loading_totn');
 	$field_effluent_totp = field_get_items('node',$node,'field_loading_totp');
 	$field_effluent_tss = field_get_items('node',$node,'field_loading_tss');
-	$editPerm = user_access('Edit own content');
+	$addLoadingPerm = user_access('add loading custom');
+	$editProjectPerm = user_access('edit project custom');
+	//
 	//print $editPerm;
 	if (isset($nid)){
 		// set some node values to the jQuery extension
@@ -105,7 +107,7 @@ $view_loading->set_display('block');
 							$effl_form_markup .= drupal_render($effl_form['field_tss']);
 							$effl_form_markup .= '</div>';
 							$effl_form_markup .= '<div class="row" id="effluent-standard-actions"><br/>';
-							if($editPerm){
+							if($editProjectPerm){
 								$effl_form_markup .= drupal_render($effl_form['actions']['submit']);
 							}
 							$effl_form_markup .= '</div>';
@@ -139,7 +141,7 @@ $view_loading->set_display('block');
 			<div class="col-sm-12" id="loading-list-container"><?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute(); print $view_loading->render(); ?></div>
 		</div>
 		<div class="row" id="loading-actions-container">
-			<?php if ($editPerm):?><button class="btn btn-primary btn-add-loading" id="add-loading-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Loading</button><?php endif; ?>
+			<?php if ($addLoadingPerm):?><button class="btn btn-primary btn-add-loading" id="add-loading-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Loading</button><?php endif; ?>
 			<!--button class="btn btn-default hidden" id="cancel-loading" >Cancel</button-->
 		</div>
 		<div class="row" id="loading-form-container"></div>

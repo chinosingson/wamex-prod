@@ -363,6 +363,7 @@
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
 				var viewport = $('#dashboard-projects-viewport');
 				$('#add-project').unbind("click").on('click',function(event){
+					//console.log('add new project');
 					if($('#cancel-project').hasClass('hidden')) $('#cancel-project').removeClass('hidden');
 					// load the /project/add custom form, and attach ajax behaviors to the container
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/add';
