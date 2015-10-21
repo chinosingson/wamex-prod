@@ -195,9 +195,12 @@
 				});
 				
 				if($('#wamex-loading-form').length > 0){
-					console.log('wamex-loading-form ready');
-					var termIndex = $('#edit-field-loading-type')[0].selectedIndex;
-					loadLoadingAttributes(termIndex);
+					//console.log('wamex-loading-form ready');
+					// if new loading has no title, set loading type default values
+					if(!$('#wamex-loading-form #edit-title')[0].value){
+						var termIndex = $('#edit-field-loading-type')[0].selectedIndex;
+						loadLoadingAttributes(termIndex);
+					}
 				};
 				
 				$('.project-delete-loading-btn').unbind('click').on('click',function(event){
@@ -274,7 +277,7 @@
 					//console.log($(this).val());
 					console.log($('#edit-field-loading-type')[0].selectedIndex);
 					var termIndex = $('#edit-field-loading-type')[0].selectedIndex;
-					loadLoadingAttributes(termIndex)
+					loadLoadingAttributes(termIndex);
 				});
 				
 				function getSumProduct(attributes,weights){
@@ -289,15 +292,16 @@
 					return sumProduct.toFixed(1);
 				}
 				
-				if($('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable').length > 0){
+				/*if($('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable').length > 0){
+					$.fn.editable.defaults.mode = 'inline';
 					$('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable').each(function(index,value){
-						console.log($(this).attr('id') + ' text: ' + $(this).text());
+						//console.log($(this).attr('id') + ' text: ' + $(this).text());
 						$('#'+$(this).attr('id')).editable();
 						//console.log('index: '+index);
 						//console.log(value);
 					});
 					
-				}
+				}*/
 				
 				$('.loading-weight-editable').unbind('click').on('click', function(event){
 					//console.log($(this).attr('id'));
@@ -305,7 +309,8 @@
 				});
 
 				$('#view-project-loadings').ready(function(){
-					var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable');
+					var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight span.loading-weight-container');
+					//var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable');
 					//console.log(weight_values)
 					var weight_sum = 0;
 					
