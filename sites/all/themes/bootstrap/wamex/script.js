@@ -3,14 +3,20 @@
 	Drupal.behaviors.display = {
 		attach: function (context, settings) {
 			function loadExchangeRate(termId,reset) {
+				console.log('loadExchangeRate');
 				// get exchange rate from json-encoded taxonomy term
 				// currency info pre-load
 				var currencyTerms = Drupal.settings.taxonomy.currency;
 				if (currencyTerms[termId]){
-					exchRate = currencyTerms[termId].field_exchange_rate['und'][0].value;
+					var exchRate = currencyTerms[termId].field_exchange_rate['und'][0].value;
+					//var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
+					console.log('exchRate: ' + exchRate);
+					//console.log('nodeExchRate: ' + nodeExchRate);
+					console.log($('#edit-field-exchange-rate-to-usd-und-0-value').attr('value'));
+					
 					if (reset==1){
 						// load values from JS
-						//console.log('exch rate - load values from JS');
+						console.log('exch rate - load values from JS');
 						$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
 					} /*else {
 						// load values from node
@@ -45,9 +51,9 @@
 						if(!$('#effluent-standard-values input').prop('disabled')){
 							$('#effluent-standard-values input').attr('disabled',true);
 						}
-						if(!$('#edit-effl-submit').hasClass('hidden')){
+						/*if(!$('#edit-effl-submit').hasClass('hidden')){
 							$('#edit-effl-submit').addClass('hidden');
-						}
+						}*/
 						$('#edit-field-cod').val((termObj.field_loading_cod.length === 0) ?  'N/A' : termObj.field_loading_cod['und'][0].value);
 						$('#edit-field-bod5').val((termObj.field_loading_bod5.length === 0) ?  'N/A' : termObj.field_loading_bod5['und'][0].value);
 						$('#edit-field-totn').val((termObj.field_loading_totn.length === 0) ?  'N/A' : termObj.field_loading_totn['und'][0].value);
@@ -59,9 +65,9 @@
 							$('#effluent-standard-values input').attr('disabled',false);
 						}
 						
-						if($('#edit-effl-submit').hasClass('hidden')){
+						/*if($('#edit-effl-submit').hasClass('hidden')){
 							$('#edit-effl-submit').removeClass('hidden');
-						}
+						}*/
 						$('#edit-field-cod').val((!nodeCOD) ?  'N/A' : nodeCOD);
 						$('#edit-field-bod5').val((!nodeBOD5) ?  'N/A' : nodeBOD5);
 						$('#edit-field-totn').val((!nodeTotN) ?  'N/A' : nodeTotN);
@@ -95,10 +101,10 @@
 					//loadExchangeRate($('#edit-field-currency-und').val(),0);
 				});*/
 
-				$('#project-node-form-ajax').ready(function(){
+				/*$('#project-node-form-ajax').ready(function(){
 					// load default value on form ready
 					loadExchangeRate($('#edit-field-currency').val(),0);
-				});
+				});*/
 				
 				if($('#wamex-project-form').length > 0){
 					$('#wamex-project-form').ready(function(){
@@ -114,6 +120,7 @@
 				// field_currency behavior
 				$('#edit-field-currency-und').unbind('change').change(function(){
 					var currencyTermId = $(this).val();
+					console.log(currencyTermId);
 					loadExchangeRate(currencyTermId,0);
 				});
 				
@@ -188,7 +195,7 @@
 					var idTokens = btnId.split("-");
 					var projectId = idTokens[2];
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/add/'+projectId;
-					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.empty().html('Retrieving form <img src="' + throbberPath + '" />');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
 					});
@@ -221,7 +228,7 @@
 				
 				var rowStaticHtml = '';
 				$('.project-edit-loading-btn').unbind('click').on('click',function(event){
-					if($('#cancel-loading').hasClass('hidden')) $('#cancel-loading').removeClass('hidden');
+					if($('#edit-loading-cancel').hasClass('hidden')) $('#edit-loading-cancel').removeClass('hidden');
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
@@ -242,13 +249,13 @@
 					});
 				});
 				
-				$('#cancel-loading').unbind("click").on('click',function(event){
+				$('#edit-loading-cancel').unbind("click").on('click',function(event){
 					var viewport = $('#loading-form-container');
 					viewport.empty();
 					$('.project-edit-loading-btn').removeClass('disabled');
 					$('.project-delete-loading-btn').removeClass('disabled');
 					$('.btn-add-loading').removeClass('disabled');
-					$('#cancel-loading').addClass('hidden');
+					$('#edit-loading-cancel').addClass('hidden');
 				});
 				
 				$('#edit-cancel').addClass('btn');

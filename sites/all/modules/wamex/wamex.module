@@ -198,15 +198,15 @@ function wamex_display_tech($techArgs){
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
 
 	$header = array(
-		array('data' => t('ID'), 'field' => 'tid', 'sort' => 'asc'), 
-		array('data' => t('Name'), 'field' => 'name') ,
-		array('data' => t('COD'), 'field' => 'cod'),
-		array('data' => t('BOD5'), 'field' => 'max_bod'),
-		array('data' => t('N %'), 'field' => 'max_n_p'),
-		array('data' => t('N max'), 'field' => 'max_n_a'),
-		array('data' => t('P '), 'field' => 'max_p_a	'),
-		array('data' => t('TSS %'), 'field' => 'max_tss_p'),
-		array('data' => t('TSS max'), 'field' => 'max_tss_a'),
+		array('data' => t('ID')), 
+		array('data' => t('Name')) ,
+		array('data' => t('COD')),
+		array('data' => t('BOD5')),
+		array('data' => t('N %')),
+		array('data' => t('N max')),
+		array('data' => t('P ')),
+		array('data' => t('TSS %')),
+		array('data' => t('TSS max')),
 	);
 	
 	// check if there are technology id's saved to the current node
@@ -387,7 +387,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		'#suffix' => '</div>',
 		//'#prefix' => '<td class="view-field view-field-edit">',
 		//'#suffix' => '</td>',
-		'#attributes' =>array('placeholder' => t('*Required')),
+		//'#attributes' =>array('placeholder' => t('*Required')),
 		//'#field_prefix' => 'field_prefix|',
 		//'#prefix' => '<div>',
 	);
@@ -409,7 +409,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_loading_type'] = array(
 		'#type' => 'select',
 		'#title' => t('Type'),
-		'#required' => TRUE,
+		//'#required' => TRUE,
 		//'#empty_option' => t('- Select -'),
 		//'#empty_value' => 0,
 		'#options' => $loading_type_opts,
@@ -421,7 +421,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_adwf'] = array(
 		'#type' => 'textfield',
-		'#title' => t('ADWF'),
+		'#title' => t('<span class="label-name">ADWF</span>&nbsp;<span class="label-unit">(l/p/d)</span>'),
 		'#default_value' => $adwf,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -430,7 +430,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_cod'] = array(
 		'#type' => 'textfield',
-		'#title' => t('COD'),
+		'#title' => t('<span class="label-name">COD</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $cod,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -439,7 +439,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_bod5'] = array(
 		'#type' => 'textfield',
-		'#title' => t('BOD5'),
+		'#title' => t('<span class="label-name">BOD5</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $bod5,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -448,7 +448,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_totn'] = array(
 		'#type' => 'textfield',
-		'#title' => t('TotN'),
+		'#title' => t('<span class="label-name">TotN</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $totn,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -457,7 +457,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_totp'] = array(
 		'#type' => 'textfield',
-		'#title' => t('TotP'),
+		'#title' => t('<span class="label-name">TotP</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $totp,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -466,7 +466,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_tss'] = array(
 		'#type' => 'textfield',
-		'#title' => t('TSS'),
+		'#title' => t('<span class="label-name">TSS</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $tss,
 		'#prefix' => '<div class="col-sm-1">',
 		'#suffix' => '</div>',
@@ -483,18 +483,19 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	);
 	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
 	
-	$form['actions']['submit']['#prefix'] = '<div class="col-sm-1">';
-	$form['actions']['submit']['#suffix'] = '</div>';
+	$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
+	//$form['actions']['submit']['#suffix'] = '</div>';
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_loading_form_submit';
 	$form['actions']['submit']['#attributes']['id'] = 'edit-loading-submit';
 	$form['actions']['submit']['#attributes']['class'][] = 'btn-xs';
-	$form['actions']['cancel']['#prefix'] = '<div class="col-sm-1">';
-	$form['actions']['cancel']['#suffix'] = '</div>';
+	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+	//$form['actions']['cancel']['#prefix'] = '<div id="loading-cancel-container">';
+	$form['actions']['cancel']['#suffix'] = '</div></div>';
 	$form['actions']['cancel']['#type'] = 'button';
-	$form['actions']['cancel']['#value'] = t('Cancel');
-	$form['actions']['cancel']['#attributes']['id'] = 'cancel-loading';
+	$form['actions']['cancel']['#value'] = t('<span class="glyphicon glyphicon-remove"></span>&nbsp;Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'edit-loading-cancel';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
@@ -503,11 +504,10 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		// edit existing
 		$form['nid']['#type'] = 'hidden';
 		$form['nid']['#value'] = $nid;
-		$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Update');
 		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit-'.$nid;
 	} else {
 		// add new
-		$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+		//$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
 		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit';
 	}
 	
@@ -744,20 +744,6 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_discount_rate_und_0_value'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Discount Rate'),
-		'#default_value' => $field_discount_rate,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div></div>',
-	);
-	$form['field_ci_cost_und_0_value'] = array(
-		'#type' => 'textfield',
-		'#title' => t('CI Cost'),
-		'#default_value' => $field_ci_cost,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div></div>',
-	);
 
 	$currency_vocab = taxonomy_vocabulary_machine_name_load('currency');
 	$currency_terms  = wamex_get_selectbox_contents($currency_vocab->vid);
@@ -768,7 +754,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'select',
 		'#default_value' => $field_currency,
 		'#options' => $currency_opts,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div>',
 	);
 	$form['field_exchange_rate_to_usd_und_0_value'] = array(
@@ -778,6 +764,21 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="col-sm-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
 		'#suffix' => '</div></div>',
 	);
+	$form['field_discount_rate_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Discount Rate'),
+		'#default_value' => $field_discount_rate,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_ci_cost_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Capital Investment Cost'),
+		'#default_value' => $field_ci_cost,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+
 	
 	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
 	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
@@ -787,47 +788,47 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('Effluent Standard'),
 		'#type' => 'select',
 		'#options' => $effluent_opts,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
 	
 	$form['field_cod'] = array(
-		'#title' => t('COD'),
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="row" id="project-effluent-standard-values"><div class="col-sm-2">',
+		'#prefix' => '<div class="row" id="project-effluent-standard-values"><div class="effluent-standard-attribute col-sm-10 col-sm-offset-0 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-2 ">',
 		'#suffix' => '</div>', //</div>',
 	);
 
 	$form['field_bod5'] = array(
-		'#title' => t('BOD5'),
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="col-sm-3">',
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
 		'#suffix' => '</div>',
 	);
 
 	$form['field_totn'] = array(
-		'#title' => t('TotN'),
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="col-sm-3">',
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
 		'#suffix' => '</div>',
 	);
 
 	$form['field_totp'] = array(
-		'#title' => t('TotP'),
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="col-sm-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
 		'#suffix' => '</div>',
 	);
 
 	$form['field_tss'] = array(
-		'#title' => t('TSS'),
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="col-sm-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
 		'#suffix' => '</div></div>',
 	);
 
@@ -888,31 +889,31 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	);
 	
 	$form['field_cod'] = array(
-		'#title' => t('COD'),
+		'#title' => t('<span class="label-name">COD</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_bod5'] = array(
-		'#title' => t('BOD5'),
+		'#title' => t('<span class="label-name">BOD5</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_totn'] = array(
-		'#title' => t('TotN'),
+		'#title' => t('<span class="label-name">TotN</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_totp'] = array(
-		'#title' => t('TotP'),
+		'#title' => t('<span class="label-name">TotP</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_tss'] = array(
-		'#title' => t('TSS'),
+		'#title' => t('<span class="label-name">TSS</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
@@ -945,7 +946,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	$form['actions']['submit']['#prefix'] = '<div class="col-sm-6"><label>&nbsp;</label>';
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-effl-submit';
-	$form['actions']['submit']['#attributes']['class'][] = 'hidden';
+	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
 	$form['actions']['submit']['#value'] = t('Save');
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
@@ -1162,12 +1163,33 @@ function wamex_user_login(&$edit, $account)
 {
   // set $redirection to the desired location
   $redirection = 'dashboard';
-  
+	$_GET['destination'] = $redirection;
 	// Unless there is already a redirection going, or the user is trying to reset his password, we redirect to $redirection.
   if (empty($_GET['destination'])
     && !is_null($redirection)
     && (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset'))
   {
     $_GET['destination'] = $redirection; // Should we use $edit['redirect'] instead..?
-  }
+  } /*else {
+		//drupal_set_message('ito','error');
+		//drupal_set_message(print_r($_GET,1),'error');
+		//drupal_set_message(print_r($_POST,1),'error');
+		
+	}*/
 }
+
+/*function wamex_breadcrumb($variables) {
+	$breadcrumb = $variables['breadcrumb'];
+
+	if (!empty($breadcrumb)) {
+		$crumbs = '<ul class="breadcrumbs">';
+
+		foreach($breadcrumb as $value) {
+			$crumbs .= '<li>'.$value.'</li>';
+		}
+		$crumbs .= '</ul>';
+	}
+		
+	$crumbs .= '<pre>'.print_r($variables,1).'</pre>';
+	return $crumbs;
+}*/

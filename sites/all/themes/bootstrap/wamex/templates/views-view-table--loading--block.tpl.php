@@ -18,6 +18,7 @@
  *   field id, then row number. This matches the index in $rows.
  * @ingroup views_templates
  */
+ 
  $classes .= ' table-hover table-responsive';
 ?><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
    <?php if (!empty($title) || !empty($caption)) : ?>
@@ -28,7 +29,12 @@
       <tr>
         <?php foreach ($header as $field => $label): ?>
           <th <?php if ($header_classes[$field]) { print 'class="'. $header_classes[$field] . '" '; } ?>>
-            <?php print $label; ?>
+            <?php 
+							if ($label == 'ADWF') $unit = '(l/p/d)'; else $unit = '(mg/l)';
+							if (in_array($label, array('Name', 'Type','%'))) $unit = '';
+							if ($label == '') $label = ''; else $label = '<span class="label-name">'.$label.'</span>&nbsp;<span class="label-unit">'.$unit.'</span>';
+							print $label; 
+						?>
           </th>
         <?php endforeach; ?>
       </tr>

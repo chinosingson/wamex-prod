@@ -17,14 +17,14 @@
 						icon: {
 								valid: 'glyphicon glyphicon-ok',
 								invalid: 'glyphicon glyphicon-remove',
-								validating: 'glyphicon glyphicon-refresh'
+								validating: 'glyphicon glyphicon-refresh',
 						},
 						fields: {
 							title: {
 								trigger: 'focus blur keyup',
 								validators: {
 									notEmpty: {
-										message: 'The project title is required and cannot be empty.'
+										message: 'The project title is required and cannot be empty.',
 									}
 								}
 							}
