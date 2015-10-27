@@ -45,8 +45,10 @@ $view_loading->set_display('block');
 	<div class="container-fluid">
 		<div class="row">
 			<div id="project-information" class="col-sm-5 col-md-5 col-lg-5">
-				<div class="row">
-					<div class="col-sm-12"><h3 class="project-section-title">Project Information</h3></div>
+				<div class="row" id="project-info-title-container">
+					<div class="col-sm-12"><h3 class="project-section-title" id="project-info-title">Project Information</h3>
+					<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary" ><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
+					</div>
 				</div>
 				<table class="table">
 					<tbody>
@@ -141,7 +143,7 @@ $view_loading->set_display('block');
 	<hr/>
 	<div class="container-fluid" id="loading-list-container">
 		<div class="row">
-			<div class="col-sm-12" id="loading-title-container"><h3 class="project-section-title" id="loading-list-title">Wastewater Characterisation</h3>
+			<div class="col-sm-12" id="loading-title-container"><a name="loading-list"></a><h3 class="project-section-title" id="loading-list-title">Wastewater Characterisation</h3>
 				<?php if ($addLoadingPerm):?><button class="btn btn-primary btn-add-loading" id="add-loading-<?php print $node->nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add Loading</button><?php endif; ?>
 			</div>
 		</div>

@@ -178,6 +178,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	/*border: 1px dotted red;*/
 }
 
+body.page-project-edit #project-effluent-standard-values .effluent-standard-attribute input,
 body.page-dashboard #project-effluent-standard-values .effluent-standard-attribute input {
 	/*border: 1px dotted blue;*/
 	position: absolute;
@@ -186,6 +187,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	width: 35%;
 }
 
+body.page-project-edit #project-effluent-standard-values label,
 body.page-dashboard #project-effluent-standard-values label {
 	/*border: 1px dotted green;*/
 	display: inline;
@@ -296,6 +298,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	min-width: 75px;
 }
 
+#project-info-title,
 #effluents-title,
 #loading-list-title,
 #loading-tech-title {
@@ -326,4 +329,30 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 #wamex-loading-form .form-item-title label {
 	color: #c00;
 	
+}
+
+#project-info-title-container {
+	margin-bottom: 10px;
+}
+
+.form-control-feedback.glyphicon-remove {
+	color: red;
+	margin-left: 10px;
+}
+.form-control-feedback.glyphicon-ok {
+	color: green;
+	margin-left: 10px;
+}
+
+body.page-project-edit #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i,
+body.page-dashboard #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i {
+	position: relative;
+	left: 80px;
+	top: -7px;
+}
+
+body.page-project-edit #project-effluent-standard-values .effluent-standard-attribute input.form-control,
+body.page-dashboard #project-effluent-standard-values .effluent-standard-attribute input.form-control {
+	padding-left: 5px;
+	padding-right: 5px;
 }

@@ -3,20 +3,20 @@
 	Drupal.behaviors.display = {
 		attach: function (context, settings) {
 			function loadExchangeRate(termId,reset) {
-				console.log('loadExchangeRate');
+				//console.log('loadExchangeRate');
 				// get exchange rate from json-encoded taxonomy term
 				// currency info pre-load
 				var currencyTerms = Drupal.settings.taxonomy.currency;
 				if (currencyTerms[termId]){
 					var exchRate = currencyTerms[termId].field_exchange_rate['und'][0].value;
 					//var nodeExchRate = Drupal.settings.node.values.field_exchange_rate_to_usd;
-					console.log('exchRate: ' + exchRate);
+					//console.log('exchRate: ' + exchRate);
 					//console.log('nodeExchRate: ' + nodeExchRate);
-					console.log($('#edit-field-exchange-rate-to-usd-und-0-value').attr('value'));
+					//console.log($('#edit-field-exchange-rate-to-usd-und-0-value').attr('value'));
 					
 					if (reset==1){
 						// load values from JS
-						console.log('exch rate - load values from JS');
+						//console.log('exch rate - load values from JS');
 						$('#edit-field-exchange-rate-to-usd-und-0-value').val(exchRate);
 					} /*else {
 						// load values from node
@@ -38,6 +38,8 @@
 			}
 
 			function loadEffluentStandardAttributes(termIndex,reset) {	// ADD AN OVERRIDE ARG
+				//console.log(termIndex);
+				//console.log(Drupal.settings.taxonomy.effluentStandards);
 				var termObj = Drupal.settings.taxonomy.effluentStandards[termIndex];
 				var nodeEffluentStandard = Drupal.settings.node.values.field_effluent_standard;
 				var nodeCOD = Drupal.settings.node.values.field_cod;
@@ -46,6 +48,7 @@
 				var nodeTotP = Drupal.settings.node.values.field_totp;
 				var nodeTSS = Drupal.settings.node.values.field_tss;
 				if(termObj){
+					//console.log(termObj);
 					if(termObj.name != 'Custom'){
 						// load values from js
 						if(!$('#effluent-standard-values input').prop('disabled')){
@@ -78,7 +81,7 @@
 			}
 			
 			// alter project input field types
-			if($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard').length > 0) {
+			if($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard, body.page-project-edit').length > 0) {
 				$('#edit-field-population-und-0-value').attr('type','number');
 				$('#edit-field-discount-rate-und-0-value').attr('type','number');
 				$('#edit-field-ci-cost-und-0-value').attr('type','number');
@@ -106,8 +109,16 @@
 					loadExchangeRate($('#edit-field-currency').val(),0);
 				});*/
 				
+				$('#cancel-project').unbind('click').on('click',function(event){
+					console.log('cancel-project');
+					console.log($('#wamex-project-form').find('input[name="nid"]')[0].value);
+					console.log(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+					window.location.replace(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+				});
+				
 				if($('#wamex-project-form').length > 0){
 					$('#wamex-project-form').ready(function(){
+						//console.log($('#edit-field-effluent-standard')[0].selectedIndex);
 						loadExchangeRate($('#edit-field-currency-und').val(),0);
 						loadEffluentStandardAttributes($('#edit-field-effluent-standard')[0].selectedIndex,1);
 					});
@@ -120,7 +131,7 @@
 				// field_currency behavior
 				$('#edit-field-currency-und').unbind('change').change(function(){
 					var currencyTermId = $(this).val();
-					console.log(currencyTermId);
+					//console.log(currencyTermId);
 					loadExchangeRate(currencyTermId,0);
 				});
 				
@@ -137,13 +148,13 @@
 				
 			}
 			
-			if($('body.page-node, body.node-type-project').length > 0){
-			
+			if($('body.page-node, body.node-type-project, body.page-project-edit').length > 0){
+				//console.log('ito!!!');
 				$('#project-effluent-standard').unbind('change').on('change',function(event){
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
 				
-				$('body.node-type-project').ready(function(){
+				$('body.node-type-project, body.page-project-edit').ready(function(){
 					if($('#project-effluent-standard').length > 0)loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
 				}); 
 				

@@ -2,7 +2,7 @@
 	
 	Drupal.behaviors.wamex = {
 		attach: function (context, settings) {
-			if($('body.page-dashboard').length > 0){
+			if($('body.page-dashboard, body.page-project-edit').length > 0){
 				//var projectValidatorOptions = ;
 				
 				$('#wamex-project-form').ready(function(){
