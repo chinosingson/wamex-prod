@@ -1,0 +1,1235 @@
+<?php
+// $Id$
+
+/**
+ * @file   WaMEx module.
+ */
+
+ require_once DRUPAL_ROOT .'/'. drupal_get_path('module','wamex').'/wamex_math.php';
+ 
+/**
+* Implementation of hook_permission().
+*/
+function wamex_permission() {
+	$items = array();
+  $items['add project custom'] = array(
+		'title' => t('<em>Project</em>: Add new project.'),
+		'description' => t('Allow users to add new WaMEx projects'),
+	);
+	
+	$items['edit project custom'] = array(
+		'title' => t('<em>Project</em>: Edit existing project.'),
+		'description' => t('Allow users to edit WaMEx projects'),
+	);
+	
+	$items['delete project custom'] = array(
+		'title' => t('<em>Project</em>: Delete existing project.'),
+		'description' => t('Allow users to delete WaMEx projects'),
+	);
+	
+  $items['add loading custom'] = array(
+		'title' => t('<em>Loading</em>: Add new loading.'),
+		'description' => t('Allow users to add new WaMEx loadings'),
+	);
+	
+	$items['edit loading custom'] = array(
+		'title' => t('<em>Loading</em>: Edit existing loading.'),
+		'description' => t('Allow users to edit WaMEx loadings'),
+	);
+
+	$items['delete loading custom'] = array(
+		'title' => t('<em>Loading</em>: Delete existing loading.'),
+		'description' => t('Allow users to delete WaMEx loadings'),
+	);
+	
+	return $items;
+}
+
+ 
+ 
+ /**
+ * Implements hook_menu().
+ */
+ 
+function wamex_menu() {
+
+  $items = array();
+	
+	// render any drupal page via ajax
+	$items['get/ajax'] = array(
+    'page callback' => 'wamex_ajax_get_ajax', // Render HTML
+    //'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+    'delivery callback' => 'wamex_ajax_callback',  // Magic goes here
+  );  
+	
+	// project functions
+	$items['project/add'] = array(
+    'title' => 'Add Project',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_project_form'),
+    'access arguments' => array('add project custom'),
+    'type' => MENU_LOCAL_TASK,
+	);
+	
+	$items['project/edit/%'] = array(
+    'title' => 'Edit Project',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_project_form',2),
+    'access arguments' => array('edit project custom'),
+    'type' => MENU_CALLBACK,
+	);
+	
+	$items['project/delete/%'] = array(
+    'title' => 'Delete Project',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_project_delete_confirm',2),
+    'access arguments' => array('delete project custom'),
+    'type' => MENU_CALLBACK,
+	);
+	
+	
+	// loading functions
+	$items['loading/add/%'] = array(
+		'title' => 'Add Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_form',NULL,2),
+		'access arguments' => array('add loading custom'),
+		'type' => MENU_LOCAL_TASK,
+	);
+	$items['loading/edit/%'] = array(
+		'title' => 'Edit Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_form',2, NULL),
+		'access arguments' => array('edit loading custom'),
+		'type' => MENU_CALLBACK,
+	);
+	$items['loading/delete/%'] = array(
+		'title' => 'Delete Loading',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_loading_delete_confirm',2,107),
+		'access arguments' => array('delete loading custom'),
+		'type' => MENU_CALLBACK,
+	);
+	
+	$items['loading/technologies'] = array(
+		'title' => 'Loading Technologies',
+    'page callback' => 'wamex_display_tech',
+		'access callback' => TRUE,
+    'access arguments' => array('Edit own content'),
+		'type' => MENU_CALLBACK,
+		//'type' => MENU_DEFAULT_LOCAL_TASK,
+	);
+	
+	/*$items['loading/techs/all'] = array(
+		'title' => 'All Technologies',
+		'page callback' => 'wamex_get_all_tech',
+		'access arguments' => array('Edit own content'),
+		//'type' => MENU_DEFAULT_LOCAL_TASK,
+	);*/
+	
+	/*$items['project/effluents/%'] = array(
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('wamex_project_effl_form',2),
+		'access arguments' => array('Edit own content'),
+		'type' => MENU_CALLBACK,
+	);*/
+	
+	/*$items['test/table'] = array(
+		'title' => 'Test table',
+		'page callback' => 'wamex_display_table',
+		'access arguments' => array('administer WaMEx technology'),
+		'type' => MENU_CALLBACK,
+	);*/
+	
+  return $items;
+}
+
+
+/*function wamex_display_table() {
+	$name = 'chino';
+	$surname = 'singson';
+	$row = array(
+		'title' => array(
+			'data' => $name . ' ' . $surname,
+			'class' => array('myClass')
+		),
+		//'date' => date('Y-m-d', $account->created),
+		'name' => $name . ' ' . $surname,
+	);
+	$output = theme('table',array('header'=>array(),'rows'=>$row));
+
+	return $output;
+}*/
+
+function wamex_display_tech($techArgs){
+	$output = "";
+	$aryTechArgs = explode('&',$techArgs);
+	$str_loadings  = $aryTechArgs[0];
+	$str_standards = $aryTechArgs[1];
+	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
+	//$output .= "<pre>Standards: ".$str_standards."</pre>";
+	
+	
+	$ary_loadings_init  = explode('|',$str_loadings); 	// check for 6 items
+	$ary_standards_init = explode('|',$str_standards);	// check for 5 items
+	//$output .= "<pre>".print_r($ary_standards_init,1)."</pre>";
+	
+	// set loading and standards arrays
+	$arrayAverageLoad = array(
+		'ADWF' => $ary_loadings_init[0],
+		'COD'  => $ary_loadings_init[1],
+		'BOD5' => $ary_loadings_init[2],
+		'N'    => $ary_loadings_init[3],
+		'P'    => $ary_loadings_init[4], 
+		'TSS'  => $ary_loadings_init[5]
+	);
+	
+	$arrayStandards = array(
+		//'name' => "Malaysia",
+		'COD'  => $ary_standards_init[0],
+		'BOD5' => $ary_standards_init[1],
+		'N'    => $ary_standards_init[2],
+		'P'    => $ary_standards_init[3],
+		'TSS'  => $ary_standards_init[4],
+	);
+	
+	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
+
+	$header = array(
+		array('data' => t('ID')), 
+		array('data' => t('Name')) ,
+		array('data' => t('COD')),
+		array('data' => t('BOD5')),
+		array('data' => t('N %')),
+		array('data' => t('N max')),
+		array('data' => t('P ')),
+		array('data' => t('TSS %')),
+		array('data' => t('TSS max')),
+	);
+	
+	// check if there are technology id's saved to the current node
+	$node = menu_get_object();
+	if (!is_null($node->field_tech_ids)) {
+		$tech_ids = $node->field_tech_ids;	// needs to be exploded from a delimited list saved in this field
+	} else {
+		// fetch suitable technologies from database
+		$tech_ids = wamex_select_tech($arrayAverageLoad,$arrayStandards);
+	}
+	
+	//$output .= "<pre>".print_r($tech_ids,1)."</pre>";
+	
+	if (count($tech_ids)>0){
+		//$sql .= tablesort_sql($header);
+		//$result = pager_query($sql, 50, 0 , NULL, $keys);
+		$output .= "Displaying ".count($tech_ids)." items";
+
+		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
+		$results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))
+								//->orderByHeader($header)
+							 ->condition('tid', $tech_ids,'IN')
+							 ->execute();
+		$rows = array();
+		$destination = drupal_get_destination();
+		foreach ($results as $val) {
+			$rows[] = array(
+				'id'=>$val->tid,
+				'name'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),
+				'COD'=>$val->cod, 
+				'BOD5'=>$val->max_bod, 
+				'N_p'=>$val->max_n_p, 
+				'N_a'=>$val->max_n_a, 
+				'P'=>$val->max_p_a, 
+				'TSS_p'=>$val->max_tss_p, 
+				'TSS_a'=>$val->max_tss_a,
+			);
+		}
+		
+		if (empty($rows)) {
+			$empty_message = $keys ? t('No URL aliases found.') : t('No URL aliases available.') ;
+			$rows[] = array(array('data' => $empty_message, 'colspan' => 48));
+		}
+		$output .= theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>array('id'=>'table-loading-tech')));
+	} else {
+		$output .= 'No technologies suitable for selected standard and sources.';
+		
+	}
+	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
+  //$output .= theme('pager', NULL, 50, 0);
+
+  return $output;
+}
+
+
+function wamex_get_selectbox_contents($vid) {
+  $terms = taxonomy_get_tree($vid);
+	$output = array();
+  foreach ($terms as $data) {
+    $output[$data->tid] = $data->name;
+  }
+
+  return $output;
+}
+
+function wamex_preprocess_page(&$variables){
+	$arg = arg();
+	$effluent_taxonomy = taxonomy_vocabulary_machine_name_load('effluent_standard');
+	$effluent_taxonomy_tree  = taxonomy_get_tree($effluent_taxonomy->vid,0,NULL,TRUE);
+
+	if ($arg[0] == 'dashboard' || @is_object($variables['node']) && $variables['node']->type == 'project'){
+		drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		//drupal_add_js(drupal_get_path('module','wamex').'/js/x-editable/js/bootstrap-editable.min.js',array('type'=>'file','group'=>JS_DEFAULT,'weight'));
+	}
+
+	if ($arg[0] == 'dashboard'){
+		// load taxonomy tree for currency
+		$variables['show_messages'] = FALSE;
+		$currency_taxonomy = taxonomy_vocabulary_machine_name_load('currency');
+		$currency_taxonomy_tree = taxonomy_get_tree($currency_taxonomy->vid,0);
+
+		// get all term ids
+		$currency_tids = array();
+		foreach($currency_taxonomy_tree as $term) {
+			$currency_tids[] = $term->tid;
+		}
+		// load all terms
+		$currency_terms = taxonomy_term_load_multiple($currency_tids);
+		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
+		
+		// add terms to Drupal.settings
+		// access in JS via Drupal.settings.taxonomy.currency
+		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
+
+		drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>0))),'setting');
+	}
+	
+	if (@is_object($variables['node']) && $variables['node']->type == 'project'){
+		//drupal_set_message('message','status');
+		$variables['title'] = FALSE;
+		$variables['tabs'] = FALSE;
+		//$variables['page_title'] =
+
+		$loading_taxonomy = taxonomy_vocabulary_machine_name_load('loading_type');
+		$loading_taxonomy_tree = taxonomy_get_tree($loading_taxonomy->vid,0,NULL,TRUE);
+		$loading_tids = array();
+		drupal_add_js(array('taxonomy' => array('loadingTypes' => $loading_taxonomy_tree)),'setting');
+		drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)),'setting');
+
+	}
+}
+
+function wamex_form($variables) {
+  $element = $variables ['element'];
+	$output = '';
+	//drupal_set_message(print_r($variables),'status');
+  if (isset($element ['#action'])) {
+    $element ['#attributes']['action'] = drupal_strip_dangerous_protocols($element ['#action']);
+  }
+  element_set_attributes($element, array('method', 'id'));
+  if (empty($element ['#attributes']['accept-charset'])) {
+    $element ['#attributes']['accept-charset'] = "UTF-8";
+  }
+  // Anonymous DIV to satisfy XHTML compliance.
+  $output .= '<form' . drupal_attributes($element ['#attributes']) . '><div id="form-wrapper-div">' . $element ['#children'] . '</div></form>';
+	return $output;
+}
+
+function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
+	if ($nid){
+		$node = node_load($nid);
+		//drupal_set_message('<pre>'.print_r($node).'</pre>','status');
+		$title = $node->title;
+		$body = $node->body;
+		$project_nid = $node->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+		$type = $node->field_loading_type[LANGUAGE_NONE][0]['tid'];
+		$adwf = $node->field_loading_adwf[LANGUAGE_NONE][0]['value'];
+		$cod = $node->field_loading_cod[LANGUAGE_NONE][0]['value'];
+		$bod5 = $node->field_loading_bod5[LANGUAGE_NONE][0]['value'];
+		$totn = $node->field_loading_totn[LANGUAGE_NONE][0]['value'];
+		$totp = $node->field_loading_totp[LANGUAGE_NONE][0]['value'];
+		$tss = $node->field_loading_tss[LANGUAGE_NONE][0]['value'];
+		$weight = $node->field_loading_weight[LANGUAGE_NONE][0]['value'];
+		$cancel_btn_id = 'edit-loading-cancel-'.$nid;
+	} else {
+		$node = NULL;
+		$title = '';
+		$body = '';
+		$project_nid = $pid;
+		$type = '_none';
+		$adwf = 0;
+		$cod = 0;
+		$bod5 = 0;
+		$totn = 0;
+		$totp = 0;
+		$tss = 0;
+		$weight = 0;
+		$cancel_btn_id = 'add-loading-cancel';
+	}
+	
+	$form = array();
+	//$form['#theme'] = 'table';
+	//$form['#attributes']['class'][] = 'row';
+	//$form['#attributes']['class'][] = 'form-container';
+	//$form['#attributes']['class'][] = 'container-fluid';
+	
+	
+	$form['title'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t('Name'),
+		'#default_value' => $title,
+		'#size' => 15,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+		//'#prefix' => '<td class="view-field view-field-edit">',
+		//'#suffix' => '</td>',
+		//'#attributes' =>array('placeholder' => t('*Required')),
+		//'#field_prefix' => 'field_prefix|',
+		//'#prefix' => '<div>',
+	);
+	$form['title']['#attributes']['class'][] = 'loading-required';
+	
+	$form['field_loading_project_und'] = array(
+		'#type' => 'hidden',
+		'#title' => t('Project'),
+		'#default_value' => $project_nid,
+		'#id' => 'field_loading_project_nid',
+
+	);
+	
+	$loading_type_vocab = taxonomy_vocabulary_machine_name_load('loading_type');
+	$loading_type_terms  = wamex_get_selectbox_contents($loading_type_vocab->vid);
+	$loading_type_opts = $loading_type_terms;
+	//array(''=>t('*Required'))+
+	
+	$form['field_loading_type'] = array(
+		'#type' => 'select',
+		'#title' => t('Type'),
+		//'#required' => TRUE,
+		//'#empty_option' => t('- Select -'),
+		//'#empty_value' => 0,
+		'#options' => $loading_type_opts,
+		'#default_value' => $type,
+		'#prefix' => '<div class="col-sm-2">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_type']['#attributes']['class'][] = 'loading-required';
+	
+	$form['field_loading_adwf'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">ADWF</span>&nbsp;<span class="label-unit">(l/p/d)</span>'),
+		'#default_value' => $adwf,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_adwf']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_cod'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">COD</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#default_value' => $cod,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_cod']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_bod5'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">BOD5</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#default_value' => $bod5,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_bod5']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_totn'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">TotN</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#default_value' => $totn,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_totn']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_totp'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">TotP</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#default_value' => $totp,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_totp']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_tss'] = array(
+		'#type' => 'textfield',
+		'#title' => t('<span class="label-name">TSS</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#default_value' => $tss,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_tss']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['field_loading_weight'] = array(
+		'#type' => 'textfield',
+		'#title' => t('%'),
+		'#required' => TRUE,
+		'#default_value' => $weight,
+		'#prefix' => '<div class="col-sm-1">',
+		'#suffix' => '</div>',
+	);
+	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
+	
+	$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
+	//$form['actions']['submit']['#suffix'] = '</div>';
+	$form['actions']['submit']['#type'] = 'submit';
+	$form['actions']['submit']['#ajax']['type'] = 'throbber';
+	$form['actions']['submit']['#ajax']['callback'] = 'wamex_loading_form_submit';
+	$form['actions']['submit']['#attributes']['id'] = 'edit-loading-submit';
+	$form['actions']['submit']['#attributes']['class'][] = 'btn-xs';
+	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+	//$form['actions']['cancel']['#prefix'] = '<div id="loading-cancel-container">';
+	$form['actions']['cancel']['#suffix'] = '</div></div>';
+	$form['actions']['cancel']['#type'] = 'button';
+	$form['actions']['cancel']['#value'] = t('<span class="glyphicon glyphicon-remove"></span>&nbsp;Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'edit-loading-cancel';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+
+	if ($nid){
+		// edit existing
+		$form['nid']['#type'] = 'hidden';
+		$form['nid']['#value'] = $nid;
+		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit-'.$nid;
+	} else {
+		// add new
+		//$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit';
+	}
+	
+	return $form;
+
+}
+
+function wamex_loading_form_submit($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$errors = form_get_errors();
+	$commands = array();
+	drupal_get_messages();
+
+	if(!empty($errors)) { 
+		$selector = '#project-messages';
+		$error_variables = array(
+			'items'=> $errors,
+			'title'=> 'Add New Loading Errors',
+			'type'=> 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
+		drupal_set_message('this','error');
+		//$form_state['redirect'] = 'dashboard';
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	}
+	else {
+	
+		if (empty($form_state['values']['nid'])){
+			// add new node
+			global $user;
+			$newnode = new stdClass();
+			$newnode->title = $form_state['input']['title'];
+			$newnode->language = LANGUAGE_NONE;
+			$newnode->type = 'loading';
+			$newnode->field_loading_project[LANGUAGE_NONE][0]['target_id'] = $form_state['input']['field_loading_project_und'];
+			$newnode->field_loading_type[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_loading_type'];
+			$newnode->field_loading_adwf[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_adwf'];
+			$newnode->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_cod'];
+			$newnode->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_bod5'];
+			$newnode->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_totn'];
+			$newnode->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_totp'];
+			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_tss'];
+			$newnode->field_loading_weight[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_weight'];
+			try {
+				node_save($newnode);
+				$success = TRUE;
+				drupal_set_message(t('Loading <b>'.$newnode->title.'</b> created.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t('New Loading not saved.<br/>'.$e->getMessage()),'error');
+			}
+		} 
+		else {
+			// update existing node
+			$node = node_load($form_state['values']['nid']);
+			$node->title = $form_state['input']['title'];
+			$node->language = LANGUAGE_NONE;
+			$node->field_loading_project[LANGUAGE_NONE][0]['target_id'] = $form_state['input']['field_loading_project_und'];
+			$node->field_loading_type[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_loading_type'];
+			$node->field_loading_adwf[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_adwf'];
+			$node->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_cod'];
+			$node->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_bod5'];
+			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_totn'];
+			$node->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_totp'];
+			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_tss'];
+			$node->field_loading_weight[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_loading_weight'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Loading <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Loading not updated.'),'error');
+			}
+		}
+
+		if ($success){
+			$form_state['redirect'] = array('node/'.$form_state['input']['field_loading_project_und'], array('fragment'=>'loading-list'));
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
+		
+	}
+	//$node->field_loading_attributes[LANGUAGE_NONE][0]['field_loading_'][LANGUAGE_NONE] = $form_state['input']['field_loading_'];
+}
+
+function wamex_loading_submit_handler($form, &$form_state) {
+  if ($form_state['node']->nid) {
+  
+    
+    //popup_element(t(''), t("Your project has been submitted"));
+	
+	//drupal_set_message(t('1'.$form_state['redirect']));
+
+	$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
+	
+					$path =  array(
+						t('thank-you'),
+						array(
+							'query' => array(
+							'destination' => t('node'),
+							),
+						),
+					);
+	
+	//$form_state['redirect'] = $path;
+  }
+}
+
+function wamex_loading_delete_confirm($form, &$form_state, $nid){
+	$node = node_load($nid);
+	$loading_name = $node->title;
+	$project_nid = $node->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+  if (user_access('delete loading custom')) {
+		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
+    $output = confirm_form($form,
+      t('Are you sure you want to delete %title?', array('%title' => $loading_name)),
+      isset($_GET['destination']) ? $_GET['destination'] : 'node/'.$project_nid,
+			t('Are you sure you want to delete loading %title? This action cannot be undone.', array('%title' => $loading_name)),
+			t('Yes'),
+			t('No'));
+  }
+  return $output;
+}
+
+function wamex_loading_delete_confirm_submit($form, &$form_state){
+  if ($form_state['values']['confirm']) {
+		try{
+			node_delete($form_state['values']['nid']);
+			$success = TRUE;
+			drupal_set_message(t('The loading has been deleted.'));
+		}
+		catch (Exception $e){
+			$success = FALSE;
+			drupal_set_message(t('Could not delete the loading.'),'error');
+		}
+	
+    $form_state['redirect'] = $form['actions']['cancel']['#href'];
+    return;
+  }
+
+}
+
+
+function wamex_project_form($form, &$form_state, $nid = null) {
+	if ($nid) {
+		$node = node_load($nid);
+		//node_object_prepare($node);
+		$title = $node->title;
+		$body = $node->body['und'][0]['value'];
+		$field_location = $node->field_location['und'][0]['value'];
+		$field_population = $node->field_population['und'][0]['value'];
+		$field_author = $node->field_author['und'][0]['value'];
+		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
+		$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
+		$field_currency = $node->field_currency['und'][0]['tid'];
+		$field_exchange_rate_to_usd = $node->field_exchange_rate_to_usd['und'][0]['value'];
+		$field_effluent_standard = $node->field_effluent_standard['und'][0]['tid'];
+		$field_cod = $node->field_loading_cod['und'][0]['value'];
+		$field_bod5 = $node->field_loading_bod5['und'][0]['value'];
+		$field_totn = $node->field_loading_totn['und'][0]['value'];
+		$field_totp = $node->field_loading_totp['und'][0]['value'];
+		$field_tss = $node->field_loading_tss['und'][0]['value'];
+		if(arg(0) == 'project'){
+			drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+		drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+			drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
+			drupal_add_js(drupal_get_path('module','wamex').'/js/wamex.js');
+			drupal_add_js(array('node' => array('values' => array('nid'=>$nid))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_cod))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_bod5'=>$field_bod5))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_totn'=>$field_totn))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_totp'=>$field_totp))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_tss'=>$field_tss))),'setting');
+		}
+	} else {
+		$node = NULL;
+		$title = '';
+		$body = '';
+		$field_location = '';
+		$field_population = 0;
+		$field_author = '';
+		$field_discount_rate = 0;
+		$field_ci_cost = 0;
+		$field_currency = 2;	// default to tid of US Dollar
+		$field_exchange_rate_to_usd = 1.0;
+		$field_effluent_standard = '';
+		$field_cod = 0;
+		$field_bod5 = 0;
+		$field_totn = 0;
+		$field_totp = 0;
+		$field_tss = 0;
+	}
+
+	$form = array();
+	//$form['#node'] = $node;
+	$form['#attributes']['class'][] = 'form-container';
+	$form['#attributes']['class'][] = 'container-fluid';
+	$form['#attributes']['name'] = 'wamex-project-form';
+	//$form['#prefix'] = '<div id="project-forms-container" class="container-fluid">';
+	//$form['#suffix'] = '</div>';
+	
+	//$form['#attributes']['data-toggle'] = 'validator';
+	//$form['#attributes']['role'] = 'form';
+	$form['title'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t('Project Name'),
+		'#default_value' => $title,
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_location'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Location'),
+		'#default_value' => $field_location,
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_population_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Population'),
+		'#default_value' => $field_population,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['body'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Description'),
+		'#default_value' => $body,
+		'#prefix' => '<div class="row"><div class="col-sm-12">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_author'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Author'),
+		'#default_value' => $field_author,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+
+	// load taxonomy tree for currency
+	$currency_vocab = taxonomy_vocabulary_machine_name_load('currency');
+	$currency_terms  = wamex_get_selectbox_contents($currency_vocab->vid);
+	$currency_opts = $currency_terms;
+	$currency_taxonomy_tree = taxonomy_get_tree($currency_vocab->vid,0);
+	// get all term ids
+	$currency_tids = array();
+	foreach($currency_taxonomy_tree as $term) {
+		$currency_tids[] = $term->tid;
+	}
+	// load all terms
+	$currency_terms2 = taxonomy_term_load_multiple($currency_tids);
+	
+	// add terms to Drupal.settings
+	// access in JS via Drupal.settings.taxonomy.currency
+	drupal_add_js(array('taxonomy' => array('currency' => $currency_terms2)), 'setting');
+
+	$form['field_currency_und'] = array(
+		'#title' => t('Currency'),
+		'#type' => 'select',
+		'#default_value' => $field_currency,
+		'#options' => $currency_opts,
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div>',
+	);
+	$form['field_exchange_rate_to_usd_und_0_value'] = array(
+		'#title' => t('Exchange Rate to USD'),
+		'#type' => 'textfield',
+		'#default_value' => $field_exchange_rate_to_usd,
+		'#prefix' => '<div class="col-sm-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_discount_rate_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Discount Rate'),
+		'#default_value' => $field_discount_rate,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_ci_cost_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Capital Investment Cost'),
+		'#default_value' => $field_ci_cost,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+
+	
+	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
+	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
+	$effluent_opts = $effluent_terms;
+	$effluent_taxonomy_tree = taxonomy_get_tree($effluent_vocab->vid,0,NULL,TRUE);
+	// get all term ids
+	$effluent_tids = array();
+	foreach($effluent_taxonomy_tree as $term) {
+		$effluent_tids[] = $term->tid;
+	}
+	// load all terms
+	$effluent_terms2 = taxonomy_term_load_multiple($effluent_tids);
+	
+	// add terms to Drupal.settings
+	// access in JS via Drupal.settings.taxonomy.effluent
+	drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)), 'setting');
+
+	
+	$form['field_effluent_standard'] = array(
+		'#title' => t('Effluent Standard'),
+		'#type' => 'select',
+		'#options' => $effluent_opts,
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	
+	$form['field_cod'] = array(
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+		'#prefix' => '<div class="row" id="project-effluent-standard-values"><div class="effluent-standard-attribute col-sm-10 col-sm-offset-0 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-2 ">',
+		'#suffix' => '</div>', //</div>',
+	);
+
+	$form['field_bod5'] = array(
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#suffix' => '</div>',
+	);
+
+	$form['field_totn'] = array(
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#suffix' => '</div>',
+	);
+
+	$form['field_totp'] = array(
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#suffix' => '</div>',
+	);
+
+	$form['field_tss'] = array(
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#suffix' => '</div></div>',
+	);
+
+	$form['actions']['submit']['#type'] = 'submit';
+	$form['actions']['submit']['#ajax']['type'] = 'throbber';
+	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_form_submit';
+	//$form['actions']['cancel']['#prefix'] = '<div class="col-sm-1">';
+	//$form['actions']['cancel']['#suffix'] = '</div>';
+	$form['actions']['cancel']['#type'] = 'button';
+	$form['actions']['cancel']['#value'] = t('Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'cancel-project';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
+	//$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+	
+	if ($nid){
+		// edit existing
+		$form['nid']['#type'] = 'hidden';
+		$form['nid']['#value'] = $nid;
+		$form['actions']['submit']['#value'] = t('Update Project');
+	} else {
+		// add new
+		$form['actions']['submit']['#value'] = t('Save Project');
+	}
+	
+	return $form;
+	
+}
+
+function wamex_project_effl_form($form, &$form_state, $nid = null){
+	//drupal_set_message('nid = '.$nid,'status');
+	if ($nid) {
+		$node = node_load($nid);
+		$field_effluent_standard = (is_null($node->field_effluent_standard) ? NULL : $node->field_effluent_standard['und'][0]['tid']);
+		$field_cod = (is_null($node->field_loading_cod) ? NULL : $node->field_loading_cod['und'][0]['value']);
+		$field_bod5 = (is_null($node->field_loading_bod5) ? NULL : $node->field_loading_bod5['und'][0]['value']);
+		$field_totn = (is_null($node->field_loading_totn) ? NULL : $node->field_loading_totn['und'][0]['value']);
+		$field_totp = (is_null($node->field_loading_totp) ? NULL : $node->field_loading_totp['und'][0]['value']);
+		$field_tss = (is_null($node->field_loading_tss) ? NULL : $node->field_loading_tss['und'][0]['value']);
+	} else {
+		$node = NULL;
+		$field_effluent_standard = '';
+		$field_cod = 0;
+		$field_bod5 = 0;
+		$field_totn = 0;
+		$field_totp = 0;
+		$field_tss = 0;
+	}
+	
+	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
+	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
+	$effluent_opts = $effluent_terms;
+	
+	$form['field_effluent_standard'] = array(
+		//'#title' => t('Effluent Standard'),
+		'#type' => 'select',
+		'#options' => $effluent_opts,
+	);
+	
+	$form['field_cod'] = array(
+		//'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+	);
+
+	$form['field_bod5'] = array(
+		//'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+	);
+
+	$form['field_totn'] = array(
+		//'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+	);
+
+	$form['field_totp'] = array(
+		//'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+	);
+
+	$form['field_tss'] = array(
+		//'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#type' => 'textfield',
+		'#default_value' => 0,
+	);
+	
+	//$form['field_effluent_standard']['#prefix'] = '<div class="col-sm-6">';
+	//$form['field_effluent_standard']['#suffix'] = '</div>';
+	$form['field_effluent_standard']['#attributes']['id'] = 'project-effluent-standard';
+	//$form['field_effluent_standard']['#title'] = t('Select a Standard');
+	$form['field_effluent_standard']['#value'] = $field_effluent_standard;
+	$form['field_cod']['#prefix'] = '<div class="project-effluent-attribute" id="project-effluent-cod">';
+	$form['field_cod']['#suffix'] = '</div>';
+	$form['field_cod']['#value'] = $field_cod;
+	$form['field_cod']['#attributes']['disabled'] = 'disabled';
+	$form['field_bod5']['#prefix'] = '<div class="project-effluent-attribute" id="project-effluent-bod5">';
+	$form['field_bod5']['#suffix'] = '</div>';
+	$form['field_bod5']['#value'] = $field_bod5;
+	$form['field_bod5']['#attributes']['disabled'] = 'disabled';
+	$form['field_totn']['#prefix'] = '<div class=" project-effluent-attribute" id="project-effluent-totn">';
+	$form['field_totn']['#suffix'] = '</div>';
+	$form['field_totn']['#value'] = $field_totn;
+	$form['field_totn']['#attributes']['disabled'] = 'disabled';
+	$form['field_totp']['#prefix'] = '<div class=" project-effluent-attribute" id="project-effluent-totp">';
+	$form['field_totp']['#suffix'] = '</div>';
+	$form['field_totp']['#value'] = $field_totp;
+	$form['field_totp']['#attributes']['disabled'] = 'disabled';
+	$form['field_tss']['#prefix'] = '<div class=" project-effluent-attribute" id="project-effluent-tss">';
+	$form['field_tss']['#suffix'] = '</div>';
+	$form['field_tss']['#value'] = $field_tss;
+	$form['field_tss']['#attributes']['disabled'] = 'disabled';
+	//$form['actions']['submit']['#prefix'] = '<div class="col-sm-6"><label>&nbsp;</label>';
+	$form['actions']['submit']['#type'] = 'button';
+	$form['actions']['submit']['#id'] = 'edit-effl-submit';
+	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
+	$form['actions']['submit']['#value'] = t('Save');
+	$form['actions']['submit']['#ajax']['type'] = 'throbber';
+	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
+	//$form['actions']['submit']['#suffix'] = '</div>';
+	$form['nid']['#type'] = 'hidden';
+	$form['nid']['#value'] = $nid;
+	
+	return $form;
+}
+
+function wamex_project_effl_form_submit($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$errors = form_get_errors();
+	$commands = array();
+	drupal_get_messages();
+	if(!empty($errors)){
+		$selector = '#effluent-standards-messages';
+		$error_variables = array(
+			'items' => $errors,
+			'title' => 'Edit Effluent Standard Errors',
+			'type' => 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
+		//drupal_set_message('this','error');
+		//$form_state['redirect'] = 'dashboard';
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	} else {
+		if (!empty($form_state['values']['nid'])){
+			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
+			$node = node_load($form_state['values']['nid']);
+			$node->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];
+			$node->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_cod'];
+			$node->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_bod5'];
+			$node->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
+			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
+			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Project not updated.'),'error');
+			}
+		} else {
+			drupal_set_message('Error saving Project!','error');
+			$success = FALSE;
+		}
+		
+		if ($success){
+			//$form_state['redirect'] = 'dashboard';
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
+	}
+}
+
+function wamex_project_form_submit($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$errors = form_get_errors();
+	$commands = array();
+	drupal_get_messages();
+
+	// check for form errors
+	if(!empty($errors)) { 
+		// if there are errors, display them in the container with id=$selector
+		$selector = '#dashboard-messages';
+		$error_variables = array(
+			'items'=> $errors,
+			'title'=> 'Add New Project Errors',
+			'type'=> 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
+		drupal_set_message('this','error');
+		//$form_state['redirect'] = 'dashboard';
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	} 
+	else {
+		// if there are no errors, attempt to save the node
+		//drupal_set_message('form has no errors','status');
+		//$success = NULL;
+		if (empty($form_state['values']['nid'])){
+			// add new node
+			global $user;
+			$newnode = new stdClass();
+			$newnode->title = $form_state['input']['title'];
+			$newnode->language = LANGUAGE_NONE;
+			$newnode->type = 'project';
+			$newnode->uid = $user->uid;
+			$newnode->body[LANGUAGE_NONE][0]['value'] = $form_state['input']['body'];
+			$newnode->body[LANGUAGE_NONE][0]['format'] = 'plain_text';
+			$newnode->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
+			$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
+			$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
+			$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
+			$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
+			$newnode->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
+			$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
+			$newnode->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];
+			$newnode->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_cod'];
+			$newnode->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_bod5'];
+			$newnode->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
+			$newnode->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
+			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$newnode = node_submit($newnode);
+
+			try {
+				node_save($newnode);
+				$success = TRUE;
+				drupal_set_message(t('Project <b>'.$newnode->title.'</b> created.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>New project not saved.'),'error');
+			}
+		}
+		else {
+			// update existing node
+			$node = node_load($form_state['values']['nid']);
+			$node->title = $form_state['input']['title'];
+			$node->language = LANGUAGE_NONE;
+			$node->body[LANGUAGE_NONE][0]['value'] = $form_state['input']['body'];
+			$node->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
+			$node->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
+			$node->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
+			$node->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
+			$node->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
+			$node->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
+			$node->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
+			$node->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];
+			$node->field_loading_cod[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_cod'];
+			$node->field_loading_bod5[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_bod5'];
+			$node->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
+			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
+			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Project not updated.'),'error');
+			}
+		}
+
+		if ($success){
+			$form_state['redirect'] = 'dashboard';
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
+	}
+	//return;
+}
+
+function wamex_project_delete_confirm($form, $form_state, $nid){
+	$node = node_load($nid);
+	$project_name = $node->title;
+  if (user_access('delete project custom')) {
+		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
+    $output = confirm_form($form,
+      t('Are you sure you want to delete %title?', array('%title' => $project_name)),
+      isset($_GET['destination']) ? $_GET['destination'] : 'dashboard',
+			t('Are you sure you want to delete %title? This action cannot be undone.', array('%title' => $project_name)),
+			t('Yes'),
+			t('No'));
+  } else {
+		$output = "Error!";
+	}
+  return $output;
+}
+
+function wamex_project_delete_confirm_submit($form, &$form_state){
+  if ($form_state['values']['confirm']) {
+		try{
+			node_delete($form_state['values']['nid']);
+			$success = TRUE;
+			drupal_set_message(t('The project has been deleted.'),'status');
+		}
+		catch (Exception $e){
+			$success = FALSE;
+			drupal_set_message(t('Could not delete the project.'),'error');
+		}
+	
+    $form_state['redirect'] = 'dashboard';
+    return;
+  }
+}
+
+function wamex_ajax_get_ajax() {
+	// The function will receive the array of arguments after the "get/ajax" prefix
+  $path = implode('/', func_get_args());
+  $render_string = menu_execute_active_handler($path, FALSE);
+  return $render_string;
+}
+
+function wamex_ajax_callback($page_callback_result) {
+	// Only render content and validates return
+  $content = is_string($page_callback_result) ? $page_callback_result : drupal_render($page_callback_result);
+  print $content;
+}
+
+function wamex_user_login(&$edit, $account)
+{
+  // set $redirection to the desired location
+  $redirection = 'dashboard';
+	$_GET['destination'] = $redirection;
+	// Unless there is already a redirection going, or the user is trying to reset his password, we redirect to $redirection.
+  if (empty($_GET['destination'])
+    && !is_null($redirection)
+    && (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset'))
+  {
+    $_GET['destination'] = $redirection; // Should we use $edit['redirect'] instead..?
+  } /*else {
+		//drupal_set_message('ito','error');
+		//drupal_set_message(print_r($_GET,1),'error');
+		//drupal_set_message(print_r($_POST,1),'error');
+		
+	}*/
+}
+
+/*function wamex_breadcrumb($variables) {
+	$breadcrumb = $variables['breadcrumb'];
+
+	if (!empty($breadcrumb)) {
+		$crumbs = '<ul class="breadcrumbs">';
+
+		foreach($breadcrumb as $value) {
+			$crumbs .= '<li>'.$value.'</li>';
+		}
+		$crumbs .= '</ul>';
+	}
+		
+	$crumbs .= '<pre>'.print_r($variables,1).'</pre>';
+	return $crumbs;
+}*/

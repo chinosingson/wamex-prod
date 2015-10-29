@@ -110,9 +110,10 @@
 				});*/
 				
 				$('#cancel-project').unbind('click').on('click',function(event){
-					console.log('cancel-project');
-					console.log($('#wamex-project-form').find('input[name="nid"]')[0].value);
-					console.log(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+					//console.log('cancel-project');
+					//console.log($('#wamex-project-form').find('input[name="nid"]')[0].value);
+					//console.log(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+					// redirect back to the node page
 					window.location.replace(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
 				});
 				
@@ -153,10 +154,6 @@
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
 				
-				$('body.node-type-project, body.page-project-edit').ready(function(){
-					if($('#project-effluent-standard').length > 0)loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
-				}); 
-				
 				/*function showEffluentStandardAttributes(termIndex){
 					var termObj = Drupal.settings.taxonomy.effluentStandards[termIndex];
 					//console.log(termIndex);
@@ -181,18 +178,35 @@
 				
 				function getAverageLoadings() {
 					var averageLoadings = $('#ave_adwf').html()+'|'+$('#ave_cod').html()+'|'+$('#ave_bod5').html()+'|'+$('#ave_totn').html()+'|'+$('#ave_totp').html()+'|'+$('#ave_tss').html();
-					return averageLoadings;
+					//console.log($('#ave_adwf').html());
+					if($('#ave_adwf').length > 0){
+						return averageLoadings;
+					}
+					else {
+						return false;
+					}
 				}
 				
-				$('.btn-show-tech').unbind('click').on('click',function(event){
+				function showTechnologies(){
 					var viewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
 					viewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
 					var avgLoading = getAverageLoadings();
+					//console.log(avgLoading);
 					var stdValues = getEffluentStandardAttributes();
 					var techArgs = avgLoading + '&' + stdValues;
-					viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
-						Drupal.attachBehaviors('#loading-tech-list');
+					if (avgLoading.length > 0){
+						viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
+							Drupal.attachBehaviors('#loading-tech-list');
+						});
+					} else {
+						viewport.empty().html('There are no Wastewater Characterisations. Click on <i>Add Loading</i> above to create one or more profiles.');
+					}
+				}
+				
+				$('.btn-show-tech').unbind('click').on('click',function(event){
+					$('#loading-tech-list',context).once('display',function(){
+						showTechnologies();
 					});
 				});
 			
@@ -325,7 +339,8 @@
 					
 				});
 
-				$('#view-project-loadings').ready(function(){
+				//$('#view-project-loadings').ready(function(){
+				if($('#view-project-loadings').length > 0){
 					var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight span.loading-weight-container');
 					//var weight_values = $('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable');
 					//console.log(weight_values)
@@ -372,7 +387,15 @@
 					//console.log('tss_avg: '+tss_avg);
 					$('#ave_tss').html(tss_avg);
 
-				});
+				}
+				
+				$('body.node-type-project, body.page-project-edit').ready(function(event){
+					if($('#project-effluent-standard').length > 0)loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
+					$('#loading-tech-list',context).once('display',function(){
+						showTechnologies();
+					});
+				}); 
+				
 				
 				var techModal = '<div class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
