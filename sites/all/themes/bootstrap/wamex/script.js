@@ -149,7 +149,6 @@
 			}
 			
 			if($('body.page-node, body.node-type-project, body.page-project-edit').length > 0){
-				//console.log('ito!!!');
 				$('#project-effluent-standard').unbind('change').on('change',function(event){
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
@@ -373,6 +372,26 @@
 					//console.log('tss_avg: '+tss_avg);
 					$('#ave_tss').html(tss_avg);
 
+				});
+				
+				var techModal = '<div class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
+				+'<div class="modal-dialog">'
+				+'<div class="modal-content">'
+				+'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button></div>'
+				+'<div class="modal-body"></div>'
+				+'<div class="modal-footer"><button class="btn" data-dismiss="modal">Close</button></div>'
+				+'</div>'
+				+'</div>'
+				+'</div>';
+				
+				var customModal = $(techModal);
+				$('.technology-name').unbind('click').on('click',function(event){
+					event.preventDefault();
+					//console.log($(this).attr('id'));
+					$('.main-container').append(customModal);
+					$('.custom-modal .modal-body').empty().append($(this).text());
+					$('.custom-modal').show();
+					$('.custom-modal').modal();
 				});
 				
 			}

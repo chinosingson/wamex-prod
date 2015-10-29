@@ -32,7 +32,7 @@
             <?php 
 							if ($label == 'ADWF') $unit = '(l/p/d)'; else $unit = '(mg/l)';
 							if (in_array($label, array('Name', 'Type','%'))) $unit = '';
-							if ($label == '') $label = ''; else $label = '<span class="label-name">'.$label.'</span>&nbsp;<span class="label-unit">'.$unit.'</span>';
+							if ($label == '') $label = ''; else $label = '<span class="label-name">'.$label.'</span><br/><span class="label-unit">'.$unit.'</span>';
 							print $label; 
 						?>
           </th>

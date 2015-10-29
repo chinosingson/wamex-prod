@@ -235,7 +235,7 @@ function wamex_display_tech($techArgs){
 		foreach ($results as $val) {
 			$rows[] = array(
 				'id'=>$val->tid,
-				'name'=>$val->name,
+				'name'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),
 				'COD'=>$val->cod, 
 				'BOD5'=>$val->max_bod, 
 				'N_p'=>$val->max_n_p, 
