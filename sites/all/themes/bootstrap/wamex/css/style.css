@@ -356,3 +356,9 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	padding-left: 5px;
 	padding-right: 5px;
 }
+
+.col-cod { background-color: Pink !important;}
+.col-bod5 { background-color: lightSalmon !important; }
+.col-totn { background-color: khaki !important; }
+.col-totp { background-color: paleGreen !important; }
+.col-tss { background-color: powderBlue !important; }

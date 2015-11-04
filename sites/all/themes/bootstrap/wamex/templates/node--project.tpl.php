@@ -44,7 +44,7 @@ $view_loading->set_display('block');
 <div id="project-page-<?php print $node->nid; ?>">
 	<div class="container-fluid">
 		<div class="row">
-			<div id="project-information" class="col-sm-5 col-md-5 col-lg-5">
+			<div id="project-information" class="col-sm-12 col-md-12 col-lg-12">
 				<div class="row" id="project-info-title-container">
 					<div class="col-sm-12"><h3 class="project-section-title" id="project-info-title">Project Information</h3>
 					<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary" ><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
@@ -91,52 +91,7 @@ $view_loading->set_display('block');
 					</tbody>
 				</table>
 			</div>
-			<div id="project-information" class="col-sm-5 col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
-				<div class="row">
-					<div class="col-sm-12">
-						<h3 class="project-section-title" id="effluents-title">Effluent Standards</h3>
-						<button class="btn btn-xs btn-default" id="standards-help">?</button>
-						<div id="effluent-standards-messages"></div>
-					</div>
-				</div>
-						<?php 
-							$effl_form = drupal_get_form('wamex_project_effl_form',$nid);
-							$effl_form['field_effluent_standard']['#title'] = t('Standard');
-							//echo '<pre>'.print_r($effl_form['actions']['submit'],1).'</pre>';
-							//print render($effl_form['submit']);
-							$effl_form_markup = '<div class="row" id="effluent-standard-name">';
-							$effl_form_markup .= drupal_render($effl_form['field_effluent_standard']);
-							$effl_form_markup .= '</div>';
-							$effl_form_markup .= '<div class="row" id="effluent-standard-values">';
-							$effl_form_markup .= drupal_render($effl_form['field_cod']);
-							$effl_form_markup .= drupal_render($effl_form['field_bod5']);
-							$effl_form_markup .= drupal_render($effl_form['field_totn']);
-							$effl_form_markup .= drupal_render($effl_form['field_totp']);
-							$effl_form_markup .= drupal_render($effl_form['field_tss']);
-							$effl_form_markup .= '</div>';
-							$effl_form_markup .= '<div class="row" id="effluent-standard-actions"><br/>';
-							if($editProjectPerm){
-								$effl_form_markup .= drupal_render($effl_form['actions']['submit']);
-							}
-							$effl_form_markup .= '</div>';
-							$effl_form_markup .= drupal_render($effl_form['form_build_id']);
-							$effl_form_markup .= drupal_render($effl_form['form_id']);
-							$effl_form_markup .= drupal_render($effl_form['form_token']);
-							$variables['element'] = $effl_form;
-							$variables['element']['#children'] = $effl_form_markup;
-							print theme_form($variables);
-						?>
-				</div>
-				<!--div class="row" id="effluent-standard-values">
-					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-cod"><label>COD</label><span class="well well-sm effluent-value">&nbsp;</span></div>
-					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-bod5"><label>BOD5</label><span class="well well-sm effluent-value">&nbsp;</span></div>
-					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totn"><label>TotN</label><span class="well well-sm effluent-value">&nbsp;</span></div>
-					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totp"><label>TotP</label><span class="well well-sm effluent-value">&nbsp;</span></div>
-					<div class="col-sm-2 project-effluent-attribute" id="project-effluent-tss"><label>TSS</label><span class="well well-sm effluent-value">&nbsp;</span></div>
-					<div class="col-sm-2"></div>
-				</div-->
-				
-			</div>
+
 		</div>
 
 	</div>
@@ -155,6 +110,90 @@ $view_loading->set_display('block');
 			<!--button class="btn btn-default hidden" id="cancel-loading" >Cancel</button-->
 		</div>
 		<div class="row" id="loading-form-container"></div>
+	</div>
+	<hr/>
+	<div id="project-information" class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12">
+				<h3 class="project-section-title" id="effluents-title">Effluent Standards</h3>
+				<button class="btn btn-xs btn-default" id="standards-help">?</button>
+				<div id="effluent-standards-messages"></div>
+			</div>
+		</div>
+		<div class="row table-responsive">
+				<?php 
+					$effl_output = "";
+					$effl_form = drupal_get_form('wamex_project_effl_form',$nid);
+					$effl_header = array(
+						//array('data' => t('Standard'), 'class'=>array('tech-attributes','tech-attributes-header','tech-name','col-name')) ,
+						array('data' => $effl_form['field_effluent_standard']['#title'], 'class'=>array('col-sm-5','tech-attributes','tech-attributes-header','tech-name','col-name')) ,
+						array('data' => $effl_form['field_cod']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
+						array('data' => $effl_form['field_bod5']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
+						array('data' => $effl_form['field_totn']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+						array('data' => $effl_form['field_totp']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
+						array('data' => $effl_form['field_tss']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
+						array('data' => t('&nbsp;')),
+						array('data' => t('&nbsp;')),
+						array('data' => t('&nbsp;')),
+					);
+					$effl_rows = array();
+					$effl_form['field_effluent_standard']['#title'] = null;
+					$effl_form['field_cod']['#title'] = null;
+					$effl_form['field_bod5']['#title'] = null;
+					$effl_form['field_totn']['#title'] = null;
+					$effl_form['field_totp']['#title'] = null;
+					$effl_form['field_tss']['#title'] = null;
+					$effl_rows[0]['data'] = array(
+						array('data'=>$effl_form['field_effluent_standard']),
+						array('data'=>$effl_form['field_cod'], 'class'=>array('tech-attributes','tech-cod','col-cod')),
+						array('data'=>$effl_form['field_bod5'], 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
+						array('data'=>$effl_form['field_totn'], 'class'=>array('tech-attributes','tech-totn','col-totn')),
+						array('data'=>$effl_form['field_totp'], 'class'=>array('tech-attributes','tech-totp','col-totp')),
+						array('data'=>$effl_form['field_tss'], 'class'=>array('tech-attributes','tech-tss','col-tss')),
+						array('data' => ($editProjectPerm ? $effl_form['actions']['submit'] : t('wala'))),
+						array('data' => t('&nbsp;')),
+						array('data' => t('&nbsp;')),
+					);
+					$effl_rows[0]['id'] = 'effluent-standard-values';
+					$effl_output .= theme('table', array('header' => $effl_header, 'rows' =>$effl_rows, 'attributes'=>array('id'=>'table-effl-standards')));
+					//print $effl_output;
+					$effl_form['field_effluent_standard']['#title'] = t('Standard');
+					//echo '<pre>'.print_r($effl_form['actions']['submit'],1).'</pre>';
+					//print render($effl_form['submit']);
+					$effl_form_markup = '<div class="row" id="effluent-standard-name">';
+					$effl_form_markup = '';
+					$effl_form_markup .= drupal_render($effl_form['field_effluent_standard']);
+					$effl_form_markup .= '</div>';
+					$effl_form_markup .= '<div class="row" id="effluent-standard-values">';
+					$effl_form_markup .= drupal_render($effl_form['field_cod']);
+					$effl_form_markup .= drupal_render($effl_form['field_bod5']);
+					$effl_form_markup .= drupal_render($effl_form['field_totn']);
+					$effl_form_markup .= drupal_render($effl_form['field_totp']);
+					$effl_form_markup .= drupal_render($effl_form['field_tss']);
+					$effl_form_markup .= '</div>';
+					//$effl_form_markup .= '<div class="row" id="effluent-standard-actions"><br/>';
+					if($editProjectPerm){
+						$effl_form_markup .= drupal_render($effl_form['actions']['submit']);
+					}
+					//$effl_form_markup .= '</div>';
+					$effl_output .= drupal_render($effl_form['form_build_id']);
+					$effl_output .= drupal_render($effl_form['form_id']);
+					$effl_output .= drupal_render($effl_form['form_token']);
+					$variables['element'] = $effl_form;
+					//$variables['element']['#children'] = $effl_form_markup;
+					$variables['element']['#children'] = $effl_output;
+					print theme_form($variables);
+				?>
+		</div>
+		<!--div class="row" id="effluent-standard-values">
+			<div class="col-sm-2 project-effluent-attribute" id="project-effluent-cod"><label>COD</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+			<div class="col-sm-2 project-effluent-attribute" id="project-effluent-bod5"><label>BOD5</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+			<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totn"><label>TotN</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+			<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totp"><label>TotP</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+			<div class="col-sm-2 project-effluent-attribute" id="project-effluent-tss"><label>TSS</label><span class="well well-sm effluent-value">&nbsp;</span></div>
+			<div class="col-sm-2"></div>
+		</div-->
+		
 	</div>
 	<hr/>
 	<div class="container-fluid" id="loading-tech-container">

@@ -164,7 +164,7 @@ function wamex_menu() {
 }*/
 
 function wamex_display_tech($techArgs){
-	$output = "";
+	$output = '<div class="table-responsive">';
 	$aryTechArgs = explode('&',$techArgs);
 	$str_loadings  = $aryTechArgs[0];
 	$str_standards = $aryTechArgs[1];
@@ -198,15 +198,15 @@ function wamex_display_tech($techArgs){
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
 
 	$header = array(
-		array('data' => t('ID')), 
-		array('data' => t('Name')) ,
-		array('data' => t('COD')),
-		array('data' => t('BOD5')),
-		array('data' => t('N %')),
-		array('data' => t('N max')),
-		array('data' => t('P ')),
-		array('data' => t('TSS %')),
-		array('data' => t('TSS max')),
+		array('data' => t('ID'), 'class'=>array('tech-attributes','tech-attributes-header','tech-id','col-id')), 
+		array('data' => t('Name'), 'class'=>array('tech-attributes','tech-attributes-header','tech-name','col-name')) ,
+		array('data' => t('COD'), 'class'=>array('tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
+		array('data' => t('BOD5'), 'class'=>array('tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
+		array('data' => t('N %'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+		//array('data' => t('N max'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+		array('data' => t('P '), 'class'=>array('tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
+		array('data' => t('TSS %'), 'class'=>array('tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
+		//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
 	);
 	
 	// check if there are technology id's saved to the current node
@@ -234,15 +234,15 @@ function wamex_display_tech($techArgs){
 		$destination = drupal_get_destination();
 		foreach ($results as $val) {
 			$rows[] = array(
-				'id'=>$val->tid,
-				'name'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),
-				'COD'=>$val->cod, 
-				'BOD5'=>$val->max_bod, 
-				'N_p'=>$val->max_n_p, 
-				'N_a'=>$val->max_n_a, 
-				'P'=>$val->max_p_a, 
-				'TSS_p'=>$val->max_tss_p, 
-				'TSS_a'=>$val->max_tss_a,
+				'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
+				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
+				'COD'=>array('data'=>$val->cod, 'class'=>array('tech-attributes','tech-cod','col-cod')),
+				'BOD5'=>array('data'=>$val->max_bod, 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
+				'N_p'=>array('data'=>$val->max_n_p, 'class'=>array('tech-attributes','tech-totn','col-totn')),
+				//'N_a'=>array('data'=>$val->max_n_a, 'class'=>array('tech-attributes','tech-totn','col-totn')),
+				'P'=>array('data'=>$val->max_p_a, 'class'=>array('tech-attributes','tech-totp','col-totp')),
+				'TSS_p'=>array('data'=>$val->max_tss_p, 'class'=>array('tech-attributes','tech-tss','col-tss')),
+				//'TSS_a'=>array('data'=>$val->max_tss_a,'class'=>array('tech-attributes','tech-tss','col-tss')),
 			);
 		}
 		
@@ -257,6 +257,7 @@ function wamex_display_tech($techArgs){
 	}
 	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
   //$output .= theme('pager', NULL, 50, 0);
+	$output .= '</div>';
 
   return $output;
 }
@@ -929,68 +930,68 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	);
 	
 	$form['field_cod'] = array(
-		'#title' => t('<span class="label-name">COD</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_bod5'] = array(
-		'#title' => t('<span class="label-name">BOD5</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_totn'] = array(
-		'#title' => t('<span class="label-name">TotN</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_totp'] = array(
-		'#title' => t('<span class="label-name">TotP</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 
 	$form['field_tss'] = array(
-		'#title' => t('<span class="label-name">TSS</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
 	
-	$form['field_effluent_standard']['#prefix'] = '<div class="col-sm-6">';
-	$form['field_effluent_standard']['#suffix'] = '</div>';
+	//$form['field_effluent_standard']['#prefix'] = '<div class="col-sm-6">';
+	//$form['field_effluent_standard']['#suffix'] = '</div>';
 	$form['field_effluent_standard']['#attributes']['id'] = 'project-effluent-standard';
 	$form['field_effluent_standard']['#title'] = t('Select a Standard');
 	$form['field_effluent_standard']['#value'] = $field_effluent_standard;
-	$form['field_cod']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-cod">';
-	$form['field_cod']['#suffix'] = '</div>';
+	//$form['field_cod']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-cod">';
+	//$form['field_cod']['#suffix'] = '</div>';
 	$form['field_cod']['#value'] = $field_cod;
 	$form['field_cod']['#attributes']['disabled'] = 'disabled';
-	$form['field_bod5']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-bod5">';
-	$form['field_bod5']['#suffix'] = '</div>';
+	//$form['field_bod5']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-bod5">';
+	//$form['field_bod5']['#suffix'] = '</div>';
 	$form['field_bod5']['#value'] = $field_bod5;
 	$form['field_bod5']['#attributes']['disabled'] = 'disabled';
-	$form['field_totn']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totn">';
-	$form['field_totn']['#suffix'] = '</div>';
+	//$form['field_totn']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totn">';
+	//$form['field_totn']['#suffix'] = '</div>';
 	$form['field_totn']['#value'] = $field_totn;
 	$form['field_totn']['#attributes']['disabled'] = 'disabled';
-	$form['field_totp']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totp">';
-	$form['field_totp']['#suffix'] = '</div>';
+	//$form['field_totp']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-totp">';
+	//$form['field_totp']['#suffix'] = '</div>';
 	$form['field_totp']['#value'] = $field_totp;
 	$form['field_totp']['#attributes']['disabled'] = 'disabled';
-	$form['field_tss']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-tss">';
-	$form['field_tss']['#suffix'] = '</div>';
+	//$form['field_tss']['#prefix'] = '<div class="col-sm-2 project-effluent-attribute" id="project-effluent-tss">';
+	//$form['field_tss']['#suffix'] = '</div>';
 	$form['field_tss']['#value'] = $field_tss;
 	$form['field_tss']['#attributes']['disabled'] = 'disabled';
-	$form['actions']['submit']['#prefix'] = '<div class="col-sm-6"><label>&nbsp;</label>';
+	//$form['actions']['submit']['#prefix'] = '<div class="col-sm-6"><label>&nbsp;</label>';
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-effl-submit';
 	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
 	$form['actions']['submit']['#value'] = t('Save');
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
-	$form['actions']['submit']['#suffix'] = '</div>';
+	//$form['actions']['submit']['#suffix'] = '</div>';
 	$form['nid']['#type'] = 'hidden';
 	$form['nid']['#value'] = $nid;
 	
