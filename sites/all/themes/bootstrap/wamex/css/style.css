@@ -299,7 +299,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 }
 
 #project-info-title,
-#effluents-title,
+#standards-title,
 #loading-list-title,
 #loading-tech-title {
 	margin-right: 10px;
@@ -332,7 +332,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 }
 
 #project-info-title-container {
-	margin-bottom: 10px;
+	/*margin-bottom: 10px;*/
 }
 
 .form-control-feedback.glyphicon-remove {
@@ -362,3 +362,29 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 .col-totn { background-color: khaki !important; }
 .col-totp { background-color: paleGreen !important; }
 .col-tss { background-color: powderBlue !important; }
+
+
+.project-section-title {
+	font-size: 24px;
+
+}
+
+#collapse-standards .panel-body,
+#collapse-loading-list .panel-body {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+#collapse-loading-list .panel-body {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+#collapse-loading-list table {
+	margin-bottom: 0px;
+}
+
+.heading-arrow {
+	margin-right: 5px;
+	font-size: 16px;
+}

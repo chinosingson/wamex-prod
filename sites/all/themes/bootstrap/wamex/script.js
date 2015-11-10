@@ -154,6 +154,42 @@
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
 				
+				// toggle expand/collapse arrows on sidebar collapse
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
+					//console.log(e.currentTarget.id+' '+e.type);
+					//console.log(e);
+					var collapseElement = $('#'+e.currentTarget.id);
+					var togglerElement = collapseElement.prev().find('a').find('span');
+					//console.log(togglerElement);
+					toggleArrow(togglerElement[0].id);
+				});
+
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
+					//console.log(e.currentTarget.id+' '+e.type);
+					//console.log(e);
+					var collapseElement = $('#'+e.currentTarget.id);
+					var togglerElement = collapseElement.prev().find('a').find('span');
+					//console.log(togglerElement);
+					toggleArrow(togglerElement[0].id);
+				});
+
+				function toggleArrow(togglerId){
+					//console.log(togglerId);
+					//var togglerId = event.currentTarget.id;
+					var togglerElement = $('#'+togglerId);
+					if (togglerElement.hasClass('glyphicon-chevron-down')){
+						//console.log('DOWN!');
+						//togglerElement.switchClass('glyphicon-chevron-down','glyphicon-chevron-up',1000);
+						togglerElement.removeClass('glyphicon-chevron-down');
+						togglerElement.addClass('glyphicon-chevron-up');
+					} else if(togglerElement.hasClass('glyphicon-chevron-up')){
+						//console.log('UP!');
+						//togglerElement.switchClass('glyphicon-chevron-up','glyphicon-chevron-down',1000);
+						togglerElement.removeClass('glyphicon-chevron-up');
+						togglerElement.addClass('glyphicon-chevron-down');
+					}
+				};
+
 				/*function showEffluentStandardAttributes(termIndex){
 					var termObj = Drupal.settings.taxonomy.effluentStandards[termIndex];
 					//console.log(termIndex);
@@ -205,9 +241,10 @@
 				}
 				
 				$('.btn-show-tech').unbind('click').on('click',function(event){
-					$('#loading-tech-list',context).once('display',function(){
+					//console.log('btn-show-tech clicked');
+					//$('#loading-tech-list',context).once('display',function(){
 						showTechnologies();
-					});
+					//});
 				});
 			
 				$('.form-loading-attribute').attr('type','number');
@@ -226,7 +263,6 @@
 				});
 				
 				if($('#wamex-loading-form').length > 0){
-					//console.log('wamex-loading-form ready');
 					// if new loading has no title, set loading type default values
 					if(!$('#wamex-loading-form #edit-title')[0].value){
 						var termIndex = $('#edit-field-loading-type')[0].selectedIndex;
@@ -239,10 +275,10 @@
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
-					var nodeId = idTokens[2];
-					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/delete/'+nodeId;
-					$('#edit-loading-'+nodeId).addClass('disabled');
-					$('#delete-loading-'+nodeId).addClass('disabled');
+					var loadingNodeId = idTokens[2];
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/delete/'+loadingNodeId;
+					$('#edit-loading-'+loadingNodeId).addClass('disabled');
+					$('#delete-loading-'+loadingNodeId).addClass('disabled');
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
@@ -256,11 +292,12 @@
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
-					var nodeId = idTokens[2];
+					var loadingNodeId = idTokens[2];
 					var rowViewport = $('#loading-form-container');
-					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/edit/'+nodeId;
-					$('#edit-loading-'+nodeId).addClass('disabled');
-					$('#delete-loading-'+nodeId).addClass('disabled');
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/edit/'+loadingNodeId;
+					
+					$('#edit-loading-'+loadingNodeId).addClass('disabled');
+					$('#delete-loading-'+loadingNodeId).addClass('disabled');
 					rowStaticHtml = rowViewport.html(); 
 					rowViewport.append('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					rowViewport.load(ajaxFormPath,'ajax=1',function(){
@@ -287,7 +324,7 @@
 				
 				function loadLoadingAttributes(selected){
 					var termObj = Drupal.settings.taxonomy.loadingTypes[selected];
-					if (termIndex >= 0){
+					if (selected >= 0){
 						$('#edit-field-loading-adwf').val(termObj.field_loading_adwf['und'][0].value);
 						$('#edit-field-loading-bod5').val(termObj.field_loading_bod5['und'][0].value);
 						$('#edit-field-loading-cod').val(termObj.field_loading_cod['und'][0].value);
@@ -306,7 +343,7 @@
 
 				$('#edit-field-loading-type').unbind('change').on('change', function(event){
 					//console.log($(this).val());
-					console.log($('#edit-field-loading-type')[0].selectedIndex);
+					//console.log($('#edit-field-loading-type')[0].selectedIndex);
 					var termIndex = $('#edit-field-loading-type')[0].selectedIndex;
 					loadLoadingAttributes(termIndex);
 				});

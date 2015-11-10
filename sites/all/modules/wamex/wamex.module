@@ -93,22 +93,28 @@ function wamex_menu() {
 	// loading functions
 	$items['loading/add/%'] = array(
 		'title' => 'Add Loading',
-		'page callback' => 'drupal_get_form',
+		'page callback' => 'wamex_loading_form_render',
 		'page arguments' => array('wamex_loading_form',NULL,2),
+		//'page callback' => 'drupal_get_form',
+		//'page arguments' => array('wamex_loading_form',NULL,2),
 		'access arguments' => array('add loading custom'),
 		'type' => MENU_LOCAL_TASK,
 	);
 	$items['loading/edit/%'] = array(
 		'title' => 'Edit Loading',
-		'page callback' => 'drupal_get_form',
-		'page arguments' => array('wamex_loading_form',2, NULL),
+		'page callback' => 'wamex_loading_form_render',
+		'page arguments' => array('wamex_loading_form',2,NULL),
+		//'page callback' => 'drupal_get_form',
+		//'page arguments' => array('wamex_loading_form',2, NULL),
 		'access arguments' => array('edit loading custom'),
 		'type' => MENU_CALLBACK,
 	);
 	$items['loading/delete/%'] = array(
 		'title' => 'Delete Loading',
 		'page callback' => 'drupal_get_form',
-		'page arguments' => array('wamex_loading_delete_confirm',2,107),
+		//'page arguments' => array('wamex_loading_delete_confirm',2,107),
+		'page arguments' => array('wamex_loading_delete_confirm',2,NULL),
+		//'page arguments' => array('wamex_loading_delete_confirm',2,2),
 		'access arguments' => array('delete loading custom'),
 		'type' => MENU_CALLBACK,
 	);
@@ -250,7 +256,12 @@ function wamex_display_tech($techArgs){
 			$empty_message = $keys ? t('No URL aliases found.') : t('No URL aliases available.') ;
 			$rows[] = array(array('data' => $empty_message, 'colspan' => 48));
 		}
-		$output .= theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>array('id'=>'table-loading-tech')));
+		
+		$tblAttributes = array();
+		$tblAttributes['id'] = 'table-loading-tech';
+		$tblAttributes['class'][] = 'panel-body';
+		
+		$output .= theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>$tblAttributes));
 	} else {
 		$output .= 'No technologies suitable for selected standard and sources.';
 		
@@ -338,6 +349,78 @@ function wamex_form($variables) {
 	return $output;
 }
 
+// renders loading form as table
+function wamex_loading_form_render($form, $nid, $pid){
+	$output = "";
+	//$output .= "<h2>NID: ".$nid."</h2>";
+	//$output .= "<h2>PID: ".$pid."</h2>";
+	
+	if ($nid){
+		$project_nid = $node->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	} else {
+		$project_nid = $pid;
+	}
+
+	$loading_form = drupal_get_form($form,$nid,$pid);
+
+	$header = array();
+	$rows = array();
+	
+	$header = array(
+		array('data'=>$loading_form['title']['#title'],'class'=>array('col-sm-2')),
+		array('data'=>$loading_form['field_loading_type']['#title'],'class'=>array('col-sm-2','col-type')),
+		array('data'=>$loading_form['field_loading_adwf']['#title'],'class'=>array('col-adwf')),
+		array('data'=>$loading_form['field_loading_cod']['#title'],'class'=>array('col-cod')),
+		array('data'=>$loading_form['field_loading_bod5']['#title'],'class'=>array('col-bod5')),
+		array('data'=>$loading_form['field_loading_totn']['#title'],'class'=>array('col-totn')),
+		array('data'=>$loading_form['field_loading_totp']['#title'],'class'=>array('col-totp')),
+		array('data'=>$loading_form['field_loading_tss']['#title'],'class'=>array('col-tss')),
+		array('data'=>$loading_form['field_loading_weight']['#title'],'class'=>array()),
+		array('data'=>'&nbsp','class'=>array()),
+		array('data'=>'&nbsp','class'=>array()),
+	);
+	
+	$loading_form['title']['#title'] = null;
+	$loading_form['field_loading_type']['#title'] = null;
+	$loading_form['field_loading_adwf']['#title'] = null;
+	$loading_form['field_loading_cod']['#title'] = null;
+	$loading_form['field_loading_bod5']['#title'] = null;
+	$loading_form['field_loading_totn']['#title'] = null;
+	$loading_form['field_loading_totp']['#title'] = null;
+	$loading_form['field_loading_tss']['#title'] = null;
+	$loading_form['field_loading_weight']['#title'] = null;
+	$loading_form['field_loading_project_und']['#default_value'] = $project_nid;
+
+	$rows[0] = array(
+		array('data'=>$loading_form['title']),
+		array('data'=>$loading_form['field_loading_type'],'class'=>array('col-type')),
+		array('data'=>$loading_form['field_loading_adwf'],'class'=>array('col-adwf')),
+		array('data'=>$loading_form['field_loading_cod'],'class'=>array('col-cod')),
+		array('data'=>$loading_form['field_loading_bod5'],'class'=>array('col-bod5')),
+		array('data'=>$loading_form['field_loading_totn'],'class'=>array('col-totn')),
+		array('data'=>$loading_form['field_loading_totp'],'class'=>array('col-totp')),
+		array('data'=>$loading_form['field_loading_tss'],'class'=>array('col-tss')),
+		array('data'=>$loading_form['field_loading_weight'],'class'=>array()),
+		array('data'=>$loading_form['field_loading_project_und'],'class'=>array('hidden')),
+		array('data'=>$loading_form['nid'],'class'=>array('hidden')),
+		array('data'=>$loading_form['actions']['submit']),
+		array('data'=>$loading_form['actions']['cancel']),
+	);
+	
+	$output .= theme(
+		'table',
+		array('header'=>$header, 'rows'=>$rows)
+	);
+	
+	$output .= drupal_render($loading_form['form_build_id']);
+	$output .= drupal_render($loading_form['form_id']);
+	$output .= drupal_render($loading_form['form_token']);
+	$variables['element'] = $loading_form;
+	$variables['element']['#children'] = $output;
+	
+	return theme_form($variables);
+}
+
 function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	if ($nid){
 		$node = node_load($nid);
@@ -383,10 +466,8 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Name'),
 		'#default_value' => $title,
 		'#size' => 15,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
-		//'#prefix' => '<td class="view-field view-field-edit">',
-		//'#suffix' => '</td>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 		//'#attributes' =>array('placeholder' => t('*Required')),
 		//'#field_prefix' => 'field_prefix|',
 		//'#prefix' => '<div>',
@@ -414,62 +495,62 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#empty_value' => 0,
 		'#options' => $loading_type_opts,
 		'#default_value' => $type,
-		'#prefix' => '<div class="col-sm-2">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-2">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_type']['#attributes']['class'][] = 'loading-required';
 	
 	$form['field_loading_adwf'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">ADWF</span>&nbsp;<span class="label-unit">(l/p/d)</span>'),
+		'#title' => t('<span class="label-name">ADWF</span><br/><span class="label-unit">(l/p/d)</span>'),
 		'#default_value' => $adwf,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_adwf']['#attributes']['class'][] = 'form-loading-attribute';
 	
 	$form['field_loading_cod'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">COD</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $cod,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_cod']['#attributes']['class'][] = 'form-loading-attribute';
 	
 	$form['field_loading_bod5'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">BOD5</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $bod5,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_bod5']['#attributes']['class'][] = 'form-loading-attribute';
 	
 	$form['field_loading_totn'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TotN</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $totn,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_totn']['#attributes']['class'][] = 'form-loading-attribute';
 	
 	$form['field_loading_totp'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TotP</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $totp,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_totp']['#attributes']['class'][] = 'form-loading-attribute';
 	
 	$form['field_loading_tss'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TSS</span>&nbsp;<span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#default_value' => $tss,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_tss']['#attributes']['class'][] = 'form-loading-attribute';
 	
@@ -478,12 +559,12 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('%'),
 		'#required' => TRUE,
 		'#default_value' => $weight,
-		'#prefix' => '<div class="col-sm-1">',
-		'#suffix' => '</div>',
+		//'#prefix' => '<div class="col-sm-1">',
+		//'#suffix' => '</div>',
 	);
 	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
 	
-	$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
+	//$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
 	//$form['actions']['submit']['#suffix'] = '</div>';
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
@@ -492,7 +573,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	$form['actions']['submit']['#attributes']['class'][] = 'btn-xs';
 	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
 	//$form['actions']['cancel']['#prefix'] = '<div id="loading-cancel-container">';
-	$form['actions']['cancel']['#suffix'] = '</div></div>';
+	//$form['actions']['cancel']['#suffix'] = '</div></div>';
 	$form['actions']['cancel']['#type'] = 'button';
 	$form['actions']['cancel']['#value'] = t('<span class="glyphicon glyphicon-remove"></span>&nbsp;Cancel');
 	$form['actions']['cancel']['#attributes']['id'] = 'edit-loading-cancel';
@@ -653,7 +734,7 @@ function wamex_loading_delete_confirm_submit($form, &$form_state){
 			drupal_set_message(t('Could not delete the loading.'),'error');
 		}
 	
-    $form_state['redirect'] = $form['actions']['cancel']['#href'];
+    $form_state['redirect'] = array($form['actions']['cancel']['#href'],array('fragment'=>'loading-list'));
     return;
   }
 
@@ -988,7 +1069,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-effl-submit';
 	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
-	$form['actions']['submit']['#value'] = t('Save');
+	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Save');
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
 	//$form['actions']['submit']['#suffix'] = '</div>';
