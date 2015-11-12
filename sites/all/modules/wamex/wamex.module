@@ -674,6 +674,8 @@ function wamex_loading_form_submit($form, &$form_state){
 
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['input']['field_loading_project_und'], array('fragment'=>'loading-list'));
+			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'loading-list'));
+			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
 		} 
@@ -690,7 +692,8 @@ function wamex_loading_submit_handler($form, &$form_state) {
 	
 	//drupal_set_message(t('1'.$form_state['redirect']));
 
-	$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
+	$form_state['redirect'] = array('node/'.$form_state['input']['field_loading_project_und'], array('fragment'=>'loading-list'));
+	//$form_state['redirect'] = 'node/'.$form_state['node']->field_loading_project[LANGUAGE_NONE][0]['target_id'];
 	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
 	
 					$path =  array(
@@ -990,7 +993,8 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 		$field_totn = (is_null($node->field_loading_totn) ? NULL : $node->field_loading_totn['und'][0]['value']);
 		$field_totp = (is_null($node->field_loading_totp) ? NULL : $node->field_loading_totp['und'][0]['value']);
 		$field_tss = (is_null($node->field_loading_tss) ? NULL : $node->field_loading_tss['und'][0]['value']);
-	} else {
+	} 
+	else {
 		$node = NULL;
 		$field_effluent_standard = '';
 		$field_cod = 0;
@@ -1085,6 +1089,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 	$errors = form_get_errors();
 	$commands = array();
 	drupal_get_messages();
+	
 	if(!empty($errors)){
 		$selector = '#effluent-standards-messages';
 		$error_variables = array(
@@ -1097,7 +1102,9 @@ function wamex_project_effl_form_submit($form, &$form_state){
 		//$form_state['redirect'] = 'dashboard';
     $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
 		return array('#type' => 'ajax', '#commands' => $commands);
-	} else {
+	}
+	else {
+		
 		if (!empty($form_state['values']['nid'])){
 			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
 			$node = node_load($form_state['values']['nid']);
@@ -1118,14 +1125,18 @@ function wamex_project_effl_form_submit($form, &$form_state){
 				$success = FALSE;
 				drupal_set_message(t($e->getMessage().'<br/>Project not updated.'),'error');
 			}
-		} else {
+		}
+		else {
 			drupal_set_message('Error saving Project!','error');
 			$success = FALSE;
 		}
 		
 		if ($success){
-			//$form_state['redirect'] = 'dashboard';
+			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'standards'));
+			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'standards'));
+			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
+			//$commands[] = ctools_ajax_command_redirect('node/'.$form_state['values']['nid'],0,array('fragment'=>'standards'));
 			return array('#type' => 'ajax', '#commands' => $commands);
 		} 
 	}
@@ -1226,8 +1237,19 @@ function wamex_project_form_submit($form, &$form_state){
 		}
 
 		if ($success){
-			$form_state['redirect'] = 'dashboard';
-			$commands[] = ctools_ajax_command_reload();
+			$path = current_path();
+			$path_tokens = explode('/',$path);
+			if (in_array('project',$path_tokens)){
+				$redir = 'dashboard';
+				$form_state['redirect'] = array($redir);
+				$commands[] = ctools_ajax_command_reload();
+			} 
+			else {
+				$redir = 'node/'.$form_state['build_info']['args'][0];
+				$form_state['redirect'] = array($redir);
+				$commands[] = ctools_ajax_command_redirect($redir);
+			}
+			//drupal_set_message($redir);
 			return array('#type' => 'ajax', '#commands' => $commands);
 		} 
 	}

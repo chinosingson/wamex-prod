@@ -47,7 +47,7 @@ $view_loading->set_display('block');
 		<div id="project-information" class="col-sm-12 col-md-12 col-lg-12 panel-heading" role="tab" id="heading-project-info">
 			<div class="row" id="project-info-title-container">
 				<div class="col-sm-12">
-					<h3 class="project-section-title panel-title" id="project-info-title"><a href="#" role="button" data-toggle="collapse" data-target="#collapse-project-info" aria-expanded="true" aria-controls="collapse-project-info"><span id="toggle-project-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Project Information</a></h3>
+					<h3 class="project-section-title panel-title" id="project-info-title"><a href="#collapse-project-info" name="project-info" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-project-info"><span id="toggle-project-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Project Information</a></h3>
 				<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary btn-sm pull-right" id="edit-project-<?php print $nid; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
 				</div>
 			</div>
@@ -99,13 +99,12 @@ $view_loading->set_display('block');
 	<div id="loading-list-container" class="container-fluid panel panel-default">
 		<div  id="heading-loading-list" class="panel-heading" role="tab">
 			<div id="loading-title-container">
-				<h3 class="project-section-title panel-title" id="loading-list-title"><a href="#" role="button" data-toggle="collapse" data-target="#collapse-loading-list" aria-expanded="true" aria-controls="collapse-loading-list"><span id="toggle-loading-list" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Wastewater Characterisation</a></h3>
+				<h3 class="project-section-title panel-title" id="loading-list-title"><a href="#collapse-loading-list" name="loading-list" role="button" data-toggle="collapse" aria-expanded="true"><span id="toggle-loading-list" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Wastewater Characterisation</a></h3>
 				<?php if ($addLoadingPerm):?><button class="btn btn-primary btn-sm btn-add-loading pull-right" id="add-loading-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
 			</div>
 		</div>
 		<div id="collapse-loading-list" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-loading-list">
 			<div class="panel-body">
-				<a name="loading-list"></a>
 				<div class="table-responsive" id="loading-form-container"></div>
 				<div id="loading-view-container">
 					<div id="loading-list-container"><?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute(); print $view_loading->render(); ?></div>
@@ -176,7 +175,7 @@ $view_loading->set_display('block');
 	<div id="loading-tech-container" class="container-fluid panel panel-default">
 		<div id="heading-tech" class="panel-heading" role="tab">
 			<div id="tech-title-container">
-				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#" role="button" data-toggle="collapse" data-target="#collapse-tech" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
+				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#collapse-tech" name="technologies" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
 				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Show</button>
 			</div>
 		</div>
