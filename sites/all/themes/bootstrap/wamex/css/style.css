@@ -369,6 +369,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 
 }
 
+#collapse-popeq .panel-body,
 #collapse-standards .panel-body,
 #collapse-loading-list .panel-body {
 	padding-top: 0px;
@@ -387,4 +388,14 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 .heading-arrow {
 	margin-right: 5px;
 	font-size: 16px;
+}
+
+#collapse-popeq table.panel-body,
+#collapse-project-info table.panel-body {
+	border-top: 0px;
+}
+
+#tech-count {
+	margin: 5px 0px 5px 10px;
+	color: #666666;
 }

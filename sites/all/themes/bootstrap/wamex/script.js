@@ -155,7 +155,7 @@
 				});
 				
 				// toggle expand/collapse arrows on sidebar collapse
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -164,7 +164,7 @@
 					toggleArrow(togglerElement[0].id);
 				});
 
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -433,6 +433,63 @@
 					});
 				}); 
 				
+				
+				function getTotPolV(attributes,weights){
+					var adwfs = $('#view-project-loadings tbody td.views-field-field-loading-adwf');
+					//console.log(adwfs);
+					var sumProduct = 0;
+					attributeCount = attributes.length;
+					weightCount = weights.length;
+					if (attributeCount == weightCount){
+						for(var x = 0; x < attributeCount; x++){
+							sumProduct += adwfs[x].innerHTML*parseFloat(attributes[x].innerHTML)*parseFloat(weights[x].innerHTML)*.00001;
+						}
+					}
+					return sumProduct;
+				}
+				
+				var pe_cod = (getTotPolV(cod_values,weight_values)/$('#edit-pol-cod').val());
+				var pe_bod5 = (getTotPolV(bod5_values,weight_values)/$('#edit-pol-bod5').val());
+				var pe_totn = (getTotPolV(totn_values,weight_values)/$('#edit-pol-totn').val());
+				var pe_totp = (getTotPolV(totp_values,weight_values)/$('#edit-pol-totp').val());
+				var pe_tss = (getTotPolV(tss_values,weight_values)/$('#edit-pol-tss').val());
+				var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
+				
+				$('#edit-pol-cod').attr('type','number');
+				$('#edit-pol-bod5').attr('type','number');
+				$('#edit-pol-totn').attr('type','number');
+				$('#edit-pol-totp').attr('type','number');
+				$('#edit-pol-tss').attr('type','number');
+				$('#edit-pol-volc').attr('type','number');
+
+				// set PEs
+				$('.popeq-pe-cod').text(pe_cod.toFixed(2));
+				$('.popeq-pe-bod5').text(pe_bod5.toFixed(2));
+				$('.popeq-pe-totn').text(pe_totn.toFixed(2));
+				$('.popeq-pe-totp').text(pe_totp.toFixed(2));
+				$('.popeq-pe-tss').text(pe_tss.toFixed(2));
+				$('.popeq-pe-volc').text(pe_volc.toFixed(2));
+
+				// set TotPEs
+				var population = $('#td-field-population')[0].innerHTML;
+				console.log(population);
+				totpe_cod = (pe_cod*population);
+				totpe_bod5 = (pe_bod5*population);
+				totpe_totn = (pe_totn*population);
+				totpe_totp = (pe_totp*population);
+				totpe_tss = (pe_tss*population);
+				totpe_volc = (pe_volc*population);
+
+				$('.popeq-totpe-cod').text(totpe_cod.toFixed(2));
+				$('.popeq-totpe-bod5').text(totpe_bod5.toFixed(2));
+				$('.popeq-totpe-totn').text(totpe_totn.toFixed(2));
+				$('.popeq-totpe-totp').text(totpe_totp.toFixed(2));
+				$('.popeq-totpe-tss').text(totpe_tss.toFixed(2));
+				$('.popeq-totpe-volc').text(totpe_volc.toFixed(2));
+				
+				// set total effluent flow
+				var totflow = adwf_avg*population*.001;
+				$('.popeq-totflow').text(totflow.toFixed(2));
 				
 				var techModal = '<div class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'

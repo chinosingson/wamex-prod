@@ -101,6 +101,7 @@ function wamex_get_all_tech(){
   $select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
   $results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))
 							//->orderByHeader($header)
+							//->where('capex_2ka' IS NOT NULL, 'cape')
 						 ->execute();
 						 
   $rows = array();

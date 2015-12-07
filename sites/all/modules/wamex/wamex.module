@@ -229,7 +229,7 @@ function wamex_display_tech($techArgs){
 	if (count($tech_ids)>0){
 		//$sql .= tablesort_sql($header);
 		//$result = pager_query($sql, 50, 0 , NULL, $keys);
-		$output .= "Displaying ".count($tech_ids)." items";
+		$output .= "<div id=\"tech-count\">Displaying ".count($tech_ids)." items</div>";
 
 		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
 		$results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))
@@ -1288,6 +1288,70 @@ function wamex_project_delete_confirm_submit($form, &$form_state){
     $form_state['redirect'] = 'dashboard';
     return;
   }
+}
+
+
+
+function wamex_project_popeq_form($form, &$form_state){
+	$popeq_parameters = array(
+		'cod'=>t('COD'),
+		'bod5'=>t('BOD5'),
+		'totn'=>t('TotN'),
+		'totp'=>t('TotP'),
+		'tss'=>t('TSS'),
+		'volc'=>t('Vol/C'),
+	);
+
+	foreach ($popeq_parameters as $popeq_parameter => $name){
+		$form['popeq_parameter'][$name] = array(
+			'#type' => 'radio',
+			'#value' => 'default',
+			'#default_value' => 'cod',
+			'#return_value' => $popeq_parameter,
+			'#title' => $name,
+			'#parents' => array('popeq_parameter'),
+		);
+	}
+	
+	//$form['popeq_parameter']['#default_value'] = 'cod';
+	
+	$form['popeq_pol']['pol-cod'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 100,
+	);
+	
+	$form['popeq_pol']['pol-bod5'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 54,
+	);
+	
+	$form['popeq_pol']['pol-totn'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 5,
+	);
+	
+	$form['popeq_pol']['pol-totp'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 1,
+	);
+	
+	$form['popeq_pol']['pol-tss'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 68,
+	);
+	
+	$form['popeq_pol']['pol-volc'] = array(
+		'#type' => 'textfield',
+		'#title'=> '',
+		'#default_value'=> 200,
+	);
+	
+	return $form;
 }
 
 function wamex_ajax_get_ajax() {

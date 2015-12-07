@@ -69,7 +69,10 @@ $view_loading->set_display('block');
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Population</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_population) ? $field_population[0]['value']: "-"); ?></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_population) ? number_format($field_population[0]['value']): "-"); ?>
+						<span class="hidden" id="td-field-population"><?php print (isset($field_population) ? $field_population[0]['value']: "-"); ?></span>
+						</td>
+						
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Description</label></td>
@@ -131,15 +134,15 @@ $view_loading->set_display('block');
 					$effl_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
 					$effl_header = array(
 						//array('data' => t('Standard'), 'class'=>array('tech-attributes','tech-attributes-header','tech-name','col-name')) ,
-						array('data' => $effl_form['field_effluent_standard']['#title'], 'class'=>array('col-sm-5','tech-attributes','tech-attributes-header','tech-name','col-name')) ,
+						array('data' => $effl_form['field_effluent_standard']['#title'], 'class'=>array('col-sm-4','tech-attributes','tech-attributes-header','tech-name','col-name')) ,
 						array('data' => $effl_form['field_cod']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
 						array('data' => $effl_form['field_bod5']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
 						array('data' => $effl_form['field_totn']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
 						array('data' => $effl_form['field_totp']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
 						array('data' => $effl_form['field_tss']['#title'], 'class'=>array('col-sm-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
-						array('data' => t('&nbsp;')),
-						array('data' => t('&nbsp;')),
-						array('data' => t('&nbsp;')),
+						array('data' => t('&nbsp;'),'class'=>array('col-sm-1')),
+						//array('data' => t('&nbsp;')),
+						//array('data' => t('&nbsp;')),
 					);
 					$effl_rows = array();
 					$effl_form['field_effluent_standard']['#title'] = null;
@@ -156,8 +159,8 @@ $view_loading->set_display('block');
 						array('data'=>$effl_form['field_totp'], 'class'=>array('tech-attributes','tech-totp','col-totp')),
 						array('data'=>$effl_form['field_tss'], 'class'=>array('tech-attributes','tech-tss','col-tss')),
 						array('data' => ($editProjectPerm ? $effl_form['actions']['submit'] : t('wala'))),
-						array('data' => t('&nbsp;')),
-						array('data' => t('&nbsp;')),
+						//array('data' => t('&nbsp;')),
+						//array('data' => t('&nbsp;')),
 					);
 					$effl_rows[0]['id'] = 'effluent-standard-values';
 					$effl_output .= theme('table', array('header' => $effl_header, 'rows' =>$effl_rows, 'attributes'=>array('id'=>'table-effl-standards')));
@@ -166,6 +169,70 @@ $view_loading->set_display('block');
 					$effl_output .= drupal_render($effl_form['form_token']);
 					$variables['element'] = $effl_form;
 					$variables['element']['#children'] = $effl_output;
+					print theme_form($variables);
+				?>
+			</div>
+		</div>
+	</div>
+	
+	<div id="popeq-container" class="container-fluid panel panel-default">
+		<div id="heading-popeq" class="panel-heading" role="tab">
+			<div id="popeq-title-container">
+				<h3 id="popeq-title" class="project-section-title panel-title" ><a href="#collapse-popeq" name="populationEquivalent" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-popeq"><span id="toggle-popeq" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Population Equivalent</a></h3>
+			</div>
+		</div>
+		<div id="collapse-popeq" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-popeq">
+			<div class="panel-body">
+				<?php 
+					$popeq_output = "";
+					$popeq_form = drupal_get_form('wamex_project_popeq_form',$nid);
+					$popeq_rows[0] = array(
+						array('data' => t('Parameter'),'class'=>array('col-sm-4', 'popeq-row-header', 'popeq-row-param')),
+						array('data' => $popeq_form['popeq_parameter']['COD'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-cod','popeq-cod','col-cod')),
+						array('data' => $popeq_form['popeq_parameter']['BOD5'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-bod5','popeq-bod5','col-bod5')),
+						array('data' => $popeq_form['popeq_parameter']['TotN'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-totn','popeq-totn','col-totn')),
+						array('data' => $popeq_form['popeq_parameter']['TotP'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-totp','popeq-totp','col-totp')),
+						array('data' => $popeq_form['popeq_parameter']['TSS'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-tss','popeq-tss','col-tss')),
+						array('data' => $popeq_form['popeq_parameter']['Vol/C'], 'class'=>array('col-sm-1','popeq-parameter','popeq-parameter-volc','popeq-volc','col-volc')),
+					);
+					$popeq_rows[1]['data'] = array(
+						array('data' => t('Person Load Equivalent, (POL, gm/capita/day)'),'class'=>array('col-sm-4', 'popeq-row-header')),
+						array('data' => $popeq_form['popeq_pol']['pol-cod'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-cod','popeq-cod','col-cod')),
+						array('data' => $popeq_form['popeq_pol']['pol-bod5'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-bod5','popeq-bod5','col-bod5')),
+						array('data' => $popeq_form['popeq_pol']['pol-totn'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-totn','popeq-totn','col-totn')),
+						array('data' => $popeq_form['popeq_pol']['pol-totp'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-totp','popeq-totp','col-totp')),
+						array('data' => $popeq_form['popeq_pol']['pol-tss'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-tss','popeq-tss','col-tss')),
+						array('data' => $popeq_form['popeq_pol']['pol-volc'], 'class'=>array('col-sm-1','popeq-pol','popeq-pol-volc','popeq-volc','col-volc')),
+					);
+					$popeq_rows[2]['data'] = array(
+						array('data' => t('Population Equivalent, (PE, inhab/day)'),'class'=>array('col-sm-4', 'popeq-row-header')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-cod', 'popeq-cod', 'col-cod')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-bod5', 'popeq-bod5', 'col-bod5')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-totn', 'popeq-totn', 'col-totn')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-totp', 'popeq-totp', 'col-totp')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-tss', 'popeq-tss', 'col-tss')),
+						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-volc', 'popeq-volc', 'col-volc')),
+					);
+					$popeq_rows[3]['data'] = array(
+						array('data' => t('Total Population Equivalent'),'class'=>array('col-sm-4', 'popeq-row-header')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-cod', 'popeq-cod', 'col-cod')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-bod5', 'popeq-bod5', 'col-bod5')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-totn', 'popeq-totn', 'col-totn')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-totp', 'popeq-totp', 'col-totp')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-tss', 'popeq-tss', 'col-tss')),
+						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-volc', 'popeq-volc', 'col-volc')),
+					);
+					$popeq_rows[4]['data'] = array(
+						array('data' => t('Total Effluent Flow, (cubic meters/day)'),'class'=>array('col-sm-4', 'popeq-row-header')),
+						array('data' => '', 'class'=>array('popeq-totflow')),
+					);
+					$popeq_output .= theme('table', array('rows' =>$popeq_rows, 'attributes'=>array('id'=>'table-popeq')));
+					//$popeq_output .= drupal_render($popeq_form['popeq_parameter']);
+					$popeq_output .= drupal_render($popeq_form['form_build_id']);
+					$popeq_output .= drupal_render($popeq_form['form_id']);
+					$popeq_output .= drupal_render($popeq_form['form_token']);
+					$variables['element'] = $popeq_form;
+					$variables['element']['#children'] = $popeq_output;
 					print theme_form($variables);
 				?>
 			</div>
