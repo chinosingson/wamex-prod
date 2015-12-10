@@ -1,4 +1,4 @@
-﻿<?php 	$node = menu_get_object(); ?><div class="table-responsive"><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
+﻿<?php 	$node = menu_get_object(); ?><div class=""><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
    <?php if (!empty($title) || !empty($caption)) : ?>
      <caption><?php print $caption . $title; ?></caption>
   <?php endif; ?>
@@ -8,10 +8,22 @@
         <?php foreach ($header as $field => $label):
 					$aryStrHeaderClasses = explode('-',$header_classes[$field]); 
 					$headerName = end($aryStrHeaderClasses);
+					$gridClass = '';
+					if ($label == 'ADWF') {
+						$unit = '(&#x2113;/p/d)'; 
+					} else {
+						$unit = '(mg/&#x2113;)';
+					}
+					
+					if (in_array($label, array('ADWF','COD','BOD5','TotN','TotP','TSS','%'))){
+						$gridClass = 'col-md-1';
+					} else {
+						$gridClass = '';
+					}
 					?>
-          <th <?php if ($header_classes[$field]) { print 'class="'. $header_classes[$field] . ' col-'.$headerName.'" '; } ?>>
+          <th <?php if ($header_classes[$field]) { print 'class="'.$gridClass.' '. $header_classes[$field] . ' col-'.$headerName.'" '; } ?>>
             <?php 
-							if ($label == 'ADWF') $unit = '(l/p/d)'; else $unit = '(mg/l)';
+							
 							if (in_array($label, array('Name', 'Type','%'))) $unit = '';
 							if ($label == '') $label = ''; else $label = '<span class="label-name">'.$label.'</span><br/><span class="label-unit">'.$unit.'</span>';
 							print $label; 

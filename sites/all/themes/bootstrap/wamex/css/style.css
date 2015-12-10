@@ -298,16 +298,6 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	min-width: 75px;
 }
 
-#project-info-title,
-#standards-title,
-#loading-list-title,
-#loading-tech-title {
-	margin-right: 10px;
-	display: inline;
-	position: relative;
-	top: 3px;
-}
-
 #loading-actions-container {
 	padding-left: 35px;
 }
@@ -321,6 +311,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 }
 
 .label-unit {
+	font-style: italic;
 	font-size: 12px;
 	font-weight: normal;
 }
@@ -357,16 +348,68 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	padding-right: 5px;
 }
 
-.col-cod { background-color: Pink !important;}
+.col-cod { background-color: Pink !important; }
 .col-bod5 { background-color: lightSalmon !important; }
 .col-totn { background-color: khaki !important; }
 .col-totp { background-color: paleGreen !important; }
 .col-tss { background-color: powderBlue !important; }
 
+.col-cod-selected { background-color: hotPink !important; }
+.col-bod5-selected { background-color: coral !important; }
+.col-totn-selected { background-color: #FFDB58 !important; }
+.col-totp-selected { background-color: #5EFB6E !important; }
+.col-tss-selected { background-color: skyBlue !important; }
+.col-volc-selected { background-color: #eeeeee !important; }
 
+.col-cod,
+.col-bod5,
+.col-totn,
+.col-totp,
+.col-tss,
+.col-volc,
+.col-weight {
+	/*border: 1px dashed #333333;*/
+	max-width: 70px !important;
+}
+#view-project-loadings th.col-title,
+#view-project-loadings th.col-type{
+	width: 92px !important;
+}
+
+#view-project-loadings th.col-adwf,
+#view-project-loadings th.views-field-nothing,
+#view-project-loadings th.views-field-nothing-1,
+#view-project-loadings th.col-weight {
+	width: 50px !important;
+}
+
+#view-project-loadings th.col-cod,
+#view-project-loadings th.col-bod5,
+#view-project-loadings th.col-totn,
+#view-project-loadings th.col-totp,
+#view-project-loadings th.col-tss,
+#table-loading-tech th.col-cod,
+#table-loading-tech th.col-bod5,
+#table-loading-tech th.col-totn,
+#table-loading-tech th.col-totp,
+#table-loading-tech th.col-tss,
+#table-loading-tech th.col-volc {
+	width: 100px !important;
+}
+
+
+/*#project-info-title,
+#standards-title,
+#loading-list-title,
+#popeq-title,
+#loading-tech-title {
+}*/
 .project-section-title {
+	margin-right: 10px;
+	display: inline;
+	position: relative;
+	top: 3px;
 	font-size: 24px;
-
 }
 
 #collapse-popeq .panel-body,
@@ -398,4 +441,56 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 #tech-count {
 	margin: 5px 0px 5px 10px;
 	color: #666666;
+}
+
+#table-popeq > tbody > tr > td.popeq-row-header {
+	vertical-align: middle;
+}
+
+/*tr#effluent-standard-values select,
+tr#effluent-standard-values input,
+input.popeq-parameter {
+	padding: 3px 5px 5px 5px;
+	height: 27px;
+}*/
+
+
+table#table-loading-tech th.tech-attributes.tech-id {
+	width: 50px !important;
+}
+
+#loading-tech-list table.sticky-header tr,
+table#table-loading-tech tr {
+	border-top: 1px solid #eeeeee;
+	border-bottom: 1px solid #eeeeee;
+}
+
+/*#table-effl-standards th.tech-attributes.tech-name,
+#table-popeq td.popeq-row-header.popeq-row-param,*/
+table#table-loading-tech th.tech-attributes.tech-name,
+table#table-loading-tech td.tech-attributes.tech-name {
+    width: 275px !important;
+}
+table#table-loading-tech {
+    width: 100%;
+}
+
+#loading-tech-list table.sticky-header th,
+table#table-loading-tech th,
+table#table-loading-tech td {
+    padding: 8px;
+}
+/*#table-loading-tech th.tech-attributes.tech-name {
+	width: 300px !important;
+}*/
+
+/*
+	media queries for 991px and below
+*/
+@media(max-width:991px) {
+	
+	td {
+		font-size: 11px;
+	}
+	
 }

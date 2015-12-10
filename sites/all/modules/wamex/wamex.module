@@ -204,15 +204,16 @@ function wamex_display_tech($techArgs){
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
 
 	$header = array(
-		array('data' => t('ID'), 'class'=>array('tech-attributes','tech-attributes-header','tech-id','col-id')), 
-		array('data' => t('Name'), 'class'=>array('tech-attributes','tech-attributes-header','tech-name','col-name')) ,
-		array('data' => t('COD'), 'class'=>array('tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
-		array('data' => t('BOD5'), 'class'=>array('tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
-		array('data' => t('N %'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+		//array('data' => t('ID'), 'class'=>array('tech-attributes','tech-id','col-id')), 
+		array('data' => t('Name'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name')) ,
+		array('data' => t('COD'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
+		array('data' => t('BOD5'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
+		array('data' => t('N %'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
 		//array('data' => t('N max'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
-		array('data' => t('P '), 'class'=>array('tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
-		array('data' => t('TSS %'), 'class'=>array('tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
+		array('data' => t('P '), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
+		array('data' => t('TSS %'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
 		//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
+		array('data'=> t('&nbsp;'),'class'=>array('col-md-1','tech-attributes','col-volc')),
 	);
 	
 	// check if there are technology id's saved to the current node
@@ -240,7 +241,7 @@ function wamex_display_tech($techArgs){
 		$destination = drupal_get_destination();
 		foreach ($results as $val) {
 			$rows[] = array(
-				'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
+				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
 				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
 				'COD'=>array('data'=>$val->cod, 'class'=>array('tech-attributes','tech-cod','col-cod')),
 				'BOD5'=>array('data'=>$val->max_bod, 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
@@ -249,6 +250,7 @@ function wamex_display_tech($techArgs){
 				'P'=>array('data'=>$val->max_p_a, 'class'=>array('tech-attributes','tech-totp','col-totp')),
 				'TSS_p'=>array('data'=>$val->max_tss_p, 'class'=>array('tech-attributes','tech-tss','col-tss')),
 				//'TSS_a'=>array('data'=>$val->max_tss_a,'class'=>array('tech-attributes','tech-tss','col-tss')),
+				array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
 			);
 		}
 		
@@ -502,7 +504,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_adwf'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">ADWF</span><br/><span class="label-unit">(l/p/d)</span>'),
+		'#title' => t('<span class="label-name">ADWF</span><br/><span class="label-unit">(&#x2113;/p/d)</span>'),
 		'#default_value' => $adwf,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -511,7 +513,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_cod'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#default_value' => $cod,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -520,7 +522,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_bod5'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#default_value' => $bod5,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -529,7 +531,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_totn'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#default_value' => $totn,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -538,7 +540,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_totp'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#default_value' => $totp,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -547,7 +549,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	
 	$form['field_loading_tss'] = array(
 		'#type' => 'textfield',
-		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#default_value' => $tss,
 		//'#prefix' => '<div class="col-sm-1">',
 		//'#suffix' => '</div>',
@@ -1013,36 +1015,44 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 		'#type' => 'select',
 		'#options' => $effluent_opts,
 	);
+		$form['field_effluent_standard']['#attributes']['class'][] = "input-sm";
+
 	
 	$form['field_cod'] = array(
-		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
+	$form['field_cod']['#attributes']['class'][] = "input-sm";
 
 	$form['field_bod5'] = array(
-		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/&#x2113)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
+	$form['field_bod5']['#attributes']['class'][] = "input-sm";
 
 	$form['field_totn'] = array(
-		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/&#x2113)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
+	$form['field_totn']['#attributes']['class'][] = "input-sm";
 
 	$form['field_totp'] = array(
-		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/&#x2113)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
+	$form['field_totp']['#attributes']['class'][] = "input-sm";
 
 	$form['field_tss'] = array(
-		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
+		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/&#x2113)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
 	);
+	$form['field_tss']['#attributes']['class'][] = "input-sm";
+
 	
 	//$form['field_effluent_standard']['#prefix'] = '<div class="col-sm-6">';
 	//$form['field_effluent_standard']['#suffix'] = '</div>';
@@ -1073,7 +1083,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-effl-submit';
 	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
-	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-disk"></span>&nbsp;Save');
+	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
 	//$form['actions']['submit']['#suffix'] = '</div>';
@@ -1310,6 +1320,7 @@ function wamex_project_popeq_form($form, &$form_state){
 			'#return_value' => $popeq_parameter,
 			'#title' => $name,
 			'#parents' => array('popeq_parameter'),
+			'#attributes' => array('class'=>array('popeq-parameter-radio','popeq-parameter-radio-'.$popeq_parameter)),
 		);
 	}
 	
@@ -1320,36 +1331,54 @@ function wamex_project_popeq_form($form, &$form_state){
 		'#title'=> '',
 		'#default_value'=> 100,
 	);
+	$form['popeq_pol']['pol-cod']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-cod']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-cod']['#attributes']['min'] = 0;
 	
 	$form['popeq_pol']['pol-bod5'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
 		'#default_value'=> 54,
 	);
+	$form['popeq_pol']['pol-bod5']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-bod5']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-bod5']['#attributes']['min'] = 0;
 	
 	$form['popeq_pol']['pol-totn'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
 		'#default_value'=> 5,
 	);
+	$form['popeq_pol']['pol-totn']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-totn']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-totn']['#attributes']['min'] = 0;
 	
 	$form['popeq_pol']['pol-totp'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
 		'#default_value'=> 1,
 	);
+	$form['popeq_pol']['pol-totp']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-totp']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-totp']['#attributes']['min'] = 0;
 	
 	$form['popeq_pol']['pol-tss'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
 		'#default_value'=> 68,
 	);
+	$form['popeq_pol']['pol-tss']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-tss']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-tss']['#attributes']['min'] = 0;
 	
 	$form['popeq_pol']['pol-volc'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
 		'#default_value'=> 200,
 	);
+	$form['popeq_pol']['pol-volc']['#attributes']['class'][] = 'popeq-parameter';
+	$form['popeq_pol']['pol-volc']['#attributes']['class'][] = 'input-sm';
+	$form['popeq_pol']['pol-volc']['#attributes']['min'] = 0;
 	
 	return $form;
 }

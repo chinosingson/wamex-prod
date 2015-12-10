@@ -2,6 +2,17 @@
 	
 	Drupal.behaviors.display = {
 		attach: function (context, settings) {
+			Number.prototype.format = function(c, d, t){
+			var n = this, 
+					c = isNaN(c = Math.abs(c)) ? 2 : c, 
+					d = d == undefined ? "." : d, 
+					t = t == undefined ? "," : t, 
+					s = n < 0 ? "-" : "", 
+					i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+					j = (j = i.length) > 3 ? j % 3 : 0;
+				 return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+			 };
+ 
 			function loadExchangeRate(termId,reset) {
 				//console.log('loadExchangeRate');
 				// get exchange rate from json-encoded taxonomy term
@@ -150,9 +161,11 @@
 			}
 			
 			if($('body.page-node, body.node-type-project, body.page-project-edit').length > 0){
-				$('#project-effluent-standard').unbind('change').on('change',function(event){
+				$('#project-effluent-standard, #edit-field-effluent-standard').unbind('change').on('change',function(event){
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
+				
+				$('#table-loading-tech').removeClass('table');
 				
 				// toggle expand/collapse arrows on sidebar collapse
 				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
@@ -224,8 +237,10 @@
 				}
 				
 				function showTechnologies(){
+					//console.log('showTechnologies');
 					var viewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
+					$('#collapse-tech').collapse('show');
 					viewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
 					var avgLoading = getAverageLoadings();
 					//console.log(avgLoading);
@@ -242,6 +257,10 @@
 				
 				$('.btn-show-tech').unbind('click').on('click',function(event){
 					//console.log('btn-show-tech clicked');
+					/*if($('#collapse-tech').hasClass('collapse')) {
+						$('#collapse-tech').collapse('show');
+						//$('#loading-tech-title').click();
+					}*/
 					//$('#loading-tech-list',context).once('display',function(){
 						showTechnologies();
 					//});
@@ -427,10 +446,14 @@
 				}
 				
 				$('body.node-type-project, body.page-project-edit').ready(function(event){
-					if($('#project-effluent-standard').length > 0)loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
+					if($('#project-effluent-standard').length > 0){ 
+						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
+					}
 					$('#loading-tech-list',context).once('display',function(){
+						//console.log('#loading-tech-list');
 						showTechnologies();
 					});
+					$('#collapse-tech').collapse('show');
 				}); 
 				
 				
@@ -448,67 +471,186 @@
 					return sumProduct;
 				}
 				
-				var pe_cod = (getTotPolV(cod_values,weight_values)/$('#edit-pol-cod').val());
-				var pe_bod5 = (getTotPolV(bod5_values,weight_values)/$('#edit-pol-bod5').val());
-				var pe_totn = (getTotPolV(totn_values,weight_values)/$('#edit-pol-totn').val());
-				var pe_totp = (getTotPolV(totp_values,weight_values)/$('#edit-pol-totp').val());
-				var pe_tss = (getTotPolV(tss_values,weight_values)/$('#edit-pol-tss').val());
-				var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
-				
-				$('#edit-pol-cod').attr('type','number');
-				$('#edit-pol-bod5').attr('type','number');
-				$('#edit-pol-totn').attr('type','number');
-				$('#edit-pol-totp').attr('type','number');
-				$('#edit-pol-tss').attr('type','number');
-				$('#edit-pol-volc').attr('type','number');
+				if($('body.node-type-project').length > 0){ 
+					//var pe_cod = (getTotPolV(cod_values,weight_values)/$('#edit-pol-cod').val());
+					var pe_cod = calcPE('cod',weight_values);
+					var pe_bod5 = calcPE('bod5',weight_values);
+					var pe_totn = calcPE('totn',weight_values);
+					var pe_totp = calcPE('totp',weight_values);
+					var pe_tss = calcPE('tss',weight_values);
+					//var pe_bod5 = (getTotPolV(bod5_values,weight_values)/$('#edit-pol-bod5').val());
+					//var pe_totn = (getTotPolV(totn_values,weight_values)/$('#edit-pol-totn').val());
+					//var pe_totp = (getTotPolV(totp_values,weight_values)/$('#edit-pol-totp').val());
+					//var pe_tss = (getTotPolV(tss_values,weight_values)/$('#edit-pol-tss').val());
+					var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
+					
+					$('#edit-pol-cod').attr('type','number');
+					$('#edit-pol-bod5').attr('type','number');
+					$('#edit-pol-totn').attr('type','number');
+					$('#edit-pol-totp').attr('type','number');
+					$('#edit-pol-tss').attr('type','number');
+					$('#edit-pol-volc').attr('type','number');
 
-				// set PEs
-				$('.popeq-pe-cod').text(pe_cod.toFixed(2));
-				$('.popeq-pe-bod5').text(pe_bod5.toFixed(2));
-				$('.popeq-pe-totn').text(pe_totn.toFixed(2));
-				$('.popeq-pe-totp').text(pe_totp.toFixed(2));
-				$('.popeq-pe-tss').text(pe_tss.toFixed(2));
-				$('.popeq-pe-volc').text(pe_volc.toFixed(2));
+					// set PEs
+					$('.popeq-pe-cod').text(pe_cod.toFixed(4));
+					$('.popeq-pe-bod5').text(pe_bod5.toFixed(4));
+					$('.popeq-pe-totn').text(pe_totn.toFixed(4));
+					$('.popeq-pe-totp').text(pe_totp.toFixed(4));
+					$('.popeq-pe-tss').text(pe_tss.toFixed(4));
+					$('.popeq-pe-volc').text(pe_volc.toFixed(4));
 
-				// set TotPEs
-				var population = $('#td-field-population')[0].innerHTML;
-				console.log(population);
-				totpe_cod = (pe_cod*population);
-				totpe_bod5 = (pe_bod5*population);
-				totpe_totn = (pe_totn*population);
-				totpe_totp = (pe_totp*population);
-				totpe_tss = (pe_tss*population);
-				totpe_volc = (pe_volc*population);
+					// set TotPEs
+					var population = $('#td-field-population')[0].innerHTML;
+					//console.log(population);
+					totpe_cod = (pe_cod*population);
+					totpe_bod5 = (pe_bod5*population);
+					totpe_totn = (pe_totn*population);
+					totpe_totp = (pe_totp*population);
+					totpe_tss = (pe_tss*population);
+					totpe_volc = (pe_volc*population);
 
-				$('.popeq-totpe-cod').text(totpe_cod.toFixed(2));
-				$('.popeq-totpe-bod5').text(totpe_bod5.toFixed(2));
-				$('.popeq-totpe-totn').text(totpe_totn.toFixed(2));
-				$('.popeq-totpe-totp').text(totpe_totp.toFixed(2));
-				$('.popeq-totpe-tss').text(totpe_tss.toFixed(2));
-				$('.popeq-totpe-volc').text(totpe_volc.toFixed(2));
+					$('.popeq-totpe-cod').text(totpe_cod.format(2,'.',','));
+					$('.popeq-totpe-bod5').text(totpe_bod5.format(2,'.',','));
+					$('.popeq-totpe-totn').text(totpe_totn.format(2,'.',','));
+					$('.popeq-totpe-totp').text(totpe_totp.format(2,'.',','));
+					$('.popeq-totpe-tss').text(totpe_tss.format(2,'.',','));
+					$('.popeq-totpe-volc').text(totpe_volc.format(2,'.',','));
+					
+					// set total effluent flow
+					var totflow = adwf_avg*population*.001;
+					$('.popeq-totflow').text(totflow.format(2,'.',','));
+					
+				}
+
+				function calcPE(param,wts){
+					var paramValueSelector = '#view-project-loadings tbody td.views-field-field-loading-'+param;
+					var paramValues = $(paramValueSelector);
+					var peParamSelector = '#edit-pol-'+param;
+					var peParamValue = $(peParamSelector).val();
+					//console.log(param);
+					var peDisplay = "";
+					if(peParamValue > 0){
+						if(param!='volc'){
+							peDisplay = getTotPolV(paramValues,wts)/peParamValue;
+						} else {
+							peDisplay = $('#ave_adwf')[0].innerHTML/peParamValue;
+						}
+					} else {
+						peDisplay =  "-";
+					}
+					//console.log(peDisplay);
+					return peDisplay;
+				}
 				
-				// set total effluent flow
-				var totflow = adwf_avg*population*.001;
-				$('.popeq-totflow').text(totflow.toFixed(2));
+				// on change of any of the PopEq Parameters
+				$('#table-popeq input.popeq-parameter').unbind('change').unbind('keyup').unbind('blur').on('change keyup blur', function(e){
+					var popeqParamId = this.id;
+					var paramTokens = popeqParamId.split("-");
+					var selectedParam = paramTokens[2];
+					//console.log(selectedParam);
+					var popEq = calcPE(selectedParam,weight_values);
+					var popEqDisplay = '';
+					var totPopEqDisplay = '';
+					if (popEq != '-'){
+						popEqDisplay = popEq.toFixed(4);
+						//totPopEqDisplay = (popEq*population).toFixed(2);
+						totPopEqDisplay = (popEq*population).format(2,'.',',');
+					} else {
+						popEqDisplay = popEq;
+						totPopEqDisplay = '-';
+					}
+					$('.popeq-pe-'+selectedParam).text(popEqDisplay);
+					$('.popeq-totpe-'+selectedParam).text(totPopEqDisplay);
+					//calcPE(selectedParam, weight_values);
+
+				});
 				
-				var techModal = '<div class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
+				$('#table-popeq input.popeq-parameter').unbind('blur').on('blur',function(){
+					// if a popeq parameter input form is selected, remove the -selected class
+					var popeqParamId = this.id;
+					var paramTokens = popeqParamId.split("-");
+					var selectedParam = paramTokens[2];
+					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
+					$(popeqRadioSelector).prop("checked", true);
+					$('td.col-'+selectedParam+', th.col-'+selectedParam).removeClass('col-'+selectedParam+'-selected');
+				});
+
+				$('[name="popeq_parameter"]').unbind('blur').on('blur',function(){
+					var selectedParam = this.value; //.split("-")[2];
+					// if a popeq parameter input form is selected, remove the -selected class
+					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
+					$(popeqRadioSelector).prop("checked", true);
+					$('td.col-'+selectedParam+', th.col-'+selectedParam).removeClass('col-'+selectedParam+'-selected');
+				});
+				
+				$('#table-popeq input.popeq-parameter').unbind('focus').unbind('click').on('focus click',function(e) {
+					var popeqParamId = this.id;
+					var paramTokens = popeqParamId.split("-");
+					var selectedParam = paramTokens[2];
+					
+					// when any popeq parameter input form is clicked or focused, set the corresponding radio button as checked
+					// refactor
+					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
+					$(popeqRadioSelector).prop("checked", true);
+					$('td.col-'+selectedParam+', th.col-'+selectedParam).addClass('col-'+selectedParam+'-selected');
+				});
+				
+				
+				$('[name="popeq_parameter"]').unbind('focus').unbind('click').on('focus click',function(e){
+					var selectedParam = this.value; //.split("-")[2];
+					// when any popeq parameter input form is clicked or focused, set the corresponding radio button as checked
+					// refactor
+					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
+					$(popeqRadioSelector).prop("checked", true);
+					$('td.col-'+selectedParam+', th.col-'+selectedParam).addClass('col-'+selectedParam+'-selected');
+				});
+								
+				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
 				+'<div class="modal-content">'
-				+'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button></div>'
+				+'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>'
+				+'<h4 class="modal-title"></h4>'
+				+'</div>'
 				+'<div class="modal-body"></div>'
 				+'<div class="modal-footer"><button class="btn" data-dismiss="modal">Close</button></div>'
 				+'</div>'
 				+'</div>'
 				+'</div>';
 				
-				var customModal = $(techModal);
+				var customHelpModal = $(helpModal);
+				$('.section-help').unbind('click').on('click', function(){
+					event.preventDefault();
+					//console.log($(this).attr('id').split("-")[0]);
+					var sectionTitle = $('#'+$(this).attr('id').split("-")[0]+'-title-container h3 a')[0].innerText;
+					
+					$('.main-container').append(customHelpModal);
+					$('#section-help-modal .modal-title').empty().append('Help: '+sectionTitle);
+					$('#section-help-modal .modal-body').empty().append('Description of '+ sectionTitle + ' goes here.');
+					$('#section-help-modal').show();
+					$('#section-help-modal').modal();
+				});
+				
+				var techModal = '<div id="tech-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
+				+'<div class="modal-dialog">'
+				+'<div class="modal-content">'
+				+'<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>'
+				+'<h4 class="modal-title"></h4>'
+				+'</div>'
+				+'<div class="modal-body"></div>'
+				+'<div class="modal-footer"><button class="btn" data-dismiss="modal">Close</button></div>'
+				+'</div>'
+				+'</div>'
+				+'</div>';
+				
+				var customTechModal = $(techModal);
 				$('.technology-name').unbind('click').on('click',function(event){
 					event.preventDefault();
 					//console.log($(this).attr('id'));
-					$('.main-container').append(customModal);
-					$('.custom-modal .modal-body').empty().append($(this).text());
-					$('.custom-modal').show();
-					$('.custom-modal').modal();
+					$('.main-container').append(customTechModal);
+					$('#tech-help-modal .modal-title').empty().append('Technology: '+$(this).text());
+					$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
+					$('#tech-help-modal').show();
+					$('#tech-help-modal').modal();
 				});
 				
 			}
