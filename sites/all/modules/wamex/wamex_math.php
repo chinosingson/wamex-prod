@@ -13,14 +13,15 @@
 global $debug;
 $debug = FALSE;
 
-/*$arrayAverageLoad = array(
-	'ADWF' => 150,
-	'COD' => 50,
-	'BOD5' => 40 ,
-	'N' => 10,
-	'P' => 2, 
-	'TSS' => 140
+$arrayAverageLoad = array(
+	'ADWF' => 62.5,
+	'COD' => 55,
+	'BOD5' => 65 ,
+	'N' => 29,
+	'P' => 46.5, 
+	'TSS' => 65
 	);
+	//62.5|55.0|65.0|29.0|46.5|65.0
 
 $arrayStandards = array(
 	'name' => "Malaysia",
@@ -29,7 +30,12 @@ $arrayStandards = array(
 	'N' => -1,
 	'P' => -1,
 	'TSS' => 100,
-	); */
+	); 
+	// 102.00|50.00|null|null|100.00
+
+
+$flt_popeq = 2.3875;
+
 
 if ($debug){
 	echo "Loading: ";
@@ -38,71 +44,96 @@ if ($debug){
 	echo "Standards: ";
 	print_r ($arrayStandards);
 	echo "<br />";
+	echo "Popeq: ".$flt_popeq; 
 	echo "<br />";
 }
 
-
 // Get the list of tech options for the specified loading
-//$arrayTech = wamex_select_tech($arrayAverageLoad,$arrayStandards);
+//$arrayTech = wamex_select_tech($arrayAverageLoad,$arrayStandards,$flt_popeq);
 
-if ($debug){ 
-	echo "Applicable Tech:<br/>" ;
-	//print_r($arrayTech);
-}
+//if ($debug){ 
+//	echo "Applicable Tech:<br/>" ;
+//	print_r($arrayTech);
+//}
 
 // END
 
 
-function wamex_get_all_tech(){
+function wamex_get_all_tech($popeqV){
 
-	/*$arrayTechnology[0] = array(
-		'id' => 1,
-		'name' => "Slow Rate Treatment",
-		'pCOD' => 0.95,
-		'aCOD' => 1,
-		'pBOD5' => 0.97,
-		'aBOD5' => 1,
-		'pN' => 0.85,
-		'aN' => 1,
-		'pP' => 0.90,
-		'aP' => 1, 
-		'pTSS' => 0.95,
-		'aTSS' => 1 
-		);
-	$arrayTechnology[1] = array(
-		'id' => 2,
-		'name' => "Rapid Infiltration",
-		'pCOD' => 0.95,
-		'aCOD' => 1,
-		'pBOD5' => 0.97,
-		'aBOD5' => 1,
-		'pN' => 0.85,
-		'aN' => 1,
-		'pP' => 0.90,
-		'aP' => 1, 
-		'pTSS' => 0.95,
-		'aTSS' => 1 
-		);
-	$arrayTechnology[2] = array(
-		'id' => 3,
-		'name' => "Perfect Tank",
-		'pCOD' => 0.59,
-		'aCOD' => NULL,
-		'pBOD5' => 0.97,
-		'aBOD5' => 1,
-		'pN' => 0.85,
-		'aN' => 1,
-		'pP' => 0.90,
-		'aP' => 1, 
-		'pTSS' => 0.95,
-		'aTSS' => 1 
-		);*/
-
+	// sql select
   $select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
-  $results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))
+	// sql select fields
+	$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a');
+
+	if ($popeqV < 1) $popeqV = 1; // (?)
+	$capex_thresholds = array(
+		array('value'=>1,'alias'=> '1'),
+		array('value'=>10,'alias' => '10'),
+		array('value'=>200,'alias' => '200'),
+		array('value'=>2000,'alias' => '2k'),
+		//array('value'=>2000,'alias' => '2kb'),
+		array('value'=>20000,'alias' => '20k'),
+		//array('value'=>20000,'alias' => '20kb'),
+		array('value'=>200000,'alias' => '200k'),
+		//array('value'=>200000,'alias' => '200kb'),
+		array('value'=>600000,'alias' => '600k'),
+		//array('value'=>600000,'alias' => '600kb'),
+		array('value'=>1200000,'alias' => '1200k'),
+		//array('value'=>1200000,'alias' => '1200kb'),
+	);
+	
+	// get techs with applicable capex
+	$capex_field = array();
+	$numThresholds = count($capex_thresholds);
+	//foreach ($capex_thresholds as $cet){
+	for ($x = 0; $x < $numThresholds; $x++){
+		//$capex_field = 'capex_'.$capex_thresholds[$x]['alias'];
+		if ($popeqV >= $capex_thresholds[$x]['value']){
+			//echo $popeqV." > [".$x."]".$capex_thresholds[$x]['value']."<br/>";
+			if ($popeqV >= 1200000){
+				$threshold = $capex_thresholds[$x]['value'];
+				//echo "-".$popeqV." < [".($x)."]".$threshold."<br/>";
+			} /*else {
+				$threshold = $capex_thresholds[$x-1]['value'];
+				echo "-".$popeqV." < [".($x)."]".$threshold."<br/>";
+				// do nothing;
+			}*/
+			//break;
+		} else {
+			$threshold = $capex_thresholds[$x-1]['value'];
+			//echo "--".$popeqV." < [".($x-1)."]".$threshold."<br/>";
+			break;
+		}
+	}
+	//echo "X:".$x."<br/>";
+	//echo "Th:".$threshold."<br/>";
+	if ($threshold >= 2000){
+		$capex_field['a'] = 'capex_'.$capex_thresholds[$x-1]['alias'].'a';
+		$capex_field['b'] = 'capex_'.$capex_thresholds[$x-1]['alias'].'b';
+		$fields[] = $capex_field['a'];
+		$fields[] = $capex_field['b'];
+		$capex_condition = db_or()->isNotNull($capex_field['a'])->isNotNull($capex_field['b']);
+	} else {
+		$capex_field['a'] = 'capex_'.$capex_thresholds[$x-1]['alias'];
+		$fields[] = $capex_field['a'];
+		$capex_condition = db_or()->isNotNull($capex_field['a']);
+		//$capex_field['b'] = NULL;
+	}
+	
+	//$fields[] = $capex_field['a'];
+	//if ($capex_field['b']) $fields[] = $capex_field['b'];
+	//echo print_r($fields,1)."<br/>";
+  $query = $select->fields('wt', $fields)
+						->condition($capex_condition);
 							//->orderByHeader($header)
-							//->where('capex_2ka' IS NOT NULL, 'cape')
-						 ->execute();
+							//->condition($capex_field, '0', '<>')
+							//->isNotNull($capex_field);
+	
+
+	//echo $query->__toString();
+	//echo "<br/>";
+	$results = $query->execute();
 						 
   $rows = array();
 	$arrayTechnology = array();
@@ -132,13 +163,13 @@ function wamex_get_all_tech(){
 
 
 
-function wamex_select_tech($loading,$target){
+function wamex_select_tech($loading,$target,$popeq){
 
 	//global $debug;
 	$debug = FALSE;
 	$arrayPossibleTech = array();
 	// Load technology table as array from DB
-	$arrayAllTech = wamex_get_all_tech();
+	$arrayAllTech = wamex_get_all_tech($popeq);
 
 	$ctr = 0;
 	foreach ($arrayAllTech as $tech) {

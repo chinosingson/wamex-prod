@@ -144,7 +144,7 @@
 				$('#edit-field-currency-und').unbind('change').change(function(){
 					var currencyTermId = $(this).val();
 					//console.log(currencyTermId);
-					loadExchangeRate(currencyTermId,0);
+					loadExchangeRate(currencyTermId,1);
 				});
 				
 				// field_effluent_standard behavior
@@ -236,16 +236,29 @@
 					}
 				}
 				
-				function showTechnologies(){
+				// set COD as default parameter
+				$('#edit-popeq-parameter--2').attr('checked',true);
+				//$('#edit-popeq-parameter--2').click();
+				//console.log($('#edit-popeq-parameter--2').value);
+				//console.log($('[name="popeq_parameter"]').value);
+				//console.log()
+
+				function showTechnologies(popeqValue){
 					//console.log('showTechnologies');
+					//if (popeqValue){
+						//console.log(popeqValue);
+					//} else {
+					//	console.log('popeqValue = wala');
+					//}
 					var viewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
-					$('#collapse-tech').collapse('show');
+					//$('#collapse-tech').collapse('show');
 					viewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
 					var avgLoading = getAverageLoadings();
 					//console.log(avgLoading);
 					var stdValues = getEffluentStandardAttributes();
-					var techArgs = avgLoading + '&' + stdValues;
+					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue;
+					//console.log(techArgs);
 					if (avgLoading.length > 0){
 						viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
 							Drupal.attachBehaviors('#loading-tech-list');
@@ -254,18 +267,7 @@
 						viewport.empty().html('There are no Wastewater Characterisations. Click on <i>Add Loading</i> above to create one or more profiles.');
 					}
 				}
-				
-				$('.btn-show-tech').unbind('click').on('click',function(event){
-					//console.log('btn-show-tech clicked');
-					/*if($('#collapse-tech').hasClass('collapse')) {
-						$('#collapse-tech').collapse('show');
-						//$('#loading-tech-title').click();
-					}*/
-					//$('#loading-tech-list',context).once('display',function(){
-						showTechnologies();
-					//});
-				});
-			
+
 				$('.form-loading-attribute').attr('type','number');
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
 				$('.btn-add-loading').unbind('click').on('click',function(){
@@ -445,29 +447,19 @@
 
 				}
 				
-				$('body.node-type-project, body.page-project-edit').ready(function(event){
-					if($('#project-effluent-standard').length > 0){ 
-						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
-					}
-					$('#loading-tech-list',context).once('display',function(){
-						//console.log('#loading-tech-list');
-						showTechnologies();
-					});
-					$('#collapse-tech').collapse('show');
-				}); 
-				
-				
 				function getTotPolV(attributes,weights){
 					var adwfs = $('#view-project-loadings tbody td.views-field-field-loading-adwf');
 					//console.log(adwfs);
 					var sumProduct = 0;
 					attributeCount = attributes.length;
-					weightCount = weights.length;
-					if (attributeCount == weightCount){
-						for(var x = 0; x < attributeCount; x++){
-							sumProduct += adwfs[x].innerHTML*parseFloat(attributes[x].innerHTML)*parseFloat(weights[x].innerHTML)*.00001;
+					if($('#view-project-loadings').length > 0){
+						weightCount = weights.length;
+						if (attributeCount == weightCount){
+							for(var x = 0; x < attributeCount; x++){
+								sumProduct += adwfs[x].innerHTML*parseFloat(attributes[x].innerHTML)*parseFloat(weights[x].innerHTML)*.00001;
+							}
 						}
-					}
+					} 
 					return sumProduct;
 				}
 				
@@ -482,7 +474,11 @@
 					//var pe_totn = (getTotPolV(totn_values,weight_values)/$('#edit-pol-totn').val());
 					//var pe_totp = (getTotPolV(totp_values,weight_values)/$('#edit-pol-totp').val());
 					//var pe_tss = (getTotPolV(tss_values,weight_values)/$('#edit-pol-tss').val());
-					var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
+					if($('#view-project-loadings').length > 0){
+						var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
+					} else {
+						var pe_volc = 0;
+					}
 					
 					$('#edit-pol-cod').attr('type','number');
 					$('#edit-pol-bod5').attr('type','number');
@@ -544,9 +540,7 @@
 				
 				// on change of any of the PopEq Parameters
 				$('#table-popeq input.popeq-parameter').unbind('change').unbind('keyup').unbind('blur').on('change keyup blur', function(e){
-					var popeqParamId = this.id;
-					var paramTokens = popeqParamId.split("-");
-					var selectedParam = paramTokens[2];
+					var selectedParam = this.id.split("-")[2];
 					//console.log(selectedParam);
 					var popEq = calcPE(selectedParam,weight_values);
 					var popEqDisplay = '';
@@ -564,47 +558,69 @@
 					//calcPE(selectedParam, weight_values);
 
 				});
+
+				function highlightColumn(selPar,hu){
+					// if a popeq parameter input form is selected
+					// set the corresponding radio button as checked
+					var popeqRadioSelector = "td.popeq-parameter-"+selPar+".popeq-"+selPar+" input.popeq-parameter-radio-"+selPar;
+					$(popeqRadioSelector).prop("checked", true);
+					var colSelector = 'td.col-'+selPar+', th.col-'+selPar;
+					if(hu == 'highlight'){
+						// add the -selected class
+						$(colSelector).addClass('col-'+selPar+'-selected');
+					} else if (hu == 'unhighlight') {
+						// remove the -selected class
+						$(colSelector).removeClass('col-'+selPar+'-selected');
+					}
+				}
 				
 				$('#table-popeq input.popeq-parameter').unbind('blur').on('blur',function(){
-					// if a popeq parameter input form is selected, remove the -selected class
-					var popeqParamId = this.id;
-					var paramTokens = popeqParamId.split("-");
-					var selectedParam = paramTokens[2];
-					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
-					$(popeqRadioSelector).prop("checked", true);
-					$('td.col-'+selectedParam+', th.col-'+selectedParam).removeClass('col-'+selectedParam+'-selected');
+					var selectedParam = this.id.split("-")[2];
+					highlightColumn(selectedParam,'unhighlight');
 				});
 
 				$('[name="popeq_parameter"]').unbind('blur').on('blur',function(){
 					var selectedParam = this.value; //.split("-")[2];
-					// if a popeq parameter input form is selected, remove the -selected class
-					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
-					$(popeqRadioSelector).prop("checked", true);
-					$('td.col-'+selectedParam+', th.col-'+selectedParam).removeClass('col-'+selectedParam+'-selected');
+					highlightColumn(selectedParam,'unhighlight');
 				});
 				
 				$('#table-popeq input.popeq-parameter').unbind('focus').unbind('click').on('focus click',function(e) {
-					var popeqParamId = this.id;
-					var paramTokens = popeqParamId.split("-");
-					var selectedParam = paramTokens[2];
-					
-					// when any popeq parameter input form is clicked or focused, set the corresponding radio button as checked
-					// refactor
-					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
-					$(popeqRadioSelector).prop("checked", true);
-					$('td.col-'+selectedParam+', th.col-'+selectedParam).addClass('col-'+selectedParam+'-selected');
+					var selectedParam = this.id.split("-")[2];
+					highlightColumn(selectedParam,'highlight');
 				});
 				
 				
 				$('[name="popeq_parameter"]').unbind('focus').unbind('click').on('focus click',function(e){
-					var selectedParam = this.value; //.split("-")[2];
-					// when any popeq parameter input form is clicked or focused, set the corresponding radio button as checked
-					// refactor
-					var popeqRadioSelector = "td.popeq-parameter-"+selectedParam+".popeq-"+selectedParam+" input.popeq-parameter-radio-"+selectedParam;
-					$(popeqRadioSelector).prop("checked", true);
-					$('td.col-'+selectedParam+', th.col-'+selectedParam).addClass('col-'+selectedParam+'-selected');
+					//console.log(this.value);
+					var selectedParam = this.value;
+					highlightColumn(selectedParam,'highlight');
 				});
-								
+
+				$('body.node-type-project, body.page-project-edit').ready(function(event){
+					if($('#project-effluent-standard').length > 0){ 
+						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
+					}
+					$('#loading-tech-list',context).once('display',function(){
+						//console.log('#loading-tech-list');
+						showTechnologies($('td.popeq-totpe-'+$('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val())[0].innerText.replace(/,/g,""));
+					});
+					$('#collapse-tech').collapse('show');
+				}); 
+				
+				$('.btn-show-tech').unbind('click').on('click',function(event){
+					//console.log('btn-show-tech clicked');
+					/*if($('#collapse-tech').hasClass('collapse')) {
+						$('#collapse-tech').collapse('show');
+						//$('#loading-tech-title').click();
+					}*/
+					//$('#loading-tech-list',context).once('display',function(){
+						//console.log();
+						showTechnologies($('td.popeq-totpe-'+$('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val())[0].innerText.replace(/,/g,""));
+						//showTechnologies('eto o');
+					//});
+				});
+			
+				
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
 				+'<div class="modal-content">'

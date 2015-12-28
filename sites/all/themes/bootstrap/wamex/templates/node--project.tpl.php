@@ -92,7 +92,9 @@ $view_loading->set_display('block');
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
+						<span class="hidden" id="td-field-ci-cost"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
+						</td>
 					</tr>
 				</tbody>
 			</table>
