@@ -348,11 +348,11 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	padding-right: 5px;
 }
 
-.col-cod { background-color: Pink !important; }
-.col-bod5 { background-color: lightSalmon !important; }
-.col-totn { background-color: khaki !important; }
-.col-totp { background-color: paleGreen !important; }
-.col-tss { background-color: powderBlue !important; }
+.col-cod { background-color: #e55934 !important; }
+.col-bod5 { background-color: #fa7921 !important; }
+.col-totn { background-color: #fde74c !important; }
+.col-totp { background-color: #9bc53d !important; }
+.col-tss { background-color: #5bc0eb !important; }
 
 .col-cod-selected { background-color: hotPink !important; }
 .col-bod5-selected { background-color: coral !important; }
@@ -469,7 +469,8 @@ table#table-loading-tech tr {
 #table-popeq td.popeq-row-header.popeq-row-param,*/
 table#table-loading-tech th.tech-attributes.tech-name,
 table#table-loading-tech td.tech-attributes.tech-name {
-    width: 275px !important;
+	font-size: 12px;
+	width: 275px !important;
 }
 table#table-loading-tech {
     width: 100%;

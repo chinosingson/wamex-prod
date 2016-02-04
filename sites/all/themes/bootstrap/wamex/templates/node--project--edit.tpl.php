@@ -54,6 +54,9 @@
 			<div class="col-sm-6"><?php print drupal_render($form['field_ci_cost']); ?></div>
 		</div>
 		<div class="row">
+			<div class="col-sm-6"><?php print drupal_render($form['field_land_cost']); ?></div>
+		</div>
+		<div class="row">
 			<div class="col-sm-6"><?php print drupal_render($form['field_currency']); ?></div>
 			<div class="col-sm-6"><?php print drupal_render($form['field_exchange_rate_to_usd']); ?>
 			</div>

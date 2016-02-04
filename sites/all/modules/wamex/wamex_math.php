@@ -1,43 +1,45 @@
 <?php
 
-	//define('DRUPAL_ROOT', 'c:\xampp\htdocs\wamex');
-
-
-	//require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
-	//drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
+// uncomment these to test wamex_math
+//	define('DRUPAL_ROOT', 'c:\xampp\htdocs\wamex');
+//	require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
+//	drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
 
 // Input #1:
 // Weighted average of all loadings
 
 global $debug;
-$debug = FALSE;
-
-$arrayAverageLoad = array(
-	'ADWF' => 62.5,
-	'COD' => 55,
-	'BOD5' => 65 ,
-	'N' => 29,
-	'P' => 46.5, 
-	'TSS' => 65
-	);
-	//62.5|55.0|65.0|29.0|46.5|65.0
-
-$arrayStandards = array(
-	'name' => "Malaysia",
-	'COD' => 102,
-	'BOD5' => 50,
-	'N' => -1,
-	'P' => -1,
-	'TSS' => 100,
-	); 
-	// 102.00|50.00|null|null|100.00
+$debug = variable_get('wamex_tech_debug');
 
 
-$flt_popeq = 2.3875;
+// for testing. set $debug = TRUE to see results
+/*if ($debug){
+	//Loadings: 150.0|750.0|350.0|60.0|15.0|400.0
+	$arrayAverageLoad = array(
+		'ADWF' => 150.0,
+		'COD' => 750.0,
+		'BOD5' => 350.0,
+		'N' => 60.0,
+		'P' => 15.0, 
+		'TSS' => 400.0
+		);
+
+	//Standards: 250.00|100.00|null|null|140.00
+	$arrayStandards = array(
+		'name' => "Indian",
+		'COD' => 250,
+		'BOD5' => 100,
+		'N' => -1,
+		'P' => -1,
+		'TSS' => 140,
+		); 
 
 
-if ($debug){
+	$flt_popeq = 562500.00;
+
+	// Get the list of tech options for the specified loading
+	$arrayTech = wamex_select_tech($arrayAverageLoad,$arrayStandards,$flt_popeq);
 	echo "Loading: ";
 	print_r ($arrayAverageLoad);
 	echo "<br />";
@@ -46,27 +48,26 @@ if ($debug){
 	echo "<br />";
 	echo "Popeq: ".$flt_popeq; 
 	echo "<br />";
-}
+	echo "Applicable Tech:".count($arrayTech)."<br/>" ;
+	echo "<pre>".print_r($arrayTech,1)."</pre>";
+	
+}*/
 
-// Get the list of tech options for the specified loading
-//$arrayTech = wamex_select_tech($arrayAverageLoad,$arrayStandards,$flt_popeq);
-
-//if ($debug){ 
-//	echo "Applicable Tech:<br/>" ;
-//	print_r($arrayTech);
-//}
 
 // END
 
 
-function wamex_get_all_tech($popeqV){
+function wamex_get_all_tech($popeqV){ // scenario on/off
 
+	global $debug;
 	// sql select
   $select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
 	// sql select fields
-	$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a');
+	$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a');
 
 	if ($popeqV < 1) $popeqV = 1; // (?)
+		
+	if ($debug) echo "<b>Selecting technologies based on Population Equivalent ".number_format($popeqV,2).".</b><br/>";
 	$capex_thresholds = array(
 		array('value'=>1,'alias'=> '1'),
 		array('value'=>10,'alias' => '10'),
@@ -87,13 +88,14 @@ function wamex_get_all_tech($popeqV){
 	$capex_field = array();
 	$numThresholds = count($capex_thresholds);
 	//foreach ($capex_thresholds as $cet){
+	if ($debug) echo "<pre>";
 	for ($x = 0; $x < $numThresholds; $x++){
 		//$capex_field = 'capex_'.$capex_thresholds[$x]['alias'];
 		if ($popeqV >= $capex_thresholds[$x]['value']){
 			//echo $popeqV." > [".$x."]".$capex_thresholds[$x]['value']."<br/>";
 			if ($popeqV >= 1200000){
 				$threshold = $capex_thresholds[$x]['value'];
-				//echo "-".$popeqV." < [".($x)."]".$threshold."<br/>";
+				if ($debug) echo "<tt>Minimum Threshold: ".$popeqV." < [".($x)."]".number_format($threshold)."</tt><br/>";
 			} /*else {
 				$threshold = $capex_thresholds[$x-1]['value'];
 				echo "-".$popeqV." < [".($x)."]".$threshold."<br/>";
@@ -102,7 +104,7 @@ function wamex_get_all_tech($popeqV){
 			//break;
 		} else {
 			$threshold = $capex_thresholds[$x-1]['value'];
-			//echo "--".$popeqV." < [".($x-1)."]".$threshold."<br/>";
+			if ($debug) print "<tt>Minimum Threshold: ".number_format($threshold)."</tt><br/>";
 			break;
 		}
 	}
@@ -148,15 +150,29 @@ function wamex_get_all_tech($popeqV){
 			'aBOD5'=>NULL,
 			'pN'=>$val->max_n_p, 
 			'aN'=>$val->max_n_a, 
-			'pP'=>NULL,
+			'pP'=>$val->max_p_p,
 			'aP'=>$val->max_p_a, 
 			'pTSS'=>$val->max_tss_p, 
 			'aTSS'=>$val->max_tss_a, 
 		);
 	}
-						 
-	//print '<pre>'.print_r($rows,1).'</pre>';
-	//print '<pre>'.print_r($arrayTechnology,1).'</pre>';
+	
+	if($debug){
+		//print '<pre>'.print_r($rows,1).'</pre>';
+		//print '<pre>'.print_r($arrayTechnology,1).'</pre>';
+		print "<tt>CapEx is non-zero for ".count($arrayTechnology)." technologies.</tt><br/>";
+		
+		// display list of technology names here
+		// ...
+		$t = 1;
+		foreach ($arrayTechnology as $tech){
+			echo "<tt>$t [".$tech['id']."] ".$tech['name']."</tt><br/>";
+			$t++;
+		}
+		echo "<br/>";
+		echo "</pre>";
+
+	}
 	return $arrayTechnology;
 
 }
@@ -165,53 +181,60 @@ function wamex_get_all_tech($popeqV){
 
 function wamex_select_tech($loading,$target,$popeq){
 
-	//global $debug;
-	$debug = FALSE;
+	global $debug;
+	//$debug = FALSE;
 	$arrayPossibleTech = array();
 	// Load technology table as array from DB
 	$arrayAllTech = wamex_get_all_tech($popeq);
+	
+	if($debug) echo "<b>Selecting technologies based on average loading and standards.</b><br/>";
+	if($debug) echo "<pre>";
 
 	$ctr = 0;
 	foreach ($arrayAllTech as $tech) {
 
+	
 		// Let's assume this tech does not pass the standard
 		$flag = FALSE;
-		if ($debug) echo "Processing: [".$tech["id"] ."] " . $tech["name"] . "<br/><br/>"; 
+		if ($debug) {
+			echo "<tt><b><u>" . $tech["name"] . "</u></b> [".$tech["id"] ."]</tt><br/>";
+			echo "<tt><b>Param | Efficiency | Loading | Standard | Residue | Status | Action</b></tt><br/>";
+		}
+		
+		//if ($debug) echo "tech: ".print_r($tech,1) . "<br/><br/>";
 
 		// Test for COD
-		if ($debug) echo "Testing for COD... ";
+		if ($debug) echo "<tt>COD&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
 		if (wamex_test($loading["COD"],$tech["pCOD"],$target["COD"],$tech["aCOD"])){
-			if ($debug) echo "passed COD test <br/>";
+			if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
 			
-			if ($debug) echo "Testing for BOD5... ";
+			if ($debug) echo "<tt>BOD5&nbsp;&nbsp;|&nbsp;</tt>";
 			// If good, test for BOD5
 			if (wamex_test($loading["BOD5"],$tech["pBOD5"],$target["BOD5"],$tech["pBOD5"])){
-				if ($debug) echo "passed BOD5 test <br/>";
-				
-				if ($debug) echo "Testing for N... ";	
+				if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+
+				if ($debug) echo "<tt>N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";	
 				// If good, test for N
 				if (wamex_test($loading["N"],$tech["pN"],$target["N"],$tech["aN"])){
-					if ($debug) echo "passed N test <br/>";
+						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
 					
-					if ($debug) echo "Testing for P... ";
+					if ($debug) echo "<tt>P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
 					// If good, test for P
 					if (wamex_test($loading["P"],$tech["pP"],$target["P"],$tech["aP"])){
-						if ($debug) echo "passed P test <br/>";
+						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
 						
-						if ($debug) echo "Testing for TSS... ";
+						if ($debug) echo "<tt>TSS&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
 						// If good, test for TSS
 						if (wamex_test($loading["TSS"],$tech["pTSS"],$target["TSS"],$tech["aTSS"])){
-							if ($debug) echo "passed TSS test <br/>";
+							if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
 							// Okay, this tech passes all tests	
-							if ($debug) echo $tech["name"] . " has passed ALL TESTS! <br/><br/>";
+							if ($debug) echo "<tt><b>FINAL | PASS</b></tt><br/><br/>";
 							$flag = TRUE;
 
 						}	
 					}	
 				}	
 			}
-			
-
 		}
 
 		// Add to list of techs if this tech passes the test
@@ -221,6 +244,8 @@ function wamex_select_tech($loading,$target,$popeq){
 	}
 	
 	//if (count($arrayPossibleTech) > 0){
+		if ($debug) echo "<b>".count($arrayPossibleTech)." technologies pass tests.</b><br/>";
+		if ($debug) echo "</pre>";
 		return $arrayPossibleTech;
 	//} else {
 		//return $arrayPossibleTech[] = 'No technologies suitable for selected standard and sources.';
@@ -230,8 +255,8 @@ function wamex_select_tech($loading,$target,$popeq){
 
 function wamex_test($source,$coefficient,$output,$limit=0){
 	
-	//global $debug;
-	$debug = FALSE;
+	global $debug;
+	//$debug = FALSE;
 	if (is_null($coefficient)) {
 		$coefficient = -1;
 	}
@@ -246,28 +271,43 @@ function wamex_test($source,$coefficient,$output,$limit=0){
 		}
 
 		if($debug) {
-			echo "param: SRC:$source, COEFF:$coefficient, OUTPUT:$output, LIMIT:$limit <br/>";
+			//echo "param: SRC:$source, COEFF:$coefficient, OUTPUT:$output, RESIDUE:$residue, LIMIT:$limit <br/>";
+			//echo "<tt>Efficiency: $coefficient | Loading: $source | Standard: $output | Residue: $residue | </tt>";
+			$debug_str = "<tt>".str_pad($coefficient,10,"_",STR_PAD_LEFT)." | ".str_pad($source,7,"_",STR_PAD_LEFT)." | ".str_pad($output,8,"_",STR_PAD_LEFT)." | ".str_pad($residue,7,"_",STR_PAD_LEFT)." |</tt>";
+			$debug_str = str_replace("_","&nbsp;",$debug_str);
+			echo $debug_str;
 		}
 
 		// If calculate residue is less than max limit, set residue to the tech limit
 		if ($residue < $limit) $residue = $limit;
 
-		if ($debug){ 
+		/*if ($debug){ 
 				echo "[influent: $source / effluent: $residue / target: $output] ";
-			}
+			}*/
 
 		//if residue is less than the effluent target, it passes the test
-		if ($residue <= $output){
+		if ($residue <= $output){ // || $output == "null"){
 			return TRUE;
 		}else{
 
-			if ($debug) echo "Failed test...<br><br>";
+			if ($debug) {
+				//echo "<tt>Status: FAIL | Action: Quit</tt><br/><br/>";
+				$debug_str = "<tt> ".str_pad("FAIL",6,"_",STR_PAD_BOTH)." | ".str_pad("Quit",6,"_",STR_PAD_BOTH)."</tt><br/><br/>";
+				$debug_str = str_replace("_","&nbsp;",$debug_str);
+				echo $debug_str;
+			}
 			return FALSE;
 		} 
 
 	}else{
 
-		if ($debug) echo "Test skipped. Not applicable... ";
+		if ($debug) {
+			//echo "<tt>Efficiency: $coefficient | Loading: $source | Standard: N/A | Residue: N/A | </tt>";
+			$debug_str =  "<tt>".str_pad($coefficient,10,"_",STR_PAD_LEFT)." | ".str_pad($source,7,"_",STR_PAD_LEFT)." | ".str_pad($output,8,"_",STR_PAD_LEFT)." | ".str_pad("N/A",7,"_",STR_PAD_LEFT)." |</tt>";
+			$debug_str = str_replace("_","&nbsp;",$debug_str);
+			echo $debug_str;
+			//echo "<tt>N/A | Action: Skip | </tt>";
+		}
 		return TRUE;
 
 	}

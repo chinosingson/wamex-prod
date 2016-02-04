@@ -19,6 +19,7 @@ if ($node):
 	$field_effluent_totn = field_get_items('node',$node,'field_loading_totn');
 	$field_effluent_totp = field_get_items('node',$node,'field_loading_totp');
 	$field_effluent_tss = field_get_items('node',$node,'field_loading_tss');
+	$field_land_cost = field_get_items('node',$node,'field_land_cost');
 	$addLoadingPerm = user_access('add loading custom');
 	$editProjectPerm = user_access('edit project custom');
 	//
@@ -95,6 +96,10 @@ $view_loading->set_display('block');
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
 						<span class="hidden" id="td-field-ci-cost"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
 						</td>
+					</tr>
+					<tr>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost</label></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -243,6 +248,26 @@ $view_loading->set_display('block');
 		</div>
 	</div>
 
+	<div id="scenario-container" class="container-fluid panel panel-default">
+		<div id="heading-scenario" class="panel-heading" role="tab">
+			<div id="scenario-title-container">
+				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenarios" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collaps-scenario"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
+				<button class="btn btn-xs btn-default section-help" id="scenario-help">?</button>
+			</div>
+		</div>
+		<div id="collapse-scenario" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-scenario">
+			<div id="scenario-list">
+				<!--a<br/>
+				a<br/>
+				a<br/>
+				a<br/>
+				a<br/>
+				a<br/>
+				a<br/>-->
+			</div>
+		</div>
+	</div>
+	
 	<div id="loading-tech-container" class="container-fluid panel panel-default">
 		<div id="heading-tech" class="panel-heading" role="tab">
 			<div id="tech-title-container">

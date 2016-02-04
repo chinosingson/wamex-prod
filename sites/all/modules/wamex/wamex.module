@@ -42,10 +42,34 @@ function wamex_permission() {
 		'description' => t('Allow users to delete WaMEx loadings'),
 	);
 	
+	$items['administer wamex settings'] = array(
+		'title' => t('<em>Settings</em>: Modify WaMEx module settings.'),
+		'description' => t('Allow users to change WaMEx module settings'),
+	);
+	
 	return $items;
 }
 
- 
+/*
+ * Implements hook_admin()
+ */
+
+function wamex_admin (){
+	$form = array();
+	
+	$form['wamex_tech_debug'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Technology Selection Debug Mode'),
+		'#options' => array(0 => FALSE, 1 => TRUE),
+		'#default_value' => variable_get('wamex_tech_debug', 3),
+		'#description' => t("Enable display of wastewater technology parameter values while testing for suitability."),
+	);
+	
+	return system_settings_form($form);
+	
+}
+
+
  
  /**
  * Implements hook_menu().
@@ -128,6 +152,16 @@ function wamex_menu() {
 		//'type' => MENU_DEFAULT_LOCAL_TASK,
 	);
 	
+	$items['admin/settings/wamex'] = array(
+		'title' => 'WaMEx Settings',
+		'description' => 'Administrative settings for the WaMEx Module.',
+		'page callback' => 'drupal_get_form',
+    'page arguments' => array('wamex_admin'),
+		'access arguments' => array('administer wamex settings'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	
 	/*$items['loading/techs/all'] = array(
 		'title' => 'All Technologies',
 		'page callback' => 'wamex_get_all_tech',
@@ -204,6 +238,7 @@ function wamex_display_tech($techArgs){
 		'TSS'  => $ary_standards_init[4],
 	);
 	
+	//$output .= "<pre>".implode('|',$arrayAverageLoad)."</pre>";
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
 
 	$header = array(
@@ -211,10 +246,10 @@ function wamex_display_tech($techArgs){
 		array('data' => t('Name'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name')) ,
 		array('data' => t('COD'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
 		array('data' => t('BOD5'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
-		array('data' => t('N %'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+		array('data' => t('N'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
 		//array('data' => t('N max'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
-		array('data' => t('P '), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
-		array('data' => t('TSS %'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
+		array('data' => t('P'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
+		array('data' => t('TSS'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
 		//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
 		array('data'=> t('&nbsp;'),'class'=>array('col-md-1','tech-attributes','col-volc')),
 	);
@@ -230,13 +265,15 @@ function wamex_display_tech($techArgs){
 	
 	//$output .= "<pre>".print_r($tech_ids,1)."</pre>";
 	
+	// get scenario sorting here
+	
 	if (count($tech_ids)>0){
 		//$sql .= tablesort_sql($header);
 		//$result = pager_query($sql, 50, 0 , NULL, $keys);
 		$output .= "<div id=\"tech-count\">Displaying ".count($tech_ids)." Technology options.<br/>Population Equivalent: ".number_format($str_popeq,2)."</div>";
 
 		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
-		$results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_a', 'max_tss_p', 'max_tss_a'))
+		$results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a'))
 								//->orderByHeader($header)
 							 ->condition('tid', $tech_ids,'IN')
 							 ->execute();
@@ -246,13 +283,13 @@ function wamex_display_tech($techArgs){
 			$rows[] = array(
 				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
 				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
-				'COD'=>array('data'=>$val->cod, 'class'=>array('tech-attributes','tech-cod','col-cod')),
-				'BOD5'=>array('data'=>$val->max_bod, 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
-				'N_p'=>array('data'=>$val->max_n_p, 'class'=>array('tech-attributes','tech-totn','col-totn')),
-				//'N_a'=>array('data'=>$val->max_n_a, 'class'=>array('tech-attributes','tech-totn','col-totn')),
-				'P'=>array('data'=>$val->max_p_a, 'class'=>array('tech-attributes','tech-totp','col-totp')),
-				'TSS_p'=>array('data'=>$val->max_tss_p, 'class'=>array('tech-attributes','tech-tss','col-tss')),
-				//'TSS_a'=>array('data'=>$val->max_tss_a,'class'=>array('tech-attributes','tech-tss','col-tss')),
+				'COD'=>array('data'=>(!is_null($val->cod) ? "<!--(p = ".$val->cod.") -->".number_format((1-$val->cod)*$arrayAverageLoad['COD'],1) : ""), 'class'=>array('tech-attributes','tech-cod','col-cod')),
+				// ."/".(1-$val->cod)*$arrayAverageLoad['COD']
+				'BOD5'=>array('data'=>(!is_null($val->max_bod) ? number_format((1-$val->max_bod)*$arrayAverageLoad['BOD5'],1) : ""), 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
+				//."/".(1-$val->max_bod)*$arrayAverageLoad['BOD5']
+				'N'=>array('data'=>(!is_null($val->max_n_a) ? "<!--(a) -->".number_format($val->max_n_a,1) : (!is_null($val->max_n_p) ? "<!--(p = ".$val->max_n_p.") -->".number_format((1-$val->max_n_p)*$arrayAverageLoad['N'],1) : "")), 'class'=>array('tech-attributes','tech-totn','col-totn')),
+				'P'=>array('data'=>(!is_null($val->max_p_a) ? "<!--(a) -->".number_format($val->max_p_a,1) : (!is_null($val->max_p_p) ? "<!--(p = ".$val->max_p_p.") -->".number_format((1-$val->max_p_p)*$arrayAverageLoad['P'],1) : "")), 'class'=>array('tech-attributes','tech-totp','col-totp')),
+				'TSS'=>array('data'=>(!is_null($val->max_tss_a) ? "<!--(a)--> ".number_format($val->max_tss_a,1) : (!is_null($val->max_tss_p) ? "<!--(p = ".$val->max_tss_p.") -->".number_format((1-$val->max_tss_p)*$arrayAverageLoad['TSS'],1) : "")), 'class'=>array('tech-attributes','tech-tss','col-tss')),
 				array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
 			);
 		}
@@ -760,6 +797,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_author = $node->field_author['und'][0]['value'];
 		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
 		$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
+		$field_land_cost = $node->field_land_cost['und'][0]['value'];
 		$field_currency = $node->field_currency['und'][0]['tid'];
 		$field_exchange_rate_to_usd = $node->field_exchange_rate_to_usd['und'][0]['value'];
 		$field_effluent_standard = $node->field_effluent_standard['und'][0]['tid'];
@@ -792,6 +830,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_author = '';
 		$field_discount_rate = 0;
 		$field_ci_cost = 0;
+		$field_land_cost = 0;
 		$field_currency = 2;	// default to tid of US Dollar
 		$field_exchange_rate_to_usd = 1.0;
 		$field_effluent_standard = '';
@@ -892,6 +931,14 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'textfield',
 		'#title' => t('Capital Investment Cost'),
 		'#default_value' => $field_ci_cost,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+
+	$form['field_land_cost_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Land Cost'),
+		'#default_value' => $field_land_cost,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);

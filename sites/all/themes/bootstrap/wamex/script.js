@@ -217,11 +217,12 @@
 				}*/
 				
 				function getEffluentStandardAttributes (){
-					var effluentStandardAttributes = ($('#edit-field-cod').val() == 'N/A' ? null : $('#edit-field-cod').val()) +'|'+
-						($('#edit-field-bod5').val() == 'N/A' ? null : $('#edit-field-bod5').val()) +'|'+
-						($('#edit-field-totn').val() == 'N/A' ? null : $('#edit-field-totn').val()) +'|'+
-						($('#edit-field-totp').val() == 'N/A' ? null : $('#edit-field-totp').val()) +'|'+
-						($('#edit-field-tss').val() == 'N/A' ? null : $('#edit-field-tss').val());
+					var effluentStandardAttributes = ($('#edit-field-cod').val() == 'N/A' ? -1 : $('#edit-field-cod').val()) +'|'+
+						($('#edit-field-bod5').val() == 'N/A' ? -1 : $('#edit-field-bod5').val()) +'|'+
+						($('#edit-field-totn').val() == 'N/A' ? -1 : $('#edit-field-totn').val()) +'|'+
+						($('#edit-field-totp').val() == 'N/A' ? -1 : $('#edit-field-totp').val()) +'|'+
+						($('#edit-field-tss').val() == 'N/A' ? -1 : $('#edit-field-tss').val());
+						//console.log("efflAttr:"+effluentStandardAttributes);
 					return effluentStandardAttributes;
 				}
 				
@@ -229,6 +230,7 @@
 					var averageLoadings = $('#ave_adwf').html()+'|'+$('#ave_cod').html()+'|'+$('#ave_bod5').html()+'|'+$('#ave_totn').html()+'|'+$('#ave_totp').html()+'|'+$('#ave_tss').html();
 					//console.log($('#ave_adwf').html());
 					if($('#ave_adwf').length > 0){
+						//console.log("load:"+averageLoadings);
 						return averageLoadings;
 					}
 					else {
