@@ -205,28 +205,33 @@ function wamex_select_tech($loading,$target,$popeq){
 
 		// Test for COD
 		if ($debug) echo "<tt>COD&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
-		if (wamex_test($loading["COD"],$tech["pCOD"],$target["COD"],$tech["aCOD"])){
-			if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+		$test_cod = wamex_test($loading["COD"],$tech["pCOD"],$target["COD"],$tech["aCOD"]);
+		if ($test_cod!="FAIL"){
+			if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad($test_cod,6,"_",STR_PAD_BOTH)." | ".str_pad(($test_cod=="PASS"?"Next":"Skip"),6,"_",STR_PAD_BOTH)."</tt><br/>");
 			
 			if ($debug) echo "<tt>BOD5&nbsp;&nbsp;|&nbsp;</tt>";
 			// If good, test for BOD5
-			if (wamex_test($loading["BOD5"],$tech["pBOD5"],$target["BOD5"],$tech["pBOD5"])){
-				if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+			$test_bod5 = wamex_test($loading["BOD5"],$tech["pBOD5"],$target["BOD5"],$tech["pBOD5"]);
+			if ($test_bod5!="FAIL"){
+				if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad($test_bod5,6,"_",STR_PAD_BOTH)." | ".str_pad(($test_bod5=="PASS"?"Next":"Skip"),6,"_",STR_PAD_BOTH)."</tt><br/>");
 
 				if ($debug) echo "<tt>N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";	
 				// If good, test for N
-				if (wamex_test($loading["N"],$tech["pN"],$target["N"],$tech["aN"])){
-						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+				$test_n = wamex_test($loading["N"],$tech["pN"],$target["N"],$tech["aN"]);
+				if ($test_n!="FAIL"){
+						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad($test_n,6,"_",STR_PAD_BOTH)." | ".str_pad(($test_n=="PASS"?"Next":"Skip"),6,"_",STR_PAD_BOTH)."</tt><br/>");
 					
 					if ($debug) echo "<tt>P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
 					// If good, test for P
-					if (wamex_test($loading["P"],$tech["pP"],$target["P"],$tech["aP"])){
-						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+					$test_p = wamex_test($loading["P"],$tech["pP"],$target["P"],$tech["aP"]);
+					if ($test_p!="FAIL"){
+						if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad($test_p,6,"_",STR_PAD_BOTH)." | ".str_pad(($test_p=="PASS"?"Next":"Skip"),6,"_",STR_PAD_BOTH)."</tt><br/>");
 						
 						if ($debug) echo "<tt>TSS&nbsp;&nbsp;&nbsp;|&nbsp;</tt>";
 						// If good, test for TSS
-						if (wamex_test($loading["TSS"],$tech["pTSS"],$target["TSS"],$tech["aTSS"])){
-							if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad("Pass",6,"_",STR_PAD_BOTH)." | Continue</tt><br/>");
+						$test_tss = wamex_test($loading["TSS"],$tech["pTSS"],$target["TSS"],$tech["aTSS"]);
+						if ($test_tss!="FAIL"){
+							if ($debug) echo str_replace("_","&nbsp","<tt> ".str_pad($test_tss,6,"_",STR_PAD_BOTH)." | ".str_pad(($test_tss=="PASS"?"Next":"Skip"),6,"_",STR_PAD_BOTH)."</tt><br/>");
 							// Okay, this tech passes all tests	
 							if ($debug) echo "<tt><b>FINAL | PASS</b></tt><br/><br/>";
 							$flag = TRUE;
@@ -287,7 +292,7 @@ function wamex_test($source,$coefficient,$output,$limit=0){
 
 		//if residue is less than the effluent target, it passes the test
 		if ($residue <= $output){ // || $output == "null"){
-			return TRUE;
+			return "PASS";
 		}else{
 
 			if ($debug) {
@@ -296,7 +301,7 @@ function wamex_test($source,$coefficient,$output,$limit=0){
 				$debug_str = str_replace("_","&nbsp;",$debug_str);
 				echo $debug_str;
 			}
-			return FALSE;
+			return "FAIL";
 		} 
 
 	}else{
@@ -308,7 +313,7 @@ function wamex_test($source,$coefficient,$output,$limit=0){
 			echo $debug_str;
 			//echo "<tt>N/A | Action: Skip | </tt>";
 		}
-		return TRUE;
+		return "N/A";
 
 	}
 }
