@@ -126,12 +126,19 @@ function wamex_get_all_tech($popeqV){ // scenario on/off
 	//$fields[] = $capex_field['a'];
 	//if ($capex_field['b']) $fields[] = $capex_field['b'];
 	//echo print_r($fields,1)."<br/>";
+	
+	// REFACTOR
+	// function wamex_capex_condition (popeqV){
+	//	return $capex_condition; // db_or()... 
+	// }
+	
+	
   $query = $select->fields('wt', $fields)
 						->condition($capex_condition);
 							//->orderByHeader($header)
 							//->condition($capex_field, '0', '<>')
 							//->isNotNull($capex_field);
-	
+
 
 	//echo $query->__toString();
 	//echo "<br/>";
@@ -178,6 +185,20 @@ function wamex_get_all_tech($popeqV){ // scenario on/off
 }
 
 
+// function wamex_get_popeq_threshold (){
+// return 
+	
+//}
+
+
+
+// function wamex_scenario_filter($tids = array(tid), array(parameters)) {
+// return array( scenario scores ) // applicable/enabled parameters, sorted by score descending
+//}
+
+// function wamex_scenario_score(){
+//	score logic/math goes here
+//}
 
 function wamex_select_tech($loading,$target,$popeq){
 

@@ -98,7 +98,7 @@ $view_loading->set_display('block');
 						</td>
 					</tr>
 					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost</label></td>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(per sq m)</span></label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
 					</tr>
 				</tbody>
