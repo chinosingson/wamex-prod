@@ -1,8 +1,22 @@
 ﻿	<?php
-$node = menu_get_object(); 
-if ($node):
+	//$node = menu_get_object(); 
+
+	global $debug;
+	$user_debug = $debug;
+	global $user;
+	if($user->uid!=0){
+		$user_fields = user_load($user->uid);
+		$user_scenarios = (isset($user_fields->field_user_scenarios[LANGUAGE_NONE]) ? $user_fields->field_user_scenarios[LANGUAGE_NONE][0]['value'] : FALSE);
+	} else {
+		$user_fields = null;
+		$user_scenarios = FALSE;
+	}
+
+	if ($node):
 	$nid = $node->nid;
-	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
+	//print "<pre style='display: block; '>".$user_scenarios."</pre>";
+	//print "<pre style='display: block; '>".$user_debug."</pre>";
+	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($user_fields,1)."</pre>";
 	//$nid = field_get_items('node',$node,'nid');
 	$nid = $node->nid;
 	$field_body = field_get_items('node',$node,'body');
@@ -22,8 +36,9 @@ if ($node):
 	$field_land_cost = field_get_items('node',$node,'field_land_cost');
 	$addLoadingPerm = user_access('add loading custom');
 	$editProjectPerm = user_access('edit project custom');
+	$addScenarioPerm = user_access('add scenario custom');
 	//
-	//print $editPerm;
+
 	if (isset($nid)){
 		// set some node values to the jQuery extension
 		drupal_add_js(array('node' => array('values' => array('nid'=>$node->nid))),'setting');
@@ -41,6 +56,9 @@ if ($node):
 
 $view_loading = views_get_view('loading');
 $view_loading->set_display('block');
+
+$view_scenario = views_get_view('scenario');
+$view_scenario->set_display('block');
 
 ?>
 <div id="project-page-<?php print $nid; ?>" class="panel-group" role="tablist" aria-multiselectable="false">
@@ -107,7 +125,7 @@ $view_loading->set_display('block');
 	</div>
 
 	<div id="loading-list-container" class="container-fluid panel panel-default">
-		<div  id="heading-loading-list" class="panel-heading" role="tab">
+		<div id="heading-loading-list" class="panel-heading" role="tab">
 			<div id="loading-title-container">
 				<h3 class="project-section-title panel-title" id="loading-list-title"><a href="#collapse-loading-list" name="loading-list" role="button" data-toggle="collapse" aria-expanded="true"><span id="toggle-loading-list" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Wastewater Characterisation</a></h3>
 				<?php if ($addLoadingPerm):?><button class="btn btn-primary btn-sm btn-add-loading pull-right" id="add-loading-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
@@ -166,7 +184,7 @@ $view_loading->set_display('block');
 						array('data'=>$effl_form['field_totn'], 'class'=>array('tech-attributes','tech-totn','col-totn')),
 						array('data'=>$effl_form['field_totp'], 'class'=>array('tech-attributes','tech-totp','col-totp')),
 						array('data'=>$effl_form['field_tss'], 'class'=>array('tech-attributes','tech-tss','col-tss')),
-						array('data' => ($editProjectPerm ? $effl_form['actions']['submit'] : t('wala'))),
+						array('data' => ($editProjectPerm ? $effl_form['actions']['submit'] : t(''))),
 						//array('data' => t('&nbsp;')),
 						//array('data' => t('&nbsp;')),
 					);
@@ -251,19 +269,28 @@ $view_loading->set_display('block');
 	<div id="scenario-container" class="container-fluid panel panel-default">
 		<div id="heading-scenario" class="panel-heading" role="tab">
 			<div id="scenario-title-container">
-				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenarios" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collaps-scenario"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
+				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario-list" name="scenario-list" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collaps-scenario"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="scenario-help">?</button>
+				<?php if ($addScenarioPerm):?><button class="btn btn-primary btn-sm btn-add-scenario pull-right" id="add-scenario-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
+				<div class="form-group pull-right" id="scenario-toggle-container">
+					<div id="user-scenarios-toggle-hidden"><?php //print ($user_scenarios ? "ON" : "OFF");?></div>
+					<div class="col-sm-offset-2 col-sm-10">
+						<div class="checkbox">
+							<label for="user-scenarios-toggle">
+								<input type="checkbox" disabled id="user-scenarios-toggle" name="user-scenarios" value="<?php //print $user_scenarios; ?>"><?php //print ($user_scenarios ? "ON" : "OFF");?>
+							</label>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="collapse-scenario" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-scenario">
-			<div id="scenario-list">
-				<!--a<br/>
-				a<br/>
-				a<br/>
-				a<br/>
-				a<br/>
-				a<br/>
-				a<br/>-->
+			<div class="panel-body">
+				<div class="table-responsive" id="scenario-form-container"></div>
+				<div id="scenario-view-container">
+					<div id="scenario-list-container"><?php $view_scenario->set_arguments(array($nid)); $view_scenario->pre_execute(); $view_scenario->execute(); print $view_scenario->render(); ?></div>
+				</div>
+				<div id="scenario-actions-container"></div>
 			</div>
 		</div>
 	</div>

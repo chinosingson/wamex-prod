@@ -1,11 +1,12 @@
-﻿<?php 	$node = menu_get_object(); ?><div class=""><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
-   <?php if (!empty($title) || !empty($caption)) : ?>
-     <caption><?php print $caption . $title; ?></caption>
-  <?php endif; ?>
-  <?php if (!empty($header)) : ?>
-    <thead>
-      <tr>
-        <?php foreach ($header as $field => $label):
+﻿<?php 	$node = menu_get_object(); 
+ $editProjectPerm = user_access('edit project custom');
+?><div class=""><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
+<?php if (!empty($title) || !empty($caption)) : ?>
+<caption><?php print $caption . $title; ?></caption>
+<?php endif; ?><?php if (!empty($header)) : ?>
+		<thead>
+			<tr>
+				<?php foreach ($header as $field => $label):
 					$aryStrHeaderClasses = explode('-',$header_classes[$field]); 
 					$headerName = end($aryStrHeaderClasses);
 					$gridClass = '';
@@ -46,6 +47,10 @@
             <?php print $content; ?>
           </td>
         <?php endforeach; ?>
+				<?php if ($editProjectPerm): ?>
+					<td class="views-field views-field-nothing views-loading-field-value"><a class="btn btn-default btn-xs project-edit-loading-btn" id="edit-loading-<?php print $row['nid']?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a></td>
+					<td class="views-field views-field-nothing views-loading-field-value"><a class="btn btn-danger btn-xs project-delete-loading-btn" id="delete-loading-<?php print $row['nid']; ?>"><span class="glyphicon glyphicon-trash"></span>&nbsp;Delete</a></td>
+				<?php endif; ?>
       </tr>
     <?php endforeach; ?>
   </tbody>

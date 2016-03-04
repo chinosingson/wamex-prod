@@ -72,7 +72,7 @@ function wamex_form_alter(&$form, &$form_state, $form_id) {
 		case 'loading_node_form':
 		case 'wamex_loading_form':
 			//$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
-			if (isset($form['field_loading_project'])) { 
+			if (isset($form['field_loading_project'][LANGUAGE_NONE])) { 
 				drupal_set_title('Create Loading - '.$form['field_loading_project']['und']['#options'][1]);
 			}
 			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;

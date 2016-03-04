@@ -326,14 +326,43 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	/*margin-bottom: 10px;*/
 }
 
-.form-control-feedback.glyphicon-remove {
+
+#wamex-scenario-form .form-control-feedback.glyphicon-remove,
+#wamex-loading-form .form-control-feedback.glyphicon-remove {
 	color: red;
 	margin-left: 10px;
 }
-.form-control-feedback.glyphicon-ok {
+
+
+#wamex-scenario-form .form-control-feedback.glyphicon-ok,
+#wamex-loading-form .form-control-feedback.glyphicon-ok {
 	color: green;
 	margin-left: 10px;
 }
+
+#wamex-scenario-form .form-control-feedback.glyphicon-ok,
+#wamex-scenario-form .form-control-feedback.glyphicon-remove{
+	float: right;
+	position: relative;
+	top: 2px;
+	left: 15px;
+}
+
+
+.views-scenario-field-header,
+.views-scenario-field-value {
+	text-align: center;
+}
+
+.views-scenario-field-value {
+	/*font-size: 12px;*/
+	vertical-align: middle !important;
+}
+
+.scenario-title-label {
+	font-weight: normal;
+}
+
 
 body.page-project-edit #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i,
 body.page-dashboard #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i {
@@ -412,6 +441,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	font-size: 24px;
 }
 
+#collapse-scenario .panel-body,
 #collapse-popeq .panel-body,
 #collapse-standards .panel-body,
 #collapse-loading-list .panel-body {
@@ -419,6 +449,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	padding-bottom: 0px;
 }
 
+#collapse-scenario .panel-body,
 #collapse-loading-list .panel-body {
 	padding-left: 0px;
 	padding-right: 0px;
@@ -443,6 +474,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	color: #666666;
 }
 
+#table-scenario-form > tbody > tr > td.form-scenario-label,
 #table-popeq > tbody > tr > td.popeq-row-header {
 	vertical-align: middle;
 }
@@ -494,4 +526,53 @@ table#table-loading-tech td {
 		font-size: 11px;
 	}
 	
+}
+
+#wamex-scenario-form .form-item label {
+	min-width: 150px;
+	max-width: 50%;
+}
+
+.scenario-param-value-display {
+	/*border: 1px dotted red;*/
+	float: right;
+	
+}
+
+.scenario-required,
+.form-scenario-param{
+	display: inline-block;
+	/*position: absolute;
+	float: left;
+	width: 50%;*/
+}
+
+
+#view-project-scenarios {
+	margin-bottom: 0px;
+}
+
+#wamex-scenario-form #form-wrapper-div {
+	padding-top: 10px;
+	padding-left: 15px;
+}
+
+#scenario-toggle-container {
+	margin: 5px 10px 0px 0px;
+}
+
+.scenario-field-value-hidden,
+#user-scenarios-toggle-hidden {
+	display: none;
+}
+
+/* prettify css for scenario parameter sliders */
+#wamex-scenario-form #edit-title {
+	width: 48%;
+}
+#wamex-scenario-form input[type='range'] {
+	/*border: 1px dotted red;*/
+	height: 4px;
+	width: 48%;
+	padding: 0px;
 }

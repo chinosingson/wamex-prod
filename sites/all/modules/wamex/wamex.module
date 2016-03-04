@@ -43,24 +43,24 @@ function wamex_permission() {
 	);
 	
   $items['add scenario custom'] = array(
-		'title' => t('<em>scenario</em>: Add new scenario.'),
+		'title' => t('<em>Scenario</em>: Add new scenario.'),
 		'description' => t('Allow users to add new WaMEx scenarios'),
 	);
 	
 	$items['edit scenario custom'] = array(
-		'title' => t('<em>scenario</em>: Edit existing scenario.'),
+		'title' => t('<em>Scenario</em>: Edit existing scenario.'),
 		'description' => t('Allow users to edit WaMEx scenarios'),
 	);
 
 	$items['delete scenario custom'] = array(
-		'title' => t('<em>scenario</em>: Delete existing scenario.'),
+		'title' => t('<em>Scenario</em>: Delete existing scenario.'),
 		'description' => t('Allow users to delete WaMEx scenarios'),
 	);
 
-	$items['administer wamex settings'] = array(
+	/*$items['administer wamex settings'] = array(
 		'title' => t('<em>Settings</em>: Modify WaMEx module settings.'),
 		'description' => t('Allow users to change WaMEx module settings'),
-	);
+	);*/
 	
 	return $items;
 }
@@ -69,7 +69,7 @@ function wamex_permission() {
  * Implements hook_admin()
  */
 
-function wamex_admin (){
+/*function wamex_admin (){
 	$form = array();
 	
 	$form['wamex_tech_debug'] = array(
@@ -82,7 +82,7 @@ function wamex_admin (){
 	
 	return system_settings_form($form);
 	
-}
+}*/
 
 
  
@@ -170,7 +170,7 @@ function wamex_menu() {
 	// scenario functions
 	$items['scenario/add/%'] = array(
 		'title' => 'Add scenario',
-		'page callback' => 'wamex_scenario_form_render',
+		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_scenario_form',NULL,2),
 		//'page callback' => 'drupal_get_form',
 		//'page arguments' => array('wamex_scenario_form',NULL,2),
@@ -179,7 +179,7 @@ function wamex_menu() {
 	);
 	$items['scenario/edit/%'] = array(
 		'title' => 'Edit scenario',
-		'page callback' => 'wamex_scenario_form_render',
+		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_scenario_form',2,NULL),
 		//'page callback' => 'drupal_get_form',
 		//'page arguments' => array('wamex_scenario_form',2, NULL),
@@ -197,14 +197,14 @@ function wamex_menu() {
 	);
 	
 	
-	$items['admin/settings/wamex'] = array(
+	/*$items['admin/settings/wamex'] = array(
 		'title' => 'WaMEx Settings',
 		'description' => 'Administrative settings for the WaMEx Module.',
 		'page callback' => 'drupal_get_form',
     'page arguments' => array('wamex_admin'),
 		'access arguments' => array('administer wamex settings'),
 		'type' => MENU_NORMAL_ITEM,
-	);
+	);*/
 
 	
 	/*$items['loading/techs/all'] = array(
@@ -249,15 +249,18 @@ function wamex_menu() {
 }*/
 
 function wamex_display_tech($techArgs){
+	global $debug;
 	$output = '<div class="table-responsive">';
 	//$output .= $techArgs;
 	$aryTechArgs = explode('&',$techArgs);
 	$str_loadings  = $aryTechArgs[0];
 	$str_standards = $aryTechArgs[1];
 	$str_popeq = $aryTechArgs[2];
+	$str_scenario = $aryTechArgs[3];
 	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
 	//$output .= "<pre>Standards: ".$str_standards."</pre>";
 	//$output .= "<pre>PE: ".$str_popeq."</pre>";
+	//$output .= "<pre>Scenario: ".$str_scenario."</pre>";
 	
 	
 	$ary_loadings_init  = explode('|',$str_loadings); 	// check for 6 items
@@ -285,6 +288,7 @@ function wamex_display_tech($techArgs){
 	
 	//$output .= "<pre>".implode('|',$arrayAverageLoad)."</pre>";
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
+	if ($str_scenario!="") $score_header = "Score"; else $score_header = "&nbsp;";
 
 	$header = array(
 		//array('data' => t('ID'), 'class'=>array('tech-attributes','tech-id','col-id')), 
@@ -296,21 +300,81 @@ function wamex_display_tech($techArgs){
 		array('data' => t('P'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
 		array('data' => t('TSS'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
 		//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
-		array('data'=> t('&nbsp;'),'class'=>array('col-md-1','tech-attributes','col-volc')),
+		array('data'=> t($score_header),'class'=>array('col-md-1','tech-attributes','col-volc')),
 	);
 	
 	// check if there are technology id's saved to the current node
-	$node = menu_get_object();
-	if (!is_null($node->field_tech_ids)) {
-		$tech_ids = $node->field_tech_ids;	// needs to be exploded from a delimited list saved in this field
-	} else {
+	//$node = menu_get_object();
+	//if (!is_null($node->field_tech_ids)) {
+		//$tech_ids = $node->field_tech_ids;	// needs to be exploded from a delimited list saved in this field
+	//} else {
 		// fetch suitable technologies from database
-		$tech_ids = wamex_select_tech($arrayAverageLoad,$arrayStandards,$str_popeq);
+		$techs = wamex_select_tech($arrayAverageLoad,$arrayStandards,$str_popeq,$str_scenario);
+		//if ($debug) echo print_r($techs,1)."<br/>";
+	//}
+	
+
+	$scenario_sorted_techs = array();
+	if ($str_scenario!=""){
+		if ($debug) {
+			echo "<b>Determining Scenario Scores</b><br/><pre>";
+			//echo print_r($techs,1)."<br/>";
+			echo "<b>Tech|  Land  |  Chem  | Energy |  O&M   | Shock  | Flows  | Toxic  | Sludge | Score  </b><br/>";
+			//$scenario_scores[0] = "";
+			$scenario_weights = explode("|",$str_scenario);
+			foreach($scenario_weights as $key=>$weight){
+				$scenario_weights[$key] = str_replace("_","&nbsp;",str_pad($weight,8,"_",STR_PAD_BOTH));
+			}
+			echo "xxxx|".implode("|",$scenario_weights)."|xxxxxxxx<br/>";
+			//echo $str_scenario."<br/>";
+		}
+		$score = array();
+		foreach($techs as $key=>$tech){
+			$scenario_sorted_techs[$tech['id']]['id'] = $tech['id'];
+			$scenario_sorted_techs[$tech['id']]['score'] = wamex_scenario_score($tech,$str_scenario);
+			$scenario_sorted_techs[$tech['id']]['name'] = $tech['name'];
+			$tech['score'] = $scenario_sorted_techs[$tech['id']]['score'];
+			$score[$key] = $tech['score'];
+		}
+		if ($debug) {
+			//echo print_r($techs,1)."<br/>";
+			//echo print_r($scenario_sorted_techs,1)."<br/>";
+			echo "</pre>";
+		}
+
+		//arsort($scenario_sorted_techs);
+		array_multisort($score, SORT_DESC, $scenario_sorted_techs);
+		if ($debug) {
+			echo "<b>Sorting Technologies by Scenario Score (High to Low)</b><br/><pre>";
+			//echo print_r($scenario_sorted_techs,1)."<br/>";
+		}
+		//$scenario_sorted_techs_rev = array_reverse($scenario_sorted_techs,TRUE);
+		foreach ($scenario_sorted_techs as $tech_sorted){
+			$tech_ids[] = $tech_sorted['id'];
+		}
+		if ($debug) {
+			echo "<b>Tech| Score  | Name</b><br/>";
+			foreach($scenario_sorted_techs as $tech_s){
+				echo str_replace("_","&nbsp;",str_pad($tech_s['id'],4,"_",STR_PAD_BOTH))."|<b>".number_format($tech_s['score'],6)."</b>|".$tech_s['name']."<br/>";
+			}
+			//echo print_r($scenario_sorted_techs_rev,1)."<br/>";
+			echo "</pre>";
+		}
+	} else {
+		if ($debug) {
+			echo "<pre>";
+			echo "<b>Tech| Name</b><br/>";
+		}
+		foreach ($techs as $tech){
+			$tech_ids[] = $tech['id'];
+			if ($debug){ 
+				echo str_replace("_","&nbsp;",str_pad($tech['id'],4,"_",STR_PAD_BOTH))."|".$tech['name']."<br/>";
+			}
+		}
+		if ($debug) echo "</pre>";
 	}
-	
-	//$output .= "<pre>".print_r($tech_ids,1)."</pre>";
-	
-	// get scenario sorting here
+
+	//$output .= "<pre>".print_r($scenario_sorted_techs,1)."</pre>";
 	
 	if (count($tech_ids)>0){
 		//$sql .= tablesort_sql($header);
@@ -318,10 +382,15 @@ function wamex_display_tech($techArgs){
 		$output .= "<div id=\"tech-count\">Displaying ".count($tech_ids)." Technology options.<br/>Population Equivalent: ".number_format($str_popeq,2)."</div>";
 
 		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
-		$results = $select->fields('wt', array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a'))
+		$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a');
+		$query = $select->fields('wt', $fields)
 								//->orderByHeader($header)
-							 ->condition('tid', $tech_ids,'IN')
-							 ->execute();
+							 ->condition('tid', $tech_ids,'IN');
+		if ($str_scenario!=""){
+			//if($debug) echo "adding ORDER BY FIELD query condition<br/>";
+			$query->orderBy('FIELD(tid,'.implode(",",$tech_ids).')');
+		}
+		$results = $query->execute();
 		$rows = array();
 		$destination = drupal_get_destination();
 		
@@ -331,7 +400,8 @@ function wamex_display_tech($techArgs){
 		//	return (1-tech_coeff)*loading_param;
 		// }
 
-		foreach ($results as $val) {
+		foreach ($results as $key => $val) {
+			//if($str_scenario!="") $tech_score = $scenario_sorted_techs[$key]['score']; else $tech_score = "";
 			$rows[] = array(
 				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
 				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
@@ -342,6 +412,7 @@ function wamex_display_tech($techArgs){
 				'N'=>array('data'=>(!is_null($val->max_n_a) ? "<!--(a) -->".number_format($val->max_n_a,1) : (!is_null($val->max_n_p) ? "<!--(p = ".$val->max_n_p.") -->".number_format((1-$val->max_n_p)*$arrayAverageLoad['N'],1) : "")), 'class'=>array('tech-attributes','tech-totn','col-totn')),
 				'P'=>array('data'=>(!is_null($val->max_p_a) ? "<!--(a) -->".number_format($val->max_p_a,1) : (!is_null($val->max_p_p) ? "<!--(p = ".$val->max_p_p.") -->".number_format((1-$val->max_p_p)*$arrayAverageLoad['P'],1) : "")), 'class'=>array('tech-attributes','tech-totp','col-totp')),
 				'TSS'=>array('data'=>(!is_null($val->max_tss_a) ? "<!--(a)--> ".number_format($val->max_tss_a,1) : (!is_null($val->max_tss_p) ? "<!--(p = ".$val->max_tss_p.") -->".number_format((1-$val->max_tss_p)*$arrayAverageLoad['TSS'],1) : "")), 'class'=>array('tech-attributes','tech-tss','col-tss')),
+				'score'=>array('data'=>($str_scenario!="" ? number_format($scenario_sorted_techs[$key]['score'],2) : "")),
 				array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
 			);
 		}
@@ -460,30 +531,391 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		$node = NULL;
 		$title = '';
 		$project_nid = $pid;
-		$land   = 0;
-		$chem   = 0;
-		$ener   = 0;
-		$om     = 0;
-		$shock  = 0;
-		$flow   = 0;
-		$toxic  = 0;
-		$sludge = 0;
+		$land   = 1;
+		$chem   = 1;
+		$ener   = 1;
+		$om     = 1;
+		$shock  = 1;
+		$flow   = 1;
+		$toxic  = 1;
+		$sludge = 1;
 	}
 	
 	$form = array();
 	
-	$form[] = array();
+	$form['field_project'] = array(
+		'#type' => 'hidden',
+		'#title' => t('Project'),
+		'#default_value' => $project_nid,
+		'#id' => 'field_project_nid',
+	);
+
+	$form['title'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t('Name'),
+		'#default_value' => $title,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['title']['#attributes']['class'][] = 'scenario-required';
+
+	$form['field_scenario_req_land'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Land'),
+		'#default_value' => $land,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-land-value-display"></div></div>',
+	);
+	$form['field_scenario_req_land']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_req_land']['#attributes']['min'] = 1;
+	$form['field_scenario_req_land']['#attributes']['max'] = 5;
 	
+	$form['field_scenario_req_chem'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Chemical'),
+		'#default_value' => $chem,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-chem-value-display"></div></div>',
+	);
+	$form['field_scenario_req_chem']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_req_chem']['#attributes']['min'] = 1;
+	$form['field_scenario_req_chem']['#attributes']['max'] = 5;
+	
+	$form['field_scenario_req_energy'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Energy'),
+		'#default_value' => $ener,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-energy-value-display"></div></div>',
+	);
+	$form['field_scenario_req_energy']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_req_energy']['#attributes']['min'] = 1;
+	$form['field_scenario_req_energy']['#attributes']['max'] = 5;
+	
+	$form['field_scenario_om'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('O&M'),
+		'#default_value' => $om,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-om-value-display"></div></div>',
+	);
+	$form['field_scenario_om']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_om']['#attributes']['min'] = 1;
+	$form['field_scenario_om']['#attributes']['max'] = 5;
+	
+	$form['field_scenario_shock'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Shock'),
+		'#default_value' => $shock,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-shock-value-display"></div></div>',
+	);
+	$form['field_scenario_shock']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_shock']['#attributes']['min'] = 1;
+	$form['field_scenario_shock']['#attributes']['max'] = 5;
+	
+	$form['field_scenario_flow'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Flow'),
+		'#default_value' => $flow,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-flow-value-display"></div></div>',
+	);
+	$form['field_scenario_flow']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_flow']['#attributes']['min'] = 1;
+	$form['field_scenario_flow']['#attributes']['max'] = 5;
+	
+	$form['field_scenario_toxic'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Toxic'),
+		'#default_value' => $toxic,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-toxic-value-display"></div></div>',
+	);
+	$form['field_scenario_toxic']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_toxic']['#attributes']['min'] = 1;
+	$form['field_scenario_toxic']['#attributes']['max'] = 5;
+
+	$form['field_scenario_sludge'] = array(
+		'#type' => 'textfield',
+		'#required' => FALSE,
+		'#title' => t('Sludge'),
+		'#default_value' => $sludge,
+		'#size' => 15,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-sludge-value-display"></div></div>',
+	);
+	$form['field_scenario_sludge']['#attributes']['class'][] = 'form-scenario-param';
+	$form['field_scenario_sludge']['#attributes']['min'] = 1;
+	$form['field_scenario_sludge']['#attributes']['max'] = 5;
+	
+	$form['actions']['submit']['#type'] = 'submit';
+	$form['actions']['submit']['#ajax']['type'] = 'throbber';
+	$form['actions']['submit']['#ajax']['callback'] = 'wamex_scenario_form_submit';
+	$form['actions']['submit']['#attributes']['id'] = 'edit-scenario-submit';
+	$form['actions']['submit']['#attributes']['class'][] = 'btn-xs';
+	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+	$form['actions']['cancel']['#type'] = 'button';
+	$form['actions']['cancel']['#value'] = t('<span class="glyphicon glyphicon-remove"></span>&nbsp;Cancel');
+	$form['actions']['cancel']['#attributes']['id'] = 'edit-scenario-cancel';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
+	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+
+	if ($nid){
+		// edit existing
+		$form['nid']['#type'] = 'hidden';
+		$form['nid']['#value'] = $nid;
+		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit-'.$nid;
+	} else {
+		// add new
+		//$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit';
+	}
+
 	return $form;
 }
+
+function wamex_scenario_form_render($form, $nid, $pid) {
+	$output = "";
+	//$output .= "<h2>NID: ".$nid."</h2>";
+	//$output .= "<h2>PID: ".$pid."</h2>";
+	
+	if ($nid){
+		$project_nid = $node->field_project[LANGUAGE_NONE][0]['target_id'];
+	} else {
+		$project_nid = $pid;
+	}
+
+	$scenario_form = drupal_get_form($form,$nid,$pid);
+
+	$header = array();
+	$rows = array();
+	
+	/*$header = array(
+		array('data'=>$loading_form['title']['#title'],'class'=>array('col-sm-2')),
+		array('data'=>$loading_form['field_loading_type']['#title'],'class'=>array('col-sm-2','col-type')),
+		//array('data'=>'&nbsp','class'=>array()),
+		//array('data'=>'&nbsp','class'=>array()),
+	);*/
+	
+	$scenario_form['title']['#title'] = null;
+	$scenario_form['field_scenario_req_land']['#title'] = null;
+	$scenario_form['field_scenario_req_chem']['#title'] = null;
+	$scenario_form['field_scenario_req_energy']['#title'] = null;
+	$scenario_form['field_scenario_om']['#title'] = null;
+	$scenario_form['field_scenario_shock']['#title'] = null;
+	$scenario_form['field_scenario_flow']['#title'] = null;
+	$scenario_form['field_scenario_toxic']['#title'] = null;
+	$scenario_form['field_scenario_sludge']['#title'] = null;
+	//$scenario_form['field_project']['#default_value'] = $project_nid;
+
+	$rows[] = array(array('data'=>t('<label>Name</label>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['title']));
+	$rows[] = array(array('data'=>t('<label>Land</label><span class="scenario-param-value-display" id="edit-field-scenario-req-land-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_req_land']));
+	$rows[] = array(array('data'=>t('<label>Chemical</label><span class="scenario-param-value-display" id="edit-field-scenario-req-chem-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_req_chem']));
+	$rows[] = array(array('data'=>t('<label>Energy</label><span class="scenario-param-value-display" id="edit-field-scenario-req-energy-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_req_energy']));
+	$rows[] = array(array('data'=>t('<label>O&M</label><span class="scenario-param-value-display" id="edit-field-scenario-om-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_om']));
+	$rows[] = array(array('data'=>t('<label>Shock</label><span class="scenario-param-value-display" id="edit-field-scenario-shock-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_shock']));
+	$rows[] = array(array('data'=>t('<label>Flow</label><span class="scenario-param-value-display" id="edit-field-scenario-flow-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_flow']));
+	$rows[] = array(array('data'=>t('<label>Toxic</label><span class="scenario-param-value-display" id="edit-field-scenario-toxic-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_toxic']));
+	$rows[] = array(array('data'=>t('<label>Sludge</label><span class="scenario-param-value-display" id="edit-field-scenario-sludge-value-display"></span>'),'class'=>array('form-scenario-label')),array('data'=>$scenario_form['field_scenario_sludge']));
+	$rows[] = array(
+		array('data'=>$scenario_form['actions']['submit']),
+		array('data'=>$scenario_form['actions']['cancel']),
+	);
+	
+	$output .= theme(
+		'table',
+		array('header'=>$header, 'rows'=>$rows,'attributes'=>array('id'=>'table-scenario-form'))
+	);
+	
+	$output .= drupal_render($scenario_form['field_project']);
+	$output .= drupal_render($scenario_form['nid']);
+	$output .= drupal_render($scenario_form['form_build_id']);
+	$output .= drupal_render($scenario_form['form_id']);
+	$output .= drupal_render($scenario_form['form_token']);
+	$variables['element'] = $scenario_form;
+	$variables['element']['#children'] = $output;
+	
+	return theme_form($variables);
+}
+
+
+function wamex_scenario_form_submit($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$errors = form_get_errors();
+	$commands = array();
+	drupal_get_messages();
+
+	if(!empty($errors)) { 
+		$selector = '#project-messages';
+		$error_variables = array(
+			'items'=> $errors,
+			'title'=> 'Add New Scenario Errors',
+			'type'=> 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
+		drupal_set_message('this','error');
+		//$form_state['redirect'] = 'dashboard';
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	}
+	else {
+	
+		if (empty($form_state['values']['nid'])){
+			// add new node
+			global $user;
+			$newnode = new stdClass();
+			$newnode->title = $form_state['input']['title'];
+			$newnode->language = LANGUAGE_NONE;
+			$newnode->type = 'scenario';
+			$newnode->uid = $user->uid;
+			$newnode->field_project[LANGUAGE_NONE][0]['target_id'] = $form_state['input']['field_project'];
+			$newnode->field_scenario_req_land[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_land'];
+			$newnode->field_scenario_req_chem[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_chem'];
+			$newnode->field_scenario_req_energy[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_energy'];
+			$newnode->field_scenario_om[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_om'];
+			$newnode->field_scenario_shock[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_shock'];
+			$newnode->field_scenario_flow[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_flow'];
+			$newnode->field_scenario_toxic[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_toxic'];
+			$newnode->field_scenario_sludge[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_sludge'];
+			try {
+				node_save($newnode);
+				$success = TRUE;
+				drupal_set_message(t('Scenario <b>'.$newnode->title.'</b> created.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t('New Scenario not saved.<br/>'.$e->getMessage()),'error');
+			}
+		} 
+		else {
+			// update existing node
+			$node = node_load($form_state['values']['nid']);
+			$node->title = $form_state['input']['title'];
+			$node->language = LANGUAGE_NONE;
+			$node->field_project[LANGUAGE_NONE][0]['target_id'] = $form_state['input']['field_project'];
+			$node->field_scenario_req_land[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_land'];
+			$node->field_scenario_req_chem[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_chem'];
+			$node->field_scenario_req_energy[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_req_energy'];
+			$node->field_scenario_om[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_om'];
+			$node->field_scenario_shock[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_shock'];
+			$node->field_scenario_flow[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_flow'];
+			$node->field_scenario_toxic[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_toxic'];
+			$node->field_scenario_sludge[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_scenario_sludge'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Scenario <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Scenario not updated.'),'error');
+			}
+		}
+
+		if ($success){
+			$form_state['redirect'] = array('node/'.$form_state['input']['field_project'], array('fragment'=>'scenario-list'));
+			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'scenario-list'));
+			//drupal_set_message($redir_url);
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
+		
+	}
+	//$node->field_scenario_attributes[LANGUAGE_NONE][0]['field_scenario_'][LANGUAGE_NONE] = $form_state['input']['field_scenario_'];
+}
+
+
+function wamex_scenario_submit_handler($form, &$form_state) {
+  if ($form_state['node']->nid) {
+  
+    
+    //popup_element(t(''), t("Your project has been submitted"));
+	
+	//drupal_set_message(t('1'.$form_state['redirect']));
+
+	$form_state['redirect'] = array('node/'.$form_state['input']['field_project'], array('fragment'=>'scenario-list'));
+	//$form_state['redirect'] = 'node/'.$form_state['node']->field_project[LANGUAGE_NONE][0]['target_id'];
+	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
+	
+					$path =  array(
+						t('thank-you'),
+						array(
+							'query' => array(
+							'destination' => t('node'),
+							),
+						),
+					);
+	
+	//$form_state['redirect'] = $path;
+  }
+}
+
+
+function wamex_scenario_delete_confirm($form, &$form_state, $nid){
+	$node = node_load($nid);
+	$scenario_name = $node->title;
+	$project_nid = $node->field_project[LANGUAGE_NONE][0]['target_id'];
+  if (user_access('delete scenario custom')) {
+		$form['nid'] = array('#type' => 'hidden', '#value' => $nid);
+    $output = confirm_form($form,
+      t('Are you sure you want to delete %title?', array('%title' => $scenario_name)),
+      isset($_GET['destination']) ? $_GET['destination'] : 'node/'.$project_nid,
+			t('Are you sure you want to delete scenario %title? This action cannot be undone.', array('%title' => $scenario_name)),
+			t('Yes'),
+			t('No'));
+  }
+  return $output;
+}
+
+function wamex_scenario_delete_confirm_submit($form, &$form_state){
+  if ($form_state['values']['confirm']) {
+		try{
+			node_delete($form_state['values']['nid']);
+			$success = TRUE;
+			drupal_set_message(t('The scenario has been deleted.'));
+		}
+		catch (Exception $e){
+			$success = FALSE;
+			drupal_set_message(t('Could not delete the scenario.'),'error');
+		}
+	
+    $form_state['redirect'] = array($form['actions']['cancel']['#href'],array('fragment'=>'scenario-list'));
+    return;
+  }
+
+}
+
+
 
 // renders loading form as table
 function wamex_loading_form_render($form, $nid, $pid){
 	$output = "";
 	//$output .= "<h2>NID: ".$nid."</h2>";
 	//$output .= "<h2>PID: ".$pid."</h2>";
-	
 	if ($nid){
+		$node = node_load($nid);
 		$project_nid = $node->field_project[LANGUAGE_NONE][0]['target_id'];
 	} else {
 		$project_nid = $pid;
@@ -708,14 +1140,15 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+	$form['nid']['#type'] = 'hidden';
 
 	if ($nid){
 		// edit existing
-		$form['nid']['#type'] = 'hidden';
 		$form['nid']['#value'] = $nid;
 		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit-'.$nid;
 	} else {
 		// add new
+		$form['nid']['#value'] = NULL;
 		//$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
 		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit';
 	}
@@ -752,6 +1185,7 @@ function wamex_loading_form_submit($form, &$form_state){
 			$newnode = new stdClass();
 			$newnode->title = $form_state['input']['title'];
 			$newnode->language = LANGUAGE_NONE;
+			$newnode->uid = $user->uid;
 			$newnode->type = 'loading';
 			$newnode->field_project[LANGUAGE_NONE][0]['target_id'] = $form_state['input']['field_project_und'];
 			$newnode->field_loading_type[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_loading_type'];
@@ -803,7 +1237,7 @@ function wamex_loading_form_submit($form, &$form_state){
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['input']['field_project_und'], array('fragment'=>'loading-list'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'loading-list'));
-			//drupal_set_message($redir_url);
+			drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
 		} 
@@ -1338,6 +1772,7 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
 			$newnode->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$newnode->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
 			$newnode = node_submit($newnode);
 
 			try {
@@ -1370,6 +1805,7 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_loading_totp[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totp'];
 			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
+			$node->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
 			$node = node_submit($node);
 			try {
 				node_save($node);

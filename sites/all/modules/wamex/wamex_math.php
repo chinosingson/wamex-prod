@@ -10,8 +10,17 @@
 // Weighted average of all loadings
 
 global $debug;
-$debug = variable_get('wamex_tech_debug');
-
+global $user;
+if($user->uid!=0){
+	$user_fields = user_load($user->uid);
+	$debug = (isset($user_fields->field_user_tech_debug[LANGUAGE_NONE]) ? $user_fields->field_user_tech_debug[LANGUAGE_NONE][0]['value'] : FALSE);
+} else {
+	$user_fields = null;
+	$debug = FALSE;
+}
+//$debug = variable_get('wamex_tech_debug');
+//$debug = (isset($user_fields->field_user_tech_debug[LANGUAGE_NONE]) ? $user_fields->field_user_tech_debug[LANGUAGE_NONE][0]['value'] : FALSE);
+//$user_debug = var
 
 // for testing. set $debug = TRUE to see results
 /*if ($debug){
@@ -57,17 +66,98 @@ $debug = variable_get('wamex_tech_debug');
 // END
 
 
-function wamex_get_all_tech($popeqV){ // scenario on/off
+function wamex_get_all_tech($popeqV,$scenarioV){ // scenario on/off
 
 	global $debug;
 	// sql select
   $select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
 	// sql select fields
-	$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a');
+	$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a','req_land','req_chem','req_energy','om','shock','flows','toxic','sludge');
+	//if ($scenarioV != "") {
+		//$scenario_fields = array('req_land','req_chem','req_energy','om','shock','flows','toxic','sludge');
+		//$fields = array_merge($fields,$scenario_fields);
+		//if ($debug) {
+			//echo print_r($fields,1)."<br/>";
+			//echo print_r($scenario_fields,1)."<br/>";
+		//}
+	//}
 
+	$capex_condition = wamex_get_popeq_threshold($popeqV);
+	//$fields[] = $capex_field['a'];
+	//if ($capex_field['b']) $fields[] = $capex_field['b'];
+	//echo print_r($capex_condition,1)."<br/>";
+	
+	
+  $query = $select->fields('wt', $fields)
+						->condition($capex_condition);
+							//->orderByHeader($header)
+							//->condition($capex_field, '0', '<>')
+							//->isNotNull($capex_field);
+
+
+	//echo $query->__toString();
+	//echo "<br/>";
+	$results = $query->execute();
+						 
+  $rows = array();
+	$arrayTechnology = array();
+   //$destination = drupal_get_destination();
+  foreach ($results as $val) {
+		$arrayTechnology[] = array(
+			'id'=>$val->tid,
+			'name'=>$val->name,
+			'pCOD'=>$val->cod, 
+			'aCOD'=>NULL,
+			'pBOD5'=>$val->max_bod, 
+			'aBOD5'=>NULL,
+			'pN'=>$val->max_n_p, 
+			'aN'=>$val->max_n_a, 
+			'pP'=>$val->max_p_p,
+			'aP'=>$val->max_p_a, 
+			'pTSS'=>$val->max_tss_p, 
+			'aTSS'=>$val->max_tss_a,
+			'req_land'=>$val->req_land,
+			'req_chem'=>$val->req_chem,
+			'req_energy'=>$val->req_energy,
+			'om'=>$val->om,
+			'shock'=>$val->shock,
+			'flows'=>$val->flows,
+			'toxic'=>$val->toxic,
+			'sludge'=>$val->sludge,
+		);
+	}
+	
+	if($debug){
+		//print '<pre>'.print_r($rows,1).'</pre>';
+		//print '<pre>'.print_r($arrayTechnology,1).'</pre>';
+		//echo "<b>Selecting Technologies based on Population Equivalent</b><br/><pre>";
+		print "Population Equivalent: ".number_format($popeqV,2)."<br/>";
+		print "CapEx is non-zero for ".count($arrayTechnology)." technologies.<br/>";
+		
+		// display list of technology names here
+		// ...
+		$t = 1;
+		echo "<b>Tech| Name</b><br/>";
+		foreach ($arrayTechnology as $tech){
+			echo str_replace("_","&nbsp;",str_pad($tech['id'],4,"_",STR_PAD_BOTH))."|".$tech['name']."</tt><br/>";
+			$t++;
+		}
+		echo "<br/>";
+		echo "</pre>";
+
+	}
+	return $arrayTechnology;
+
+}
+
+
+function wamex_get_popeq_threshold($popeqV) {
+	global $debug;
 	if ($popeqV < 1) $popeqV = 1; // (?)
 		
-	if ($debug) echo "<b>Selecting technologies based on Population Equivalent ".number_format($popeqV,2).".</b><br/>";
+	if ($debug) {
+		echo "<b>Selecting technologies based on Population Equivalent</b><br/>";
+	}
 	$capex_thresholds = array(
 		array('value'=>1,'alias'=> '1'),
 		array('value'=>10,'alias' => '10'),
@@ -123,72 +213,9 @@ function wamex_get_all_tech($popeqV){ // scenario on/off
 		//$capex_field['b'] = NULL;
 	}
 	
-	//$fields[] = $capex_field['a'];
-	//if ($capex_field['b']) $fields[] = $capex_field['b'];
-	//echo print_r($fields,1)."<br/>";
+	return $capex_condition;
 	
-	// REFACTOR
-	// function wamex_capex_condition (popeqV){
-	//	return $capex_condition; // db_or()... 
-	// }
-	
-	
-  $query = $select->fields('wt', $fields)
-						->condition($capex_condition);
-							//->orderByHeader($header)
-							//->condition($capex_field, '0', '<>')
-							//->isNotNull($capex_field);
-
-
-	//echo $query->__toString();
-	//echo "<br/>";
-	$results = $query->execute();
-						 
-  $rows = array();
-	$arrayTechnology = array();
-   //$destination = drupal_get_destination();
-  foreach ($results as $val) {
-		$arrayTechnology[] = array(
-			'id'=>$val->tid,
-			'name'=>$val->name,
-			'pCOD'=>$val->cod, 
-			'aCOD'=>NULL,
-			'pBOD5'=>$val->max_bod, 
-			'aBOD5'=>NULL,
-			'pN'=>$val->max_n_p, 
-			'aN'=>$val->max_n_a, 
-			'pP'=>$val->max_p_p,
-			'aP'=>$val->max_p_a, 
-			'pTSS'=>$val->max_tss_p, 
-			'aTSS'=>$val->max_tss_a, 
-		);
-	}
-	
-	if($debug){
-		//print '<pre>'.print_r($rows,1).'</pre>';
-		//print '<pre>'.print_r($arrayTechnology,1).'</pre>';
-		print "<tt>CapEx is non-zero for ".count($arrayTechnology)." technologies.</tt><br/>";
-		
-		// display list of technology names here
-		// ...
-		$t = 1;
-		foreach ($arrayTechnology as $tech){
-			echo "<tt>$t [".$tech['id']."] ".$tech['name']."</tt><br/>";
-			$t++;
-		}
-		echo "<br/>";
-		echo "</pre>";
-
-	}
-	return $arrayTechnology;
-
 }
-
-
-// function wamex_get_popeq_threshold (){
-// return 
-	
-//}
 
 
 
@@ -196,19 +223,61 @@ function wamex_get_all_tech($popeqV){ // scenario on/off
 // return array( scenario scores ) // applicable/enabled parameters, sorted by score descending
 //}
 
-// function wamex_scenario_score(){
-//	score logic/math goes here
-//}
+function wamex_scenario_score($tech,$scenarioV) {
+	global $debug;
+	$ary_scenario = explode("|",$scenarioV);
+	$scenario_sum = array_sum($ary_scenario);
+	$weights = array(
+		'req_land'=>$ary_scenario[0]/$scenario_sum,
+		'req_chem'=>$ary_scenario[1]/$scenario_sum,
+		'req_energy'=>$ary_scenario[2]/$scenario_sum,
+		'om'=>$ary_scenario[3]/$scenario_sum,
+		'shock'=>$ary_scenario[4]/$scenario_sum,
+		'flows'=>$ary_scenario[5]/$scenario_sum,
+		'toxic'=>$ary_scenario[6]/$scenario_sum,
+		'sludge'=>$ary_scenario[7]/$scenario_sum,
+	);
+	
+	//score logic/math goes here
+	$score = (double) $tech['req_land']*$weights['req_land']+
+		$tech['req_chem']*$weights['req_chem']+
+		$tech['req_energy']*$weights['req_energy']+
+		$tech['om']*$weights['om']+
+		$tech['shock']*$weights['shock']+
+		$tech['flows']*$weights['flows']+
+		$tech['toxic']*$weights['toxic']+
+		$tech['sludge']*$weights['sludge'];
+	
+	
+	if ($debug){
+		//echo $scenarioV."<br/>";
+		//echo print_r($tech,1)."<br/>";
+		//echo "scenario_sum: ".$scenario_sum."<br/>";
+		//echo "weights: ".implode("|",$weights)."<br/>";
+		echo str_replace("_","&nbsp;",str_pad($tech['id'],4,"_",STR_PAD_BOTH))."|";
+		echo str_pad(number_format($tech['req_land']*$weights['req_land'],6),8,"_",STR_PAD_BOTH)."|";
+		echo number_format($tech['req_chem']*$weights['req_chem'],6)."|";
+		echo number_format($tech['req_energy']*$weights['req_energy'],6)."|";
+		echo number_format($tech['om']*$weights['om'],6)."|";
+		echo number_format($tech['shock']*$weights['shock'],6)."|";
+		echo number_format($tech['flows']*$weights['flows'],6)."|";
+		echo number_format($tech['toxic']*$weights['toxic'],6)."|";
+		echo number_format($tech['sludge']*$weights['sludge'],6)."|";
+		echo "<b>".number_format($score,6)."</b><br/>";
+		//echo $tech['name']."<br/>";
+	}
+	return $score;
+}
 
-function wamex_select_tech($loading,$target,$popeq){
+function wamex_select_tech($loading,$target,$popeq,$scenario){
 
 	global $debug;
 	//$debug = FALSE;
 	$arrayPossibleTech = array();
 	// Load technology table as array from DB
-	$arrayAllTech = wamex_get_all_tech($popeq);
+	$arrayAllTech = wamex_get_all_tech($popeq,$scenario);
 	
-	if($debug) echo "<b>Selecting technologies based on average loading and standards.</b><br/>";
+	if($debug) echo "<b>Selecting technologies based on Average Loading and Standards.</b><br/>";
 	if($debug) echo "<pre>";
 
 	$ctr = 0;
@@ -265,7 +334,7 @@ function wamex_select_tech($loading,$target,$popeq){
 
 		// Add to list of techs if this tech passes the test
 		if ($flag == TRUE) {
-			$arrayPossibleTech[] = $tech["id"];
+			$arrayPossibleTech[] = $tech;
 		}
 	}
 	

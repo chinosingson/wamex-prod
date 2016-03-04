@@ -216,7 +216,7 @@
 					}
 				}*/
 				
-				function getEffluentStandardAttributes (){
+				function getEffluentStandardAttributes() {
 					var effluentStandardAttributes = ($('#edit-field-cod').val() == 'N/A' ? -1 : $('#edit-field-cod').val()) +'|'+
 						($('#edit-field-bod5').val() == 'N/A' ? -1 : $('#edit-field-bod5').val()) +'|'+
 						($('#edit-field-totn').val() == 'N/A' ? -1 : $('#edit-field-totn').val()) +'|'+
@@ -238,6 +238,23 @@
 					}
 				}
 				
+				function getScenarioValues(scenarioRadioId){
+					if(scenarioRadioId){
+						var radioIdTokens = scenarioRadioId.split("-");
+						var scenarioId = radioIdTokens[2];
+						return $("#field_scenario_req_land_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_req_chem_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_req_energy_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_om_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_shock_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_flow_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_toxic_hidden_"+scenarioId)[0].innerText+"|"+
+							$("#field_scenario_sludge_hidden_"+scenarioId)[0].innerText;
+					} else {
+						return "";
+					}
+				}
+				
 				// set COD as default parameter
 				$('#edit-popeq-parameter--2').attr('checked',true);
 				//$('#edit-popeq-parameter--2').click();
@@ -245,13 +262,10 @@
 				//console.log($('[name="popeq_parameter"]').value);
 				//console.log()
 
-				function showTechnologies(popeqValue){
+				function showTechnologies(popeqValue) {
 					//console.log('showTechnologies');
-					//if (popeqValue){
-						//console.log(popeqValue);
-					//} else {
-					//	console.log('popeqValue = wala');
-					//}
+					/*if (popeqValue) console.log(popeqValue);
+					// else console.log('popeqValue = wala');*/
 					var viewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
 					//$('#collapse-tech').collapse('show');
@@ -259,7 +273,10 @@
 					var avgLoading = getAverageLoadings();
 					//console.log(avgLoading);
 					var stdValues = getEffluentStandardAttributes();
-					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue;
+					//console.log($('.scenario-radio:checked').attr('id'));
+					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
+					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues;
+					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){
 						viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
@@ -270,6 +287,7 @@
 					}
 				}
 
+				// LOADING
 				$('.form-loading-attribute').attr('type','number');
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
 				$('.btn-add-loading').unbind('click').on('click',function(){
@@ -293,6 +311,8 @@
 					}
 				};
 				
+				// LOADING
+				// delete loading button action
 				$('.project-delete-loading-btn').unbind('click').on('click',function(event){
 					var viewport = $('#loading-form-container');
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
@@ -309,6 +329,8 @@
 				});
 				
 				
+				// LOADING
+				// edit loading button action
 				var rowStaticHtml = '';
 				$('.project-edit-loading-btn').unbind('click').on('click',function(event){
 					if($('#edit-loading-cancel').hasClass('hidden')) $('#edit-loading-cancel').removeClass('hidden');
@@ -333,6 +355,9 @@
 					});
 				});
 				
+				
+				// LOADING
+				// cancel edit loading button action
 				$('#edit-loading-cancel').unbind("click").on('click',function(event){
 					var viewport = $('#loading-form-container');
 					viewport.empty();
@@ -364,6 +389,8 @@
 					}
 				}
 
+				// LOADING
+				// edit loading type dropdown action
 				$('#edit-field-loading-type').unbind('change').on('change', function(event){
 					//console.log($(this).val());
 					//console.log($('#edit-field-loading-type')[0].selectedIndex);
@@ -449,6 +476,8 @@
 
 				}
 				
+				
+				// POPEQ
 				function getTotPolV(attributes,weights){
 					var adwfs = $('#view-project-loadings tbody td.views-field-field-loading-adwf');
 					//console.log(adwfs);
@@ -465,6 +494,131 @@
 					return sumProduct;
 				}
 				
+				// SCENARIO
+				// add a scenario
+				$('.btn-add-scenario').unbind('click').on('click',function(){
+					//console.log('ADD SCENARIO');
+					var viewport = $('#scenario-form-container');
+					//if($('#cancel-loading').hasClass('hidden')) $('#cancel-loading').removeClass('hidden');
+					var btnId = $(this).attr('id');
+					var idTokens = btnId.split("-");
+					var projectId = idTokens[2];
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/scenario/add/'+projectId;
+					viewport.empty().html('Retrieving form <img src="' + throbberPath + '" />');
+					viewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#scenario-form-container');
+					});
+				});
+				
+
+				// SCENARIO
+				// when a scenario parameter is changed
+				$('.form-scenario-param').attr('type','range');
+				
+				function displayParamLevel(paramValue){
+					var paramText = Array();
+					paramText[1] = "Not Applicable";
+					paramText[2] = "Very Low";
+					paramText[3] = "Low";
+					paramText[4] = "High";
+					paramText[5] = "Very High";
+					
+					return paramText[paramValue];
+				}
+				
+				// SCENARIO
+				// display parameter values on form load
+				$('#wamex-scenario-form').ready(function(e){
+					$('#edit-field-scenario-req-land-value-display').html(displayParamLevel($('#edit-field-scenario-req-land').val()));
+					$('#edit-field-scenario-req-chem-value-display').html(displayParamLevel($('#edit-field-scenario-req-chem').val()));
+					$('#edit-field-scenario-req-energy-value-display').html(displayParamLevel($('#edit-field-scenario-req-energy').val()));
+					$('#edit-field-scenario-om-value-display').html(displayParamLevel($('#edit-field-scenario-om').val()));
+					$('#edit-field-scenario-shock-value-display').html(displayParamLevel($('#edit-field-scenario-shock').val()));
+					$('#edit-field-scenario-flow-value-display').html(displayParamLevel($('#edit-field-scenario-flow').val()));
+					$('#edit-field-scenario-toxic-value-display').html(displayParamLevel($('#edit-field-scenario-toxic').val()));
+					$('#edit-field-scenario-sludge-value-display').html(displayParamLevel($('#edit-field-scenario-sludge').val()));
+				});
+				
+				// SCENARIO
+				// load scenario parameter plain-language values
+				$('.form-scenario-param').unbind('change').unbind('focus').unbind('click').on('change focus click',function(){
+					var displayBoxSelector = "#"+this.id+"-value-display";
+					$(displayBoxSelector).html(displayParamLevel($(this).val()));
+				});
+				
+				// scenario
+				// delete scenario button action
+				$('.project-delete-scenario-btn').unbind('click').on('click',function(event){
+					var viewport = $('#scenario-form-container');
+					// load the /project/edit/% custom form, and attach ajax behaviors to the container
+					var btnId = $(this).attr('id');
+					var idTokens = btnId.split("-");
+					var scenarioNodeId = idTokens[2];
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/scenario/delete/'+scenarioNodeId;
+					$('#edit-scenario-'+scenarioNodeId).addClass('disabled');
+					$('#delete-scenario-'+scenarioNodeId).addClass('disabled');
+					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					viewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#scenario-form-container');
+					});
+				});
+				
+				// SCENARIO
+				// edit scenario button action
+				$('.project-edit-scenario-btn').unbind('click').on('click',function(event){
+					if($('#edit-scenario-cancel').hasClass('hidden')) $('#edit-scenario-cancel').removeClass('hidden');
+					// load the /project/edit/% custom form, and attach ajax behaviors to the container
+					var btnId = $(this).attr('id');
+					var idTokens = btnId.split("-");
+					var scenarioNodeId = idTokens[2];
+					var rowViewport = $('#scenario-form-container');
+					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/scenario/edit/'+scenarioNodeId;
+					
+					$('#edit-scenario-'+scenarioNodeId).addClass('disabled');
+					$('#delete-scenario-'+scenarioNodeId).addClass('disabled');
+					rowStaticHtml = rowViewport.html(); 
+					rowViewport.append('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
+					rowViewport.load(ajaxFormPath,'ajax=1',function(){
+						Drupal.attachBehaviors('#scenario-form-container');
+						$('.edit-scenario-cancel').unbind('click').on('click',function(event){
+							rowViewport.html(rowStaticHtml);
+							Drupal.attachBehaviors($('#scenario-'+nodeId));
+							rowStaticHtml = '';
+						});
+					});
+				});
+				
+				// SCENARIO
+				// toggle user scenarios
+				$('#user-scenarios-toggle').unbind('click').on('click',function(e){
+					console.log('user-scenarios-toggle clicked');
+				});
+				
+				if ($('#user-scenarios-toggle-hidden').length > 0){
+					var userScenarios = $('#user-scenarios-toggle-hidden')[0].innerHTML;
+					if (userScenarios == 'OFF') $('.scenario-radio').attr('disabled',true);
+				}
+				//console.log(userScenarios);
+				
+				// SCENARIO
+				// scenario radio button action
+				$('.scenario-radio').unbind('click').on('click',function(){
+					var radioId = $(this).attr('id');
+					var idTokens = radioId.split("-");
+					var scenarioNodeId = idTokens[2];
+					var rowId = '#scenario-row-'+scenarioNodeId;
+				})
+				
+
+				$('#edit-scenario-cancel').unbind("click").on('click',function(event){
+					var viewport = $('#scenario-form-container');
+					viewport.empty();
+					$('.project-edit-scenario-btn').removeClass('disabled');
+					$('.project-delete-scenario-btn').removeClass('disabled');
+					$('.btn-add-scenario').removeClass('disabled');
+					$('#edit-loading-cancel').addClass('hidden');
+				});
+
 				if($('body.node-type-project').length > 0){ 
 					//var pe_cod = (getTotPolV(cod_values,weight_values)/$('#edit-pol-cod').val());
 					var pe_cod = calcPE('cod',weight_values);
@@ -520,6 +674,7 @@
 					
 				}
 
+				// calculate Population Equivalent
 				function calcPE(param,wts){
 					var paramValueSelector = '#view-project-loadings tbody td.views-field-field-loading-'+param;
 					var paramValues = $(paramValueSelector);
@@ -609,6 +764,7 @@
 					$('#collapse-tech').collapse('show');
 				}); 
 				
+				// TECHNOLOGIES
 				$('.btn-show-tech').unbind('click').on('click',function(event){
 					//console.log('btn-show-tech clicked');
 					/*if($('#collapse-tech').hasClass('collapse')) {

@@ -124,6 +124,37 @@
 						}
 					});*/
 				});
+				
+				$('#wamex-scenario-form').ready(function(){
+					$('#edit-title').trigger('focus');
+					$('#wamex-scenario-form')
+						.find('[name="title"]')
+							.change(function(e){
+								$('#wamex-scenario-form').formValidation('revalidateField','title')
+							})
+							.end()
+						.formValidation({
+							framework: 'bootstrap',
+							icon: {
+									valid: 'glyphicon glyphicon-ok',
+									invalid: 'glyphicon glyphicon-remove',
+									validating: 'glyphicon glyphicon-refresh'
+							},
+							fields: {
+								title: {
+									validators: {
+										notEmpty: {
+											message: 'Name required'
+										}
+									}
+								}
+							}
+						})
+						.formValidation('validate')
+						.on('err.form.fv', function(e){
+							console.log('error');
+						});
+				});
 			
 			}
 
