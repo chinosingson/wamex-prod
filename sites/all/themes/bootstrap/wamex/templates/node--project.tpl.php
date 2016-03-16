@@ -269,7 +269,7 @@ $view_scenario->set_display('block');
 	<div id="scenario-container" class="container-fluid panel panel-default">
 		<div id="heading-scenario" class="panel-heading" role="tab">
 			<div id="scenario-title-container">
-				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario-list" name="scenario-list" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collaps-scenario"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
+				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenario" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-scenario"><span id="toggle-scenario" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="scenario-help">?</button>
 				<?php if ($addScenarioPerm):?><button class="btn btn-primary btn-sm btn-add-scenario pull-right" id="add-scenario-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
 				<div class="form-group pull-right" id="scenario-toggle-container">

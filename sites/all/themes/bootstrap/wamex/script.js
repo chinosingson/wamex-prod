@@ -161,6 +161,7 @@
 			}
 			
 			if($('body.page-node, body.node-type-project, body.page-project-edit').length > 0){
+				//console.log('here');
 				$('#project-effluent-standard, #edit-field-effluent-standard').unbind('change').on('change',function(event){
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
 				});
@@ -242,14 +243,14 @@
 					if(scenarioRadioId){
 						var radioIdTokens = scenarioRadioId.split("-");
 						var scenarioId = radioIdTokens[2];
-						return $("#field_scenario_req_land_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_req_chem_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_req_energy_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_om_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_shock_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_flow_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_toxic_hidden_"+scenarioId)[0].innerText+"|"+
-							$("#field_scenario_sludge_hidden_"+scenarioId)[0].innerText;
+						return $("#field_scenario_req_land_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_req_chem_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_req_energy_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_om_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_shock_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_flow_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_toxic_hidden_"+scenarioId)[0].innerHTML+"|"+
+							$("#field_scenario_sludge_hidden_"+scenarioId)[0].innerHTML;
 					} else {
 						return "";
 					}
@@ -275,7 +276,7 @@
 					var stdValues = getEffluentStandardAttributes();
 					//console.log($('.scenario-radio:checked').attr('id'));
 					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
-					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues;
+					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues; // x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){
@@ -619,6 +620,27 @@
 					$('#edit-loading-cancel').addClass('hidden');
 				});
 
+				// calculate Population Equivalent
+				function calcPE(param,wts){
+					var paramValueSelector = '#view-project-loadings tbody td.views-field-field-loading-'+param;
+					var paramValues = $(paramValueSelector);
+					var peParamSelector = '#edit-pol-'+param;
+					var peParamValue = $(peParamSelector).val();
+					//console.log(param);
+					var peDisplay = "";
+					if(peParamValue > 0){
+						if(param!='volc'){
+							peDisplay = getTotPolV(paramValues,wts)/peParamValue;
+						} else {
+							peDisplay = $('#ave_adwf')[0].innerHTML/peParamValue;
+						}
+					} else {
+						peDisplay =  "-";
+					}
+					//console.log(peDisplay);
+					return peDisplay;
+				}
+				
 				if($('body.node-type-project').length > 0){ 
 					//var pe_cod = (getTotPolV(cod_values,weight_values)/$('#edit-pol-cod').val());
 					var pe_cod = calcPE('cod',weight_values);
@@ -674,27 +696,6 @@
 					
 				}
 
-				// calculate Population Equivalent
-				function calcPE(param,wts){
-					var paramValueSelector = '#view-project-loadings tbody td.views-field-field-loading-'+param;
-					var paramValues = $(paramValueSelector);
-					var peParamSelector = '#edit-pol-'+param;
-					var peParamValue = $(peParamSelector).val();
-					//console.log(param);
-					var peDisplay = "";
-					if(peParamValue > 0){
-						if(param!='volc'){
-							peDisplay = getTotPolV(paramValues,wts)/peParamValue;
-						} else {
-							peDisplay = $('#ave_adwf')[0].innerHTML/peParamValue;
-						}
-					} else {
-						peDisplay =  "-";
-					}
-					//console.log(peDisplay);
-					return peDisplay;
-				}
-				
 				// on change of any of the PopEq Parameters
 				$('#table-popeq input.popeq-parameter').unbind('change').unbind('keyup').unbind('blur').on('change keyup blur', function(e){
 					var selectedParam = this.id.split("-")[2];
@@ -758,8 +759,9 @@
 						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
 					}
 					$('#loading-tech-list',context).once('display',function(){
-						//console.log('#loading-tech-list');
-						showTechnologies($('td.popeq-totpe-'+$('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val())[0].innerText.replace(/,/g,""));
+						var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+						var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
+						showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
 					});
 					$('#collapse-tech').collapse('show');
 				}); 
@@ -773,7 +775,9 @@
 					}*/
 					//$('#loading-tech-list',context).once('display',function(){
 						//console.log();
-						showTechnologies($('td.popeq-totpe-'+$('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val())[0].innerText.replace(/,/g,""));
+						var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+						var techTdSelector2 = 'td.popeq-totpe-'+popeqParamName2;
+						showTechnologies($(techTdSelector2)[0].innerHTML.replace(/,/g,""));
 						//showTechnologies('eto o');
 					//});
 				});
@@ -820,9 +824,13 @@
 				$('.technology-name').unbind('click').on('click',function(event){
 					event.preventDefault();
 					//console.log($(this).attr('id'));
+					// get/ajax/  technology/<tid>
+					//.load('get/ajax/technology/'+tid);
+					// wastewaterinfo.asia/tech-sheets/tds-003
 					$('.main-container').append(customTechModal);
 					$('#tech-help-modal .modal-title').empty().append('Technology: '+$(this).text());
-					$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
+					//$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
+					$('#tech-help-modal .modal-body').empty().load("http://wastewaterinfo.asia/tech-sheets/tds-003");
 					$('#tech-help-modal').show();
 					$('#tech-help-modal').modal();
 				});
