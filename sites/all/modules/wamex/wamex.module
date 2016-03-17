@@ -362,6 +362,7 @@ function wamex_display_tech($techArgs){
 		}
 	} else {
 		if ($debug) {
+			echo "<b>Suitable Technologies: ".count($techs)." pass tests.</b><br/>";
 			echo "<pre>";
 			echo "<b>Tech| Name</b><br/>";
 		}
@@ -556,8 +557,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Name'),
 		'#default_value' => $title,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div></div>',
+		'#prefix' => '<div class="row"><div class="col-sm-2">',
+		'#suffix' => '</div>',
 	);
 	$form['title']['#attributes']['class'][] = 'scenario-required';
 
@@ -567,8 +568,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Land'),
 		'#default_value' => $land,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-land-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-req-land-value-display"></div></div>',
 	);
 	$form['field_scenario_req_land']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_land']['#attributes']['min'] = 1;
@@ -580,8 +581,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Chemical'),
 		'#default_value' => $chem,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-chem-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-req-chem-value-display"></div></div>',
 	);
 	$form['field_scenario_req_chem']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_chem']['#attributes']['min'] = 1;
@@ -593,8 +594,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Energy'),
 		'#default_value' => $ener,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-req-energy-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-req-energy-value-display"></div></div>',
 	);
 	$form['field_scenario_req_energy']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_energy']['#attributes']['min'] = 1;
@@ -606,8 +607,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('O&M'),
 		'#default_value' => $om,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-om-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-om-value-display"></div></div>',
 	);
 	$form['field_scenario_om']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_om']['#attributes']['min'] = 1;
@@ -619,8 +620,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Shock'),
 		'#default_value' => $shock,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-shock-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-shock-value-display"></div></div>',
 	);
 	$form['field_scenario_shock']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_shock']['#attributes']['min'] = 1;
@@ -632,8 +633,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Flow'),
 		'#default_value' => $flow,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-flow-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-flow-value-display"></div></div>',
 	);
 	$form['field_scenario_flow']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_flow']['#attributes']['min'] = 1;
@@ -645,8 +646,8 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Toxic'),
 		'#default_value' => $toxic,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-toxic-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-toxic-value-display"></div></div>',
 	);
 	$form['field_scenario_toxic']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_toxic']['#attributes']['min'] = 1;
@@ -658,13 +659,15 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		'#title' => t('Sludge'),
 		'#default_value' => $sludge,
 		'#size' => 15,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
-		'#suffix' => '</div><div class="scenario-param-value-display col-sm-6" id="edit-field-scenario-sludge-value-display"></div></div>',
+		'#prefix' => '<div class="col-sm-1 scenario-param">',
+		'#suffix' => '<div class="label label-info scenario-param-value-display" id="edit-field-scenario-sludge-value-display"></div></div>',
 	);
 	$form['field_scenario_sludge']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_sludge']['#attributes']['min'] = 1;
 	$form['field_scenario_sludge']['#attributes']['max'] = 5;
 	
+	$form['actions']['#prefix'] = "<div class='col-sm-2'>";
+	$form['actions']['#suffix'] = "</div>";
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_scenario_form_submit';
@@ -1237,7 +1240,7 @@ function wamex_loading_form_submit($form, &$form_state){
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['input']['field_project_und'], array('fragment'=>'loading-list'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'loading-list'));
-			drupal_set_message($redir_url);
+			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
 		} 
@@ -1317,7 +1320,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_author = $node->field_author['und'][0]['value'];
 		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
 		$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
-		$field_land_cost = $node->field_land_cost['und'][0]['value'];
+		$field_land_cost = (isset($node->field_land_cost['und']) ? $node->field_land_cost['und'][0]['value'] : 0);
 		$field_currency = $node->field_currency['und'][0]['tid'];
 		$field_exchange_rate_to_usd = $node->field_exchange_rate_to_usd['und'][0]['value'];
 		$field_effluent_standard = $node->field_effluent_standard['und'][0]['tid'];

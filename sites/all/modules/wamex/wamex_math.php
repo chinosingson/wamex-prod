@@ -278,7 +278,7 @@ function wamex_select_tech($loading,$target,$popeq,$scenario){
 	$arrayAllTech = wamex_get_all_tech($popeq,$scenario);
 	
 	if($debug) echo "<b>Selecting technologies based on Average Loading and Standards.</b><br/>";
-	if($debug) echo "<pre>";
+	if($debug) echo "<pre style='height: 400px; overflow-y: scroll; '>";
 
 	$ctr = 0;
 	foreach ($arrayAllTech as $tech) {
@@ -339,7 +339,7 @@ function wamex_select_tech($loading,$target,$popeq,$scenario){
 	}
 	
 	//if (count($arrayPossibleTech) > 0){
-		if ($debug) echo "<b>".count($arrayPossibleTech)." technologies pass tests.</b><br/>";
+		// if ($debug) echo "<b>".count($arrayPossibleTech)." technologies pass tests.</b><br/>";
 		if ($debug) echo "</pre>";
 		return $arrayPossibleTech;
 	//} else {

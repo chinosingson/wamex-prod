@@ -169,7 +169,7 @@
 				$('#table-loading-tech').removeClass('table');
 				
 				// toggle expand/collapse arrows on sidebar collapse
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -178,7 +178,7 @@
 					toggleArrow(togglerElement[0].id);
 				});
 
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -276,6 +276,7 @@
 					var stdValues = getEffluentStandardAttributes();
 					//console.log($('.scenario-radio:checked').attr('id'));
 					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
+					//$('#collapse-scenario').collapse('toggle');
 					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues; // x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
@@ -304,6 +305,25 @@
 					});
 				});
 				
+				function loadLoadingAttributes(selected){
+					var termObj = Drupal.settings.taxonomy.loadingTypes[selected];
+					if (selected >= 0){
+						$('#edit-field-loading-adwf').val(termObj.field_loading_adwf['und'][0].value);
+						$('#edit-field-loading-bod5').val(termObj.field_loading_bod5['und'][0].value);
+						$('#edit-field-loading-cod').val(termObj.field_loading_cod['und'][0].value);
+						$('#edit-field-loading-totp').val(termObj.field_loading_totp['und'][0].value);
+						$('#edit-field-loading-totn').val(termObj.field_loading_totn['und'][0].value);
+						$('#edit-field-loading-tss').val(termObj.field_loading_tss['und'][0].value);
+					} else {
+						$('#edit-field-loading-adwf').val(0);
+						$('#edit-field-loading-bod5').val(0);
+						$('#edit-field-loading-cod').val(0);
+						$('#edit-field-loading-totp').val(0);
+						$('#edit-field-loading-totn').val(0);
+						$('#edit-field-loading-tss').val(0);
+					}
+				}
+
 				if($('#wamex-loading-form').length > 0){
 					// if new loading has no title, set loading type default values
 					if(!$('#wamex-loading-form #edit-title')[0].value){
@@ -371,25 +391,6 @@
 				$('#edit-cancel').addClass('btn');
 				$('#edit-cancel').addClass('btn-default');
 				
-				function loadLoadingAttributes(selected){
-					var termObj = Drupal.settings.taxonomy.loadingTypes[selected];
-					if (selected >= 0){
-						$('#edit-field-loading-adwf').val(termObj.field_loading_adwf['und'][0].value);
-						$('#edit-field-loading-bod5').val(termObj.field_loading_bod5['und'][0].value);
-						$('#edit-field-loading-cod').val(termObj.field_loading_cod['und'][0].value);
-						$('#edit-field-loading-totp').val(termObj.field_loading_totp['und'][0].value);
-						$('#edit-field-loading-totn').val(termObj.field_loading_totn['und'][0].value);
-						$('#edit-field-loading-tss').val(termObj.field_loading_tss['und'][0].value);
-					} else {
-						$('#edit-field-loading-adwf').val(0);
-						$('#edit-field-loading-bod5').val(0);
-						$('#edit-field-loading-cod').val(0);
-						$('#edit-field-loading-totp').val(0);
-						$('#edit-field-loading-totn').val(0);
-						$('#edit-field-loading-tss').val(0);
-					}
-				}
-
 				// LOADING
 				// edit loading type dropdown action
 				$('#edit-field-loading-type').unbind('change').on('change', function(event){
@@ -515,14 +516,18 @@
 				// SCENARIO
 				// when a scenario parameter is changed
 				$('.form-scenario-param').attr('type','range');
+				$('.form-scenario-param').attr('orient','vertical');
+				$('.form-scenario-param').removeAttr('maxlength');
+				$('.form-scenario-param').removeClass('form-control');
 				
 				function displayParamLevel(paramValue){
+					// display scenario parameter level in words
 					var paramText = Array();
-					paramText[1] = "Not Applicable";
-					paramText[2] = "Very Low";
+					paramText[1] = "N/A";
+					paramText[2] = "V. Low";
 					paramText[3] = "Low";
 					paramText[4] = "High";
-					paramText[5] = "Very High";
+					paramText[5] = "V. High";
 					
 					return paramText[paramValue];
 				}

@@ -1,0 +1,192 @@
+﻿input[type='range'] {
+  display: block;
+  margin: 2.5em auto;
+  padding: 0;
+  /* inconsistent */
+  opacity: .75;
+  background: transparent;
+  /* inconsistent */
+  /* font-size inconsistent */
+  font: 1em trebuchet ms, verdana, arial, sans-serif;
+  cursor: pointer;
+}
+input[type='range'], input[type='range']::-webkit-slider-runnable-track, input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  position: relative;
+  /* prep for creating rulers */
+}
+input[type='range']::-webkit-slider-runnable-track:before, input[type='range']::-webkit-slider-runnable-track:after, input[type='range'] /deep/ #track:before, input[type='range'] /deep/ #track:after {
+  position: absolute;
+}
+input[type='range']::-ms-track {
+  border: none;
+  /* remove default border */
+  color: transparent;
+  /* remove dfault tick marks */
+}
+input[type='range']::-webkit-slider-thumb {
+  box-sizing: border-box;
+  border: solid 0 transparent;
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+input[type='range']::-moz-range-thumb {
+  box-sizing: border-box;
+  border: solid 0 transparent;
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+input[type='range']::-ms-thumb {
+  box-sizing: border-box;
+  border: solid 0 transparent;
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+input[type='range']:nth-of-type(1) {
+  border: solid 1px transparent;
+  padding: 0 0.7em;
+  width: 27em;
+  height: 4.875em;
+  border-radius: .25em;
+  box-shadow: inset 0 1px 1px #c0ed78, 0 1px 1px #5f8f2f, 0 1em 2.25em -2.25em #000, 0 1.125em 2.315em -2.315em #000, 0 1.25em 2.375em -2.375em #000, 0 1.375em 2.5em -2.5em #000;
+  background: -webkit-linear-gradient(0deg, #eeeeee 1px, rgba(238, 238, 238, 0) 1px) repeat-x 1.5em 50% content-box, -webkit-linear-gradient(#98cb4c, #74a22f) padding-box, -webkit-linear-gradient(#7da142, #5c8022) border-box;
+  background: linear-gradient(90deg, #eeeeee 1px, rgba(238, 238, 238, 0) 1px) repeat-x 1.5em 50% content-box, linear-gradient(#98cb4c, #74a22f) padding-box, linear-gradient(#7da142, #5c8022) border-box;
+  background-size: 2em 1.25em, 100% 100%, 100% 100%;
+  /* ------- the track ------- */
+  /* ------- the fill ------- */
+  /* ------- the ruler ------- */
+  /* ------- the thumb ------- */
+  /* ------- the tip ------- */
+}
+input[type='range']:nth-of-type(1)::-webkit-slider-runnable-track {
+  width: 27em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 0.125em -0.125em #5c8520;
+  background: -webkit-linear-gradient(#e8f0f3, #c7f183);
+  background: linear-gradient(#e8f0f3, #c7f183);
+  -webkit-transform: translateY(-0.5em);
+          transform: translateY(-0.5em);
+}
+input[type='range']:nth-of-type(1)::-moz-range-track {
+  width: 27em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 0.125em -0.125em #5c8520;
+  background: linear-gradient(#e8f0f3, #c7f183);
+}
+input[type='range']:nth-of-type(1)::-ms-track {
+  width: 27em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 1px #5c8520;
+  background: linear-gradient(#e8f0f3, #c7f183);
+}
+.js input[type='range']:nth-of-type(1)::-webkit-slider-runnable-track:after, .js input[type='range']:nth-of-type(1) /deep/ #track:after {
+  top: 0;
+  left: 0;
+  width: 13.5em;
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 0.25em -0.125em #5c8520;
+  background: -webkit-linear-gradient(#ffffff, #bbbbbb);
+  background: linear-gradient(#ffffff, #bbbbbb);
+  -webkit-clip-path: inset(0 0.5em 0 0);
+          clip-path: inset(0 0.5em 0 0);
+  content: '';
+}
+.js input[type='range']:nth-of-type(1)::-moz-range-track {
+  background: linear-gradient(#ffffff, #bbbbbb) no-repeat, linear-gradient(#e8f0f3, #c7f183);
+  background-size: 13.5em 100%;
+}
+input[type='range']:nth-of-type(1)::-moz-range-progress {
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 0.25em -0.125em #5c8520;
+  background: linear-gradient(#ffffff, #bbbbbb);
+}
+.js input[type='range']:nth-of-type(1)::-moz-range-progress {
+  opacity: 0;
+}
+input[type='range']:nth-of-type(1)::-ms-fill-lower {
+  height: 0.5em;
+  border-radius: 0.25em;
+  /* shadow not really visible in IE :( */
+  box-shadow: 0 0.25em 0.25em -0.125em #5c8520;
+  background: linear-gradient(#ffffff, #bbbbbb);
+}
+input[type='range']:nth-of-type(1)::-webkit-slider-runnable-track:before, input[type='range']:nth-of-type(1) /deep/ #track:before, input[type='range']:nth-of-type(1)::-webkit-slider-thumb:before, input[type='range']:nth-of-type(1) /deep/ #thumb:before {
+  position: absolute;
+  top: 175%;
+  left: 0;
+  right: 0;
+  color: #eee;
+  font: 0.75em/2 trebuchet ms, verdana, arial, sans-serif;
+}
+input[type='range']:nth-of-type(1)::-webkit-slider-runnable-track:before, input[type='range']:nth-of-type(1) /deep/ #track:before {
+  text-indent: 1.6875em;
+  word-spacing: 1.81667em;
+  content: '1 2 3 4 5';
+}
+.js input[type='range']:nth-of-type(1)[value='1']::-webkit-slider-runnable-track:before, .js input[type='range']:nth-of-type(1)[value='1'] /deep/ #track:before, .js input[type='range']:nth-of-type(1)[value='1']::-webkit-slider-thumb:before, .js input[type='range']:nth-of-type(1)[value='1'] /deep/ #thumb:before {
+  -webkit-clip-path: polygon(0 0, 1em 0, 1em 100%, 3em 100%, 3em 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(0 0, 1em 0, 1em 100%, 3em 100%, 3em 0, 100% 0, 100% 100%, 0 100%);
+}
+.js input[type='range']:nth-of-type(1)[value='2']::-webkit-slider-runnable-track:before, .js input[type='range']:nth-of-type(1)[value='2'] /deep/ #track:before, .js input[type='range']:nth-of-type(1)[value='2']::-webkit-slider-thumb:before, .js input[type='range']:nth-of-type(1)[value='2'] /deep/ #thumb:before {
+  -webkit-clip-path: polygon(0 0, 3.66667em 0, 3.66667em 100%, 5.66667em 100%, 5.66667em 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(0 0, 3.66667em 0, 3.66667em 100%, 5.66667em 100%, 5.66667em 0, 100% 0, 100% 100%, 0 100%);
+}
+.js input[type='range']:nth-of-type(1)[value='3']::-webkit-slider-runnable-track:before, .js input[type='range']:nth-of-type(1)[value='3'] /deep/ #track:before, .js input[type='range']:nth-of-type(1)[value='3']::-webkit-slider-thumb:before, .js input[type='range']:nth-of-type(1)[value='3'] /deep/ #thumb:before {
+  -webkit-clip-path: polygon(0 0, 6.33333em 0, 6.33333em 100%, 8.33333em 100%, 8.33333em 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(0 0, 6.33333em 0, 6.33333em 100%, 8.33333em 100%, 8.33333em 0, 100% 0, 100% 100%, 0 100%);
+}
+.js input[type='range']:nth-of-type(1)[value='4']::-webkit-slider-runnable-track:before, .js input[type='range']:nth-of-type(1)[value='4'] /deep/ #track:before, .js input[type='range']:nth-of-type(1)[value='4']::-webkit-slider-thumb:before, .js input[type='range']:nth-of-type(1)[value='4'] /deep/ #thumb:before {
+  -webkit-clip-path: polygon(0 0, 9em 0, 9em 100%, 11em 100%, 11em 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(0 0, 9em 0, 9em 100%, 11em 100%, 11em 0, 100% 0, 100% 100%, 0 100%);
+}
+.js input[type='range']:nth-of-type(1)[value='5']::-webkit-slider-runnable-track:before, .js input[type='range']:nth-of-type(1)[value='5'] /deep/ #track:before, .js input[type='range']:nth-of-type(1)[value='5']::-webkit-slider-thumb:before, .js input[type='range']:nth-of-type(1)[value='5'] /deep/ #thumb:before {
+  -webkit-clip-path: polygon(0 0, 11.66667em 0, 11.66667em 100%, 13.66667em 100%, 13.66667em 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(0 0, 11.66667em 0, 11.66667em 100%, 13.66667em 100%, 13.66667em 0, 100% 0, 100% 100%, 0 100%);
+}
+input[type='range']:nth-of-type(1)::-webkit-slider-thumb {
+  margin-top: -1.25em;
+  border-width: 1em;
+  padding: 0.3125em;
+  width: 3em;
+  height: 3em;
+  background: -webkit-linear-gradient(#808080, #808080) content-box, -webkit-radial-gradient(25% 25%, circle, #fbfbf9, #bfccad) padding-box;
+  background: linear-gradient(#808080, #808080) content-box, radial-gradient(circle at 25% 25%, #fbfbf9, #bfccad) padding-box;
+}
+input[type='range']:nth-of-type(1)::-moz-range-thumb {
+  border-width: 1em;
+  padding: 0.3125em;
+  width: 3em;
+  height: 3em;
+  background: linear-gradient(#808080, #808080) content-box, radial-gradient(circle at 25% 25%, #fbfbf9, #bfccad) padding-box;
+}
+input[type='range']:nth-of-type(1)::-ms-thumb {
+  border-width: 1em;
+  padding: 0.3125em;
+  width: 3em;
+  height: 3em;
+  background: linear-gradient(#808080, #808080) content-box, radial-gradient(circle at 25% 25%, #fbfbf9, #bfccad) padding-box;
+}
+input[type='range']:nth-of-type(1)::-webkit-slider-thumb:after, input[type='range']:nth-of-type(1) /deep/ #thumb:after {
+  display: block;
+  width: 2em;
+  -webkit-transform: translate(-0.8125em, 0.5em);
+          transform: translate(-0.8125em, 0.5em);
+  color: #eee;
+  font: 700 0.9375em/2.125 trebuchet ms, verdana, arial, sans-serif;
+  text-align: center;
+}
+.js input[type='range']:nth-of-type(1)::-webkit-slider-thumb:after, .js input[type='range']:nth-of-type(1) /deep/ #thumb:after {
+  content: "7";
+}

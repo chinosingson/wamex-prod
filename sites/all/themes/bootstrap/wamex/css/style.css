@@ -340,12 +340,19 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	margin-left: 10px;
 }
 
+
+#wamex-scenario-form #form-wrapper-div > div > div.scenario-param > div.form-item.form-type-textfield > i {
+	/*border: 1px dotted blue;*/
+	display: none !important;
+}
+
+
 #wamex-scenario-form .form-control-feedback.glyphicon-ok,
-#wamex-scenario-form .form-control-feedback.glyphicon-remove{
-	float: right;
-	position: relative;
-	top: 2px;
-	left: 15px;
+#wamex-scenario-form .form-control-feedback.glyphicon-remove {
+	float: left;
+	/*position:  relative;*/
+	top: 6px;
+	left: -7px;
 }
 
 
@@ -505,14 +512,21 @@ table#table-loading-tech td.tech-attributes.tech-name {
 	width: 275px !important;
 }
 table#table-loading-tech {
-    width: 100%;
+	width: 100%;
 }
 
 #loading-tech-list table.sticky-header th,
 table#table-loading-tech th,
 table#table-loading-tech td {
-    padding: 8px;
+	padding: 8px;
 }
+
+#loading-tech-list table.sticky-header th.tech-attributes{
+	padding: 8px;
+	width: 80px;
+}
+
+
 /*#table-loading-tech th.tech-attributes.tech-name {
 	width: 300px !important;
 }*/
@@ -529,13 +543,13 @@ table#table-loading-tech td {
 }
 
 #wamex-scenario-form .form-item label {
-	min-width: 150px;
-	max-width: 50%;
+	min-width: 50px;
+	/*max-width: 50%;*/
 }
 
 .scenario-param-value-display {
 	/*border: 1px dotted red;*/
-	float: right;
+	/*float: right;*/
 	
 }
 
@@ -568,11 +582,20 @@ table#table-loading-tech td {
 
 /* prettify css for scenario parameter sliders */
 #wamex-scenario-form #edit-title {
-	width: 48%;
+	/*width: 48%;*/
 }
-#wamex-scenario-form input[type='range'] {
+#wamex-scenario-form input[type=range][orient=vertical] {
 	/*border: 1px dotted red;*/
-	height: 4px;
-	width: 48%;
-	padding: 0px;
+	writing-mode: bt-lr; /* IE */
+	-webkit-appearance: slider-vertical; /* Chrome */
+	width: 8px;
+	height: 120px;
+	padding: 0 5px;
+	margin-left: 10px;
+}
+
+#wamex-loading-delete-confirm,
+#wamex-scenario-delete-confirm,
+.view-empty {
+	margin: 10px;
 }

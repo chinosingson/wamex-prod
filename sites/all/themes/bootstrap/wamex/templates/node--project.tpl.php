@@ -99,7 +99,9 @@ $view_scenario->set_display('block');
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Currency</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_currency) ? $node->field_currency['und'][0]['taxonomy_term']->name : "-"); ?></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php 
+							//echo print_r($field_currency[0]['taxonomy_term'],1);
+							print (isset($field_currency[0]['taxonomy_term']->name) ? $field_currency[0]['taxonomy_term']->name : "-"); ?></td>
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Exchange Rate</label></td>
@@ -269,15 +271,15 @@ $view_scenario->set_display('block');
 	<div id="scenario-container" class="container-fluid panel panel-default">
 		<div id="heading-scenario" class="panel-heading" role="tab">
 			<div id="scenario-title-container">
-				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenario" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-scenario"><span id="toggle-scenario" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
+				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenario-list" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-scenario"><span id="toggle-scenario" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="scenario-help">?</button>
 				<?php if ($addScenarioPerm):?><button class="btn btn-primary btn-sm btn-add-scenario pull-right" id="add-scenario-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
 				<div class="form-group pull-right" id="scenario-toggle-container">
 					<div id="user-scenarios-toggle-hidden"><?php //print ($user_scenarios ? "ON" : "OFF");?></div>
-					<div class="col-sm-offset-2 col-sm-10">
+					<div class="col-sm-offset-2 col-sm-10 hidden">
 						<div class="checkbox">
 							<label for="user-scenarios-toggle">
-								<input type="checkbox" disabled id="user-scenarios-toggle" name="user-scenarios" value="<?php //print $user_scenarios; ?>"><?php //print ($user_scenarios ? "ON" : "OFF");?>
+								<input type="checkbox" disabled="disabled" id="user-scenarios-toggle" name="user-scenarios" value="<?php //print $user_scenarios; ?>"><?php //print ($user_scenarios ? "ON" : "OFF");?>
 							</label>
 						</div>
 					</div>
