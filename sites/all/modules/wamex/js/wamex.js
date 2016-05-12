@@ -78,6 +78,11 @@
 											thousandsSeparator : '',
 											decimalSeparator : '.',
 										},
+										greaterThan: {
+											value : 0,
+											inclusive : false,
+											message : 'Must be greater than zero (0)',
+										},
 										callback: {
 											message : 'Total % must not exceed 100',
 											callback : function (value, validator, $field){

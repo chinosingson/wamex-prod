@@ -152,3 +152,6 @@ function wamex_form_element($variables) {
 	return $output;
 }
 
+function wamex_js_alter(&$js) {
+  unset($js['misc/tableheader.js']);
+}

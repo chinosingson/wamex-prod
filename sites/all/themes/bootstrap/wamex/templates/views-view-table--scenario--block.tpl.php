@@ -59,7 +59,7 @@
 						?>
           </td>
 					<?php else: ?>
-					<input class="scenario-radio" name="scenario_nid" id="scenario-radio-<?php print $content; ?>" type="radio" value="<?php print $content; ?>"/>
+					<input class="scenario-radio" name="scenario_nid" id="scenario-radio-<?php print $content; ?>" type="radio" value="<?php print $content; ?>"  <?php print ($row_count==0 ? 'checked="checked"': "" ) ?>/>
 					<?php endif; ?>
 					</td>
         <?php endforeach; ?>

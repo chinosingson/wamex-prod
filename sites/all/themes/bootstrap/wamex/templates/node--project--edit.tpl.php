@@ -61,6 +61,15 @@
 			<div class="col-sm-6"><?php print drupal_render($form['field_exchange_rate_to_usd']); ?>
 			</div>
 		</div>
+		<?php 
+		
+			// field_discount_rate_reticulation
+			// field_om_pct_treatment
+			// field_om_pct_reticulation
+			// field_design_horizon_treatment
+			// field_design_horizon_reticulatn
+
+		?>
 		<div id="project-forms-buttons" class="row"><?php print drupal_render_children($form); ?></div>
 	</div>
 

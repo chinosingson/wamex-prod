@@ -527,6 +527,10 @@ table#table-loading-tech td {
 }
 
 
+#loading-tech-list > div > table.sticky-header > thead > tr > th.col-md-3.tech-attributes.tech-name.col-name {
+	width: 275px !important;
+}
+
 /*#table-loading-tech th.tech-attributes.tech-name {
 	width: 300px !important;
 }*/

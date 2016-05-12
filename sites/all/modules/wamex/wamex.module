@@ -250,6 +250,7 @@ function wamex_menu() {
 
 function wamex_display_tech($techArgs){
 	global $debug;
+	//$output = '<div class="table-responsive">';
 	$output = '<div class="table-responsive">';
 	//$output .= $techArgs;
 	$aryTechArgs = explode('&',$techArgs);
@@ -288,11 +289,11 @@ function wamex_display_tech($techArgs){
 	
 	//$output .= "<pre>".implode('|',$arrayAverageLoad)."</pre>";
 	//$output .= "<pre>".implode('|',$arrayStandards)."</pre>";
-	if ($str_scenario!="") $score_header = "Score"; else $score_header = "&nbsp;";
-
+	$header = array();
 	$header = array(
 		//array('data' => t('ID'), 'class'=>array('tech-attributes','tech-id','col-id')), 
 		array('data' => t('Name'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name')) ,
+		//array('data'=> t($score_header),'class'=>array('col-md-1','tech-attributes','col-volc')),
 		array('data' => t('COD'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-cod','tech-cod','col-cod')),
 		array('data' => t('BOD5'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-bod5','tech-bod5','col-bod5')),
 		array('data' => t('N'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
@@ -300,9 +301,31 @@ function wamex_display_tech($techArgs){
 		array('data' => t('P'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-totp','col-totp')),
 		array('data' => t('TSS'), 'class'=>array('col-md-1','tech-attributes','tech-attributes-totp','tech-tss','col-tss')),
 		//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
-		array('data'=> t($score_header),'class'=>array('col-md-1','tech-attributes','col-volc')),
 	);
 	
+	if ($str_scenario!="") {
+		$score_header = "Score"; 
+		$capex_header = "CapEx";
+		$opex_header = "OpEx";
+		$land_req_header = "Land Req't";
+		//$header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+		//array_unshift($header,array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')));
+		//$header = array_merge(array_slice($header,0,1,true),array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')),array_slice($header,1,count($header)-1,true));
+		//$header = 
+		array_splice($header,1,0,array(array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'))));
+		$header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+		$header[] = array('data'=>t($opex_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+		$header[] = array('data'=>t($land_req_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+		
+		//echo "<pre>".print_r($header,1)."</pre>";
+	} 
+	/*else {
+		$score_header = "&nbsp;";
+		$capex_header = "&nbsp;";
+		$opex_header = "&nbsp;";
+		$land_req_header = "&nbsp;";
+	}*/
+
 	// check if there are technology id's saved to the current node
 	//$node = menu_get_object();
 	//if (!is_null($node->field_tech_ids)) {
@@ -317,6 +340,7 @@ function wamex_display_tech($techArgs){
 	$scenario_sorted_techs = array();
 	if ($str_scenario!=""){
 		if ($debug) {
+			echo "<b>Suitable Technologies: ".count($techs)." pass tests.</b><br/>";
 			echo "<b>Determining Scenario Scores</b><br/><pre>";
 			//echo print_r($techs,1)."<br/>";
 			echo "<b>Tech|  Land  |  Chem  | Energy |  O&M   | Shock  | Flows  | Toxic  | Sludge | Score  </b><br/>";
@@ -330,11 +354,12 @@ function wamex_display_tech($techArgs){
 		}
 		$score = array();
 		foreach($techs as $key=>$tech){
-			$scenario_sorted_techs[$tech['id']]['id'] = $tech['id'];
-			$scenario_sorted_techs[$tech['id']]['score'] = wamex_scenario_score($tech,$str_scenario);
-			$scenario_sorted_techs[$tech['id']]['name'] = $tech['name'];
-			$tech['score'] = $scenario_sorted_techs[$tech['id']]['score'];
+			$scenario_sorted_techs[$tech['tid']]['id'] = $tech['tid'];
+			$scenario_sorted_techs[$tech['tid']]['score'] = wamex_scenario_score($tech,$str_scenario);
+			$scenario_sorted_techs[$tech['tid']]['name'] = $tech['name'];
+			$tech['score'] = $scenario_sorted_techs[$tech['tid']]['score'];
 			$score[$key] = $tech['score'];
+			//echo print_r($tech,1)."<br/>";
 		}
 		if ($debug) {
 			//echo print_r($techs,1)."<br/>";
@@ -367,9 +392,9 @@ function wamex_display_tech($techArgs){
 			echo "<b>Tech| Name</b><br/>";
 		}
 		foreach ($techs as $tech){
-			$tech_ids[] = $tech['id'];
+			$tech_ids[] = $tech['tid'];
 			if ($debug){ 
-				echo str_replace("_","&nbsp;",str_pad($tech['id'],4,"_",STR_PAD_BOTH))."|".$tech['name']."<br/>";
+				echo str_replace("_","&nbsp;",str_pad($tech['tid'],4,"_",STR_PAD_BOTH))."|".$tech['name']."<br/>";
 			}
 		}
 		if ($debug) echo "</pre>";
@@ -384,7 +409,7 @@ function wamex_display_tech($techArgs){
 
 		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
 		$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a');
-		$query = $select->fields('wt', $fields)
+		$query = $select->fields('wt') //, $fields)
 								//->orderByHeader($header)
 							 ->condition('tid', $tech_ids,'IN');
 		if ($str_scenario!=""){
@@ -400,12 +425,18 @@ function wamex_display_tech($techArgs){
 		// function wamex_residual(loading_param,tech_coeff){
 		//	return (1-tech_coeff)*loading_param;
 		// }
+		//$output .= "results: ".print_r($results,1)."<br/>";
+		//$output .= "tech_ids: ".print_r($tech_ids,1)."<br/>";
+		$popeq_threshold = wamex_popeq_threshold($str_popeq);
+		$popeq_shortcut = $popeq_threshold['shortcut'];
+		//if ($debug) echo "wamex.module: Th:".print_r($popeq_threshold,1)."<br/>";
 
 		foreach ($results as $key => $val) {
 			//if($str_scenario!="") $tech_score = $scenario_sorted_techs[$key]['score']; else $tech_score = "";
-			$rows[] = array(
+			$ary_values = array(
 				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
 				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
+				
 				'COD'=>array('data'=>(!is_null($val->cod) ? "<!--(p = ".$val->cod.") -->".number_format((1-$val->cod)*$arrayAverageLoad['COD'],1) : ""), 'class'=>array('tech-attributes','tech-cod','col-cod')),
 				// ."/".(1-$val->cod)*$arrayAverageLoad['COD']
 				'BOD5'=>array('data'=>(!is_null($val->max_bod) ? number_format((1-$val->max_bod)*$arrayAverageLoad['BOD5'],1) : ""), 'class'=>array('tech-attributes','tech-bod5','col-bod5')),
@@ -413,9 +444,18 @@ function wamex_display_tech($techArgs){
 				'N'=>array('data'=>(!is_null($val->max_n_a) ? "<!--(a) -->".number_format($val->max_n_a,1) : (!is_null($val->max_n_p) ? "<!--(p = ".$val->max_n_p.") -->".number_format((1-$val->max_n_p)*$arrayAverageLoad['N'],1) : "")), 'class'=>array('tech-attributes','tech-totn','col-totn')),
 				'P'=>array('data'=>(!is_null($val->max_p_a) ? "<!--(a) -->".number_format($val->max_p_a,1) : (!is_null($val->max_p_p) ? "<!--(p = ".$val->max_p_p.") -->".number_format((1-$val->max_p_p)*$arrayAverageLoad['P'],1) : "")), 'class'=>array('tech-attributes','tech-totp','col-totp')),
 				'TSS'=>array('data'=>(!is_null($val->max_tss_a) ? "<!--(a)--> ".number_format($val->max_tss_a,1) : (!is_null($val->max_tss_p) ? "<!--(p = ".$val->max_tss_p.") -->".number_format((1-$val->max_tss_p)*$arrayAverageLoad['TSS'],1) : "")), 'class'=>array('tech-attributes','tech-tss','col-tss')),
-				'score'=>array('data'=>($str_scenario!="" ? number_format($scenario_sorted_techs[$key]['score'],2) : "")),
-				array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
+				//array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
 			);
+			
+			if($str_scenario!=""){
+				array_splice($ary_values,1,0,array('score'=>array('data'=>number_format($scenario_sorted_techs[$key]['score'],2))));
+				//$ary_values[] = array('capex'=>array('data'=>number_format($val->{'capex_'.$popeq_shortcut.'a'})));
+				$ary_values['capex'] = array('data'=>number_format(wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut.'a'},$val->{'capex_'.$popeq_shortcut.'b'}),2));
+				$ary_values['opex'] = array('data'=>number_format(wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut.'a'},$val->{'opex_'.$popeq_shortcut.'b'}),2));
+				$ary_land_values = array($val->land_200,$val->land_1k);
+				$ary_values['landreq'] = array('data'=>number_format(wamex_land_req($str_popeq,$ary_land_values),2));
+			}
+			$rows[] = $ary_values;
 		}
 		
 		if (empty($rows)) {
@@ -1126,6 +1166,8 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
+	$form['field_loading_weight']['#attributes']['min'][] = 0;
+	$form['field_loading_weight']['#attributes']['max'][] = 100;
 	
 	//$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
 	//$form['actions']['submit']['#suffix'] = '</div>';
@@ -1466,6 +1508,11 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#suffix' => '</div></div>',
 	);
 
+	// field_discount_rate_reticulation
+	// field_om_pct_treatment
+	// field_om_pct_reticulation
+	// field_design_horizon_treatment
+	// field_design_horizon_reticulatn
 	
 	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
 	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
@@ -1776,6 +1823,11 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$newnode->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
+			// field_discount_rate_reticulation
+			// field_om_pct_treatment
+			// field_om_pct_reticulation
+			// field_design_horizon_treatment
+			// field_design_horizon_reticulatn
 			$newnode = node_submit($newnode);
 
 			try {
@@ -1809,6 +1861,11 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$node->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
+			// field_discount_rate_reticulation
+			// field_om_pct_treatment
+			// field_om_pct_reticulation
+			// field_design_horizon_treatment
+			// field_design_horizon_reticulatn
 			$node = node_submit($node);
 			try {
 				node_save($node);
