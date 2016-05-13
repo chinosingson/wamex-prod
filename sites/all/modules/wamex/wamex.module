@@ -160,9 +160,10 @@ function wamex_menu() {
 	
 	$items['loading/technologies'] = array(
 		'title' => 'Loading Technologies',
-    'page callback' => 'wamex_display_tech',
+		'page callback' => 'wamex_display_tech',
+		
 		'access callback' => TRUE,
-    'access arguments' => array('Edit own content'),
+		'access arguments' => array('Edit own content'),
 		'type' => MENU_CALLBACK,
 		//'type' => MENU_DEFAULT_LOCAL_TASK,
 	);
@@ -250,6 +251,8 @@ function wamex_menu() {
 
 function wamex_display_tech($techArgs){
 	global $debug;
+	
+	
 	//$output = '<div class="table-responsive">';
 	$output = '<div class="table-responsive">';
 	//$output .= $techArgs;
@@ -258,16 +261,20 @@ function wamex_display_tech($techArgs){
 	$str_standards = $aryTechArgs[1];
 	$str_popeq = $aryTechArgs[2];
 	$str_scenario = $aryTechArgs[3];
+	$str_land_cost = $aryTechArgs[4];
 	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
 	//$output .= "<pre>Standards: ".$str_standards."</pre>";
 	//$output .= "<pre>PE: ".$str_popeq."</pre>";
 	//$output .= "<pre>Scenario: ".$str_scenario."</pre>";
+	//$output .= "<pre>Land Cost: ".$str_land_cost."</pre>";
 	
 	
 	$ary_loadings_init  = explode('|',$str_loadings); 	// check for 6 items
 	$ary_standards_init = explode('|',$str_standards);	// check for 5 items
 	//$output .= "<pre>".print_r($ary_standards_init,1)."</pre>";
 	
+	
+
 	// set loading and standards arrays
 	$arrayAverageLoad = array(
 		'ADWF' => $ary_loadings_init[0],
@@ -308,6 +315,7 @@ function wamex_display_tech($techArgs){
 		$capex_header = "CapEx";
 		$opex_header = "OpEx";
 		$land_req_header = "Land Req't";
+		$land_cost_header = "Land Cost";
 		//$header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
 		//array_unshift($header,array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')));
 		//$header = array_merge(array_slice($header,0,1,true),array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')),array_slice($header,1,count($header)-1,true));
@@ -316,6 +324,7 @@ function wamex_display_tech($techArgs){
 		$header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
 		$header[] = array('data'=>t($opex_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
 		$header[] = array('data'=>t($land_req_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+		$header[] = array('data'=>t($land_cost_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
 		
 		//echo "<pre>".print_r($header,1)."</pre>";
 	} 
@@ -453,7 +462,9 @@ function wamex_display_tech($techArgs){
 				$ary_values['capex'] = array('data'=>number_format(wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut.'a'},$val->{'capex_'.$popeq_shortcut.'b'}),2));
 				$ary_values['opex'] = array('data'=>number_format(wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut.'a'},$val->{'opex_'.$popeq_shortcut.'b'}),2));
 				$ary_land_values = array($val->land_200,$val->land_1k);
-				$ary_values['landreq'] = array('data'=>number_format(wamex_land_req($str_popeq,$ary_land_values),2));
+				$landreq = wamex_land_req($str_popeq,$ary_land_values);
+				$ary_values['landreq'] = array('data'=>number_format($landreq,2));
+				$ary_values['landcost'] = array('data'=>number_format($landreq*$str_land_cost,2));
 			}
 			$rows[] = $ary_values;
 		}
@@ -1361,7 +1372,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_population = $node->field_population['und'][0]['value'];
 		$field_author = $node->field_author['und'][0]['value'];
 		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
-		$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
+		$field_om_pct_treatment = (isset($node->field_om_pct_treatment['und']) ? $node->field_om_pct_treatment['und'][0]['value'] : 0);
+		$field_design_horizon_treatment = (isset($node->field_design_horizon_treatment['und']) ? $node->field_design_horizon_treatment['und'][0]['value'] : 0);
+		//$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
 		$field_land_cost = (isset($node->field_land_cost['und']) ? $node->field_land_cost['und'][0]['value'] : 0);
 		$field_currency = $node->field_currency['und'][0]['tid'];
 		$field_exchange_rate_to_usd = $node->field_exchange_rate_to_usd['und'][0]['value'];
@@ -1373,13 +1386,16 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_tss = $node->field_loading_tss['und'][0]['value'];
 		if(arg(0) == 'project'){
 			drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
-		drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
+			drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
 			drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/framework/bootstrap.min.js',array('type'=>'file','group'=>JS_DEFAULT));
 			drupal_add_js(drupal_get_path('module','wamex').'/js/wamex.js');
 			drupal_add_js(array('node' => array('values' => array('nid'=>$nid))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_cod))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_bod5'=>$field_bod5))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_totn'=>$field_totn))),'setting');
@@ -1394,7 +1410,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_population = 0;
 		$field_author = '';
 		$field_discount_rate = 0;
-		$field_ci_cost = 0;
+		$field_om_pct_treatment = 0;
+		$field_design_horizon_treatment = 0;
+		//$field_ci_cost = 0;
 		$field_land_cost = 0;
 		$field_currency = 2;	// default to tid of US Dollar
 		$field_exchange_rate_to_usd = 1.0;
@@ -1492,13 +1510,27 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_ci_cost_und_0_value'] = array(
+	$form['field_om_pct_treatment_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('O&M % of CI Cost'),
+		'#default_value' => $field_om_pct_treatment,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	$form['field_design_horizon_treatment_und_0_value'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Design Horizon'),
+		'#default_value' => $field_design_horizon_treatment,
+		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#suffix' => '</div></div>',
+	);
+	/*$form['field_ci_cost_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Capital Investment Cost'),
 		'#default_value' => $field_ci_cost,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
-	);
+	);*/
 
 	$form['field_land_cost_und_0_value'] = array(
 		'#type' => 'textfield',
@@ -1509,9 +1541,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	);
 
 	// field_discount_rate_reticulation
-	// field_om_pct_treatment
 	// field_om_pct_reticulation
-	// field_design_horizon_treatment
 	// field_design_horizon_reticulatn
 	
 	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
@@ -1813,7 +1843,9 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 			$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
 			$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
-			$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
+			$newnode->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
+			$newnode->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
+			//$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
 			$newnode->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
 			$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 			$newnode->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];
@@ -1851,7 +1883,9 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 			$node->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
 			$node->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
-			$node->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
+			$node->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
+			$node->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
+			//$node->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
 			$node->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
 			$node->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
 			$node->field_effluent_standard[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_effluent_standard'];

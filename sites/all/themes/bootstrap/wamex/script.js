@@ -277,7 +277,8 @@
 					//console.log($('.scenario-radio:checked').attr('id'));
 					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
 					//$('#collapse-scenario').collapse('toggle');
-					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues; // x|y|z&a|b|c
+					var projNID = Drupal.settings.node.values.field_land_cost;
+					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + projNID;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){

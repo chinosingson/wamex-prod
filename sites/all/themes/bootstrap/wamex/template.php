@@ -122,7 +122,7 @@ function wamex_form_element($variables) {
 	// theme the exchange rate field
 	if($element['#id'] == 'edit-field-exchange-rate-to-usd-und-0-value'){
 		// add a 'Refresh' button
-		$suffix = '<a class="btn btn-primary" id="reset-exchange-rate" title="Reset exchange rate to default value">Refresh</a>';
+		$suffix = '<a class="btn btn-primary" id="reset-exchange-rate" title="Reset exchange rate to default value">Use Current Rate</a>';
 	}
 
   switch ($element ['#title_display']) {

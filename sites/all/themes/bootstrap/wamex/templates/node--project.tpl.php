@@ -25,6 +25,8 @@
 	$field_population = field_get_items('node',$node,'field_population');
 	$field_ci_cost = field_get_items('node',$node,'field_ci_cost');
 	$field_discount_rate = field_get_items('node',$node,'field_discount_rate');
+	$field_om_pct_treatment = field_get_items('node',$node,'field_om_pct_treatment');
+	$field_design_horizon_treatment = field_get_items('node',$node,'field_design_horizon_treatment');
 	$field_currency = field_get_items('node',$node,'field_currency');
 	$field_exchange_rate_to_usd = field_get_items('node',$node,'field_exchange_rate_to_usd');
 	$field_effluent_standard = field_get_items('node',$node,'field_effluent_standard');
@@ -44,6 +46,10 @@
 		drupal_add_js(array('node' => array('values' => array('nid'=>$node->nid))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency[0]['tid']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard[0]['tid']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_effluent_cod[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_bod5'=>$field_effluent_bod5[0]['value']))),'setting');
@@ -97,6 +103,23 @@ $view_scenario->set_display('block');
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Description</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_body) ? $field_body[0]['value'] : "-");  ?></td>
 					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="financial-info-container" class="container-fluid panel panel-default">
+		<div id="financial-information" class="col-sm-12 col-md-12 col-lg-12 panel-heading" role="tab" id="heading-financial-info">
+			<div class="row" id="financial-info-title-container">
+				<div class="col-sm-12">
+					<h3 class="project-section-title panel-title" id="financial-info-title"><a href="#collapse-financial-info" name="financial-info" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-financial-info"><span id="toggle-financial-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Financial Information</a></h3>
+				<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary btn-sm pull-right" id="edit-project-<?php print $nid; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
+				</div>
+			</div>
+		</div>
+		<div class="panel-collapse collapse in" id="collapse-financial-info" role="tabpanel" aria-labelledby="heading-financial-info">
+			<table class="table panel-body">
+				<tbody>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Currency</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php 
@@ -112,11 +135,19 @@ $view_scenario->set_display('block');
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></td>
 					</tr>
 					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
-						<span class="hidden" id="td-field-ci-cost"><?php print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
-						</td>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>O&amp;M  % of CI Cost</label></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_om_pct_treatment) ? $field_om_pct_treatment[0]['value']: "-"); ?></td>
 					</tr>
+					<tr>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Design Horizon</label></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_design_horizon_treatment) ? $field_design_horizon_treatment[0]['value']: "-"); ?></td>
+					</tr>
+					<!--tr>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
+						<span class="hidden" id="td-field-ci-cost"><?php //print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
+						</td>
+					</tr-->
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(per sq m)</span></label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
@@ -124,9 +155,7 @@ $view_scenario->set_display('block');
 					<?php 
 					
 						// field_discount_rate_reticulation
-						// field_om_pct_treatment
 						// field_om_pct_reticulation
-						// field_design_horizon_treatment
 						// field_design_horizon_reticulatn
 					?>
 				</tbody>

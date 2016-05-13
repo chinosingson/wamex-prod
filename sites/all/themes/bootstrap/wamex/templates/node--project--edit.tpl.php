@@ -51,8 +51,14 @@
 			<div class="col-sm-6"><?php print drupal_render($form['field_discount_rate']); ?></div>
 		</div>
 		<div class="row">
-			<div class="col-sm-6"><?php print drupal_render($form['field_ci_cost']); ?></div>
+			<div class="col-sm-6"><?php print drupal_render($form['field_om_pct_treatment']); ?></div>
 		</div>
+		<div class="row">
+			<div class="col-sm-6"><?php print drupal_render($form['field_design_horizon_treatment']); ?></div>
+		</div>
+		<!--div class="row">
+			<div class="col-sm-6"><?php //print drupal_render($form['field_ci_cost']); ?></div>
+		</div-->
 		<div class="row">
 			<div class="col-sm-6"><?php print drupal_render($form['field_land_cost']); ?></div>
 		</div>
@@ -64,9 +70,7 @@
 		<?php 
 		
 			// field_discount_rate_reticulation
-			// field_om_pct_treatment
 			// field_om_pct_reticulation
-			// field_design_horizon_treatment
 			// field_design_horizon_reticulatn
 
 		?>

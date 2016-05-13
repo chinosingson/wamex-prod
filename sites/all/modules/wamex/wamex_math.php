@@ -348,7 +348,8 @@ function wamex_opex($popeq,$opex_a,$opex_b) {
 	return $opex;
 }
 
-function wamex_land_req ($popeq,$land_values){
+
+function wamex_land_req($popeq,$land_values) {
 	if ($popeq < 200){
 		$land_req = 0;
 	} elseif ($popeq < 1000){
