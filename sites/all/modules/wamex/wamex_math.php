@@ -176,18 +176,18 @@ function wamex_popeq_threshold($popeqV) {
 		echo "<b>Selecting technologies based on Population Equivalent (".number_format($popeqV,2).")</b><br/>";
 	}
 	$popeq_thresholds = array(
-		array('value'=>1,'shortcut'=> '1'),
-		array('value'=>10,'shortcut' => '10'),
-		array('value'=>200,'shortcut' => '200'),
-		array('value'=>2000,'shortcut' => '2k'),
+		array('value'=>1,'shortcut'=> array('1')),
+		array('value'=>10,'shortcut' => array('10')),
+		array('value'=>200,'shortcut' => array('200')),
+		array('value'=>2000,'shortcut' => array('2ka','2kb')),
 		//array('value'=>2000,'shortcut' => '2kb'),
-		array('value'=>20000,'shortcut' => '20k'),
+		array('value'=>20000,'shortcut' => array('20ka','20kb')),
 		//array('value'=>20000,'shortcut' => '20kb'),
-		array('value'=>200000,'shortcut' => '200k'),
+		array('value'=>200000,'shortcut' => array('200ka','200kb')),
 		//array('value'=>200000,'shortcut' => '200kb'),
-		array('value'=>600000,'shortcut' => '600k'),
+		array('value'=>600000,'shortcut' => array('600ka','600kb')),
 		//array('value'=>600000,'shortcut' => '600kb'),
-		array('value'=>1200000,'shortcut' => '1200k'),
+		array('value'=>1200000,'shortcut' => array('1200ka','1200kb')),
 		//array('value'=>1200000,'shortcut' => '1200kb'),
 	);
 	
@@ -264,17 +264,17 @@ function wamex_popeq_query_elements($threshold, $shortcut){
 	$capex_field = array();
 	$popeq_fields = array();
 	if ($threshold >= 2000){
-		$capex_field['a'] = 'capex_'.$shortcut.'a';
-		$capex_field['b'] = 'capex_'.$shortcut.'b';
+		$capex_field['a'] = 'capex_'.$shortcut[0];
+		$capex_field['b'] = 'capex_'.$shortcut[1];
 		$popeq_fields[] = $capex_field['a'];
 		$popeq_fields[] = $capex_field['b'];
-		$popeq_fields[] = 'opex_'.$shortcut.'a';
-		$popeq_fields[] = 'opex_'.$shortcut.'b';
+		$popeq_fields[] = 'opex_'.$shortcut[0];
+		$popeq_fields[] = 'opex_'.$shortcut[1];
 		$popeq_condition = db_or()->isNotNull($capex_field['a'])->isNotNull($capex_field['b']);
 	} else {
-		$capex_field['a'] = 'capex_'.$shortcut;
+		$capex_field['a'] = 'capex_'.$shortcut[0];
 		$popeq_fields[] = $capex_field['a'];
-		$popeq_fields[] = 'opex_'.$shortcut;
+		$popeq_fields[] = 'opex_'.$shortcut[0];
 		$popeq_condition = db_or()->isNotNull($capex_field['a']);
 		//$capex_field['b'] = NULL;
 	}

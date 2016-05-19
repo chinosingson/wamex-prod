@@ -264,7 +264,7 @@ function wamex_display_tech($techArgs){
 	$str_land_cost = $aryTechArgs[4];
 	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
 	//$output .= "<pre>Standards: ".$str_standards."</pre>";
-	//$output .= "<pre>PE: ".$str_popeq."</pre>";
+	$output .= "<pre>PE: ".$str_popeq."</pre>";
 	//$output .= "<pre>Scenario: ".$str_scenario."</pre>";
 	//$output .= "<pre>Land Cost: ".$str_land_cost."</pre>";
 	
@@ -444,7 +444,7 @@ function wamex_display_tech($techArgs){
 			//if($str_scenario!="") $tech_score = $scenario_sorted_techs[$key]['score']; else $tech_score = "";
 			$ary_values = array(
 				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
-				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name')),
+				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap')),
 				
 				'COD'=>array('data'=>(!is_null($val->cod) ? "<!--(p = ".$val->cod.") -->".number_format((1-$val->cod)*$arrayAverageLoad['COD'],1) : ""), 'class'=>array('tech-attributes','tech-cod','col-cod')),
 				// ."/".(1-$val->cod)*$arrayAverageLoad['COD']
@@ -457,14 +457,16 @@ function wamex_display_tech($techArgs){
 			);
 			
 			if($str_scenario!=""){
-				array_splice($ary_values,1,0,array('score'=>array('data'=>number_format($scenario_sorted_techs[$key]['score'],2))));
+				array_splice($ary_values,1,0,array('score'=>array('data'=>number_format($scenario_sorted_techs[$key]['score'],2), 'class'=>array('tech-attributes','tech-score'))));
 				//$ary_values[] = array('capex'=>array('data'=>number_format($val->{'capex_'.$popeq_shortcut.'a'})));
-				$ary_values['capex'] = array('data'=>number_format(wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut.'a'},$val->{'capex_'.$popeq_shortcut.'b'}),2));
-				$ary_values['opex'] = array('data'=>number_format(wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut.'a'},$val->{'opex_'.$popeq_shortcut.'b'}),2));
+				$capex_tot = wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut[0]},$val->{'capex_'.$popeq_shortcut[1]}); //*$str_popeq;
+				$opex_tot = wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut[0]},$val->{'opex_'.$popeq_shortcut[1]}); //*$str_popeq;
+				$ary_values['capex'] = array('data'=>number_format($capex_tot,2), 'class'=>array('tech-attributes','tech-capex'));
+				$ary_values['opex'] = array('data'=>number_format($opex_tot,2), 'class'=>array('tech-attributes','tech-opex'));
 				$ary_land_values = array($val->land_200,$val->land_1k);
 				$landreq = wamex_land_req($str_popeq,$ary_land_values);
-				$ary_values['landreq'] = array('data'=>number_format($landreq,2));
-				$ary_values['landcost'] = array('data'=>number_format($landreq*$str_land_cost,2));
+				$ary_values['landreq'] = array('data'=>number_format($landreq,2), 'class'=>array('tech-attributes','tech-landreq'));
+				$ary_values['landcost'] = array('data'=>number_format($landreq*$str_land_cost,2), 'class'=>array('tech-attributes','tech-landcost'));
 			}
 			$rows[] = $ary_values;
 		}
@@ -1372,7 +1374,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_population = $node->field_population['und'][0]['value'];
 		$field_author = $node->field_author['und'][0]['value'];
 		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
-		$field_om_pct_treatment = (isset($node->field_om_pct_treatment['und']) ? $node->field_om_pct_treatment['und'][0]['value'] : 0);
+		//$field_om_pct_treatment = (isset($node->field_om_pct_treatment['und']) ? $node->field_om_pct_treatment['und'][0]['value'] : 0);
 		$field_design_horizon_treatment = (isset($node->field_design_horizon_treatment['und']) ? $node->field_design_horizon_treatment['und'][0]['value'] : 0);
 		//$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
 		$field_land_cost = (isset($node->field_land_cost['und']) ? $node->field_land_cost['und'][0]['value'] : 0);
@@ -1394,7 +1396,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 			drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate))),'setting');
-			drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment))),'setting');
+			//drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_cod))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_bod5'=>$field_bod5))),'setting');
@@ -1410,7 +1412,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_population = 0;
 		$field_author = '';
 		$field_discount_rate = 0;
-		$field_om_pct_treatment = 0;
+		//$field_om_pct_treatment = 0;
 		$field_design_horizon_treatment = 0;
 		//$field_ci_cost = 0;
 		$field_land_cost = 0;
@@ -1453,7 +1455,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'textfield',
 		'#title' => t('Population'),
 		'#default_value' => $field_population,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<div class="row"><div class="col-md-7 col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
 	$form['body'] = array(
@@ -1467,7 +1469,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'textfield',
 		'#title' => t('Author'),
 		'#default_value' => $field_author,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<div class="row"><div class="col-md-7 col-sm-12">',
 		'#suffix' => '</div></div>',
 	);
 
@@ -1493,35 +1495,35 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'select',
 		'#default_value' => $field_currency,
 		'#options' => $currency_opts,
-		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-12 col-md-6 col-lg-6">',
 		'#suffix' => '</div>',
 	);
 	$form['field_exchange_rate_to_usd_und_0_value'] = array(
 		'#title' => t('Exchange Rate to USD'),
 		'#type' => 'textfield',
 		'#default_value' => $field_exchange_rate_to_usd,
-		'#prefix' => '<div class="col-sm-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
+		'#prefix' => '<div class="col-sm-12 col-md-6 col-lg-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
 		'#suffix' => '</div></div>',
 	);
 	$form['field_discount_rate_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Discount Rate'),
 		'#default_value' => $field_discount_rate,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_om_pct_treatment_und_0_value'] = array(
+	/*$form['field_om_pct_treatment_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('O&M % of CI Cost'),
 		'#default_value' => $field_om_pct_treatment,
 		'#prefix' => '<div class="row"><div class="col-sm-6">',
 		'#suffix' => '</div></div>',
-	);
+	);*/
 	$form['field_design_horizon_treatment_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Design Horizon'),
 		'#default_value' => $field_design_horizon_treatment,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
 	);
 	/*$form['field_ci_cost_und_0_value'] = array(
@@ -1536,7 +1538,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'textfield',
 		'#title' => t('Land Cost <span class="label-unit">(per sq m)</span>'),
 		'#default_value' => $field_land_cost,
-		'#prefix' => '<div class="row"><div class="col-sm-6">',
+		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
 	);
 
@@ -1566,7 +1568,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'select',
 		'#options' => $effluent_opts,
 		'#default_value' => $field_effluent_standard,
-		'#prefix' => '<hr/><div class="row"><div class="col-sm-6">',
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
 	);
 	
@@ -1574,7 +1576,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="row" id="project-effluent-standard-values"><div class="effluent-standard-attribute col-sm-10 col-sm-offset-0 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-2 ">',
+		'#prefix' => '<div class="row" id="project-effluent-standard-values"><div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-2 ">',
 		'#suffix' => '</div>', //</div>',
 	);
 
@@ -1582,7 +1584,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div>',
 	);
 
@@ -1590,7 +1592,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div>',
 	);
 
@@ -1598,7 +1600,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div>',
 	);
 
@@ -1606,7 +1608,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
 		'#default_value' => 0,
-		'#prefix' => '<div class="effluent-standard-attribute col-lg-2 col-lg-offset-0 col-sm-10 col-md-8 col-md-offset-2">',
+		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div></div>',
 	);
 

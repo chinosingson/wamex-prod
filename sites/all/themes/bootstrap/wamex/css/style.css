@@ -32,6 +32,7 @@
 	margin-bottom: 15px;
 }
 
+#wamex-project-form #form-wrapper-div > div > div > div.form-item.form-type-select.form-item-field-currency-und,
 #wamex-project-form .row .form-item-title,
 #wamex-project-form .form-item.form-type-textarea,
 #wamex-project-form .form-item.form-type-textfield {
@@ -51,6 +52,13 @@
 	/*float: left;*/
 	min-width: 170px;
 	display: inline-block;
+}
+
+@media(max-width:995px){
+	body.page-project-edit #project-effluent-standard-values label,  {
+	 min-width: 170px;
+	 display: inline-block !important;
+ }	
 }
 
 #wamex-project-form .form-item-body > .form-textarea-wrapper {
@@ -193,6 +201,8 @@ body.page-dashboard #project-effluent-standard-values label {
 	display: inline;
 }
 
+
+
 /*.help-block {
 	display: inline-block;
 	color: #dd0000;
@@ -327,6 +337,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 }
 
 
+#wamex-project-form  .form-control-feedback.glyphicon-remove,
 #wamex-scenario-form .form-control-feedback.glyphicon-remove,
 #wamex-loading-form .form-control-feedback.glyphicon-remove {
 	color: red;
@@ -334,6 +345,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 }
 
 
+#wamex-project-form  .form-control-feedback.glyphicon-ok,
 #wamex-scenario-form .form-control-feedback.glyphicon-ok,
 #wamex-loading-form .form-control-feedback.glyphicon-ok {
 	color: green;
@@ -382,6 +394,15 @@ body.page-project-edit #project-effluent-standard-values .effluent-standard-attr
 body.page-dashboard #project-effluent-standard-values .effluent-standard-attribute input.form-control {
 	padding-left: 5px;
 	padding-right: 5px;
+}
+
+@media(max-width:1122px){
+	body.page-project-edit #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i,
+	body.page-dashboard #project-effluent-standard-values > div.effluent-standard-attribute > div.form-item > i {
+		position: relative;
+		left: 230px;
+		top: -7px;
+	}
 }
 
 .col-cod { background-color: #e55934 !important; }
@@ -504,21 +525,41 @@ table#table-loading-tech tr {
 	border-bottom: 1px solid #eeeeee;
 }
 
+
+td.tech-attributes {
+	text-align: right;
+}
+
+td.tech-attributes.tech-name {
+	text-align: left;
+}
+
 /*#table-effl-standards th.tech-attributes.tech-name,
 #table-popeq td.popeq-row-header.popeq-row-param,*/
-table#table-loading-tech th.tech-attributes.tech-name,
-table#table-loading-tech td.tech-attributes.tech-name {
+td.tech-attributes.tech-score,
+td.tech-attributes.tech-cod,
+td.tech-attributes.tech-bod5,
+td.tech-attributes.tech-totn,
+td.tech-attributes.tech-totp,
+td.tech-attributes.tech-tss,
+td.tech-attributes.tech-capex,
+td.tech-attributes.tech-opex,
+td.tech-attributes.tech-landreq,
+td.tech-attributes.tech-landcost,
+#table-loading-tech th.tech-attributes.tech-name,
+#table-loading-tech td.tech-attributes.tech-name {
 	font-size: 12px;
 	width: 275px !important;
 }
-table#table-loading-tech {
+
+#table-loading-tech {
 	width: 100%;
 }
 
 #loading-tech-list table.sticky-header th,
-table#table-loading-tech th,
-table#table-loading-tech td {
-	padding: 8px;
+#table-loading-tech th,
+#table-loading-tech td {
+	padding: 6px;
 }
 
 #loading-tech-list table.sticky-header th.tech-attributes{
@@ -544,7 +585,10 @@ table#table-loading-tech td {
 		font-size: 11px;
 	}
 	
+
 }
+
+
 
 #wamex-scenario-form .form-item label {
 	min-width: 50px;
