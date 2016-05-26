@@ -450,7 +450,11 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 #table-loading-tech th.col-totn,
 #table-loading-tech th.col-totp,
 #table-loading-tech th.col-tss,
-#table-loading-tech th.col-volc {
+#table-loading-tech th.col-volc
+
+#table-loading-tech th.tech-ww-attr,
+#table-loading-tech th.tech-financial-attr
+ {
 	width: 100px !important;
 }
 
@@ -500,8 +504,14 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 #tech-count {
 	margin: 5px 0px 5px 10px;
 	color: #666666;
+	float: left;
 }
 
+.tech-display-controls {
+	margin: 5px 0px 5px 20px;
+	color: #666666;
+	float: left;
+}
 #table-scenario-form > tbody > tr > td.form-scenario-label,
 #table-popeq > tbody > tr > td.popeq-row-header {
 	vertical-align: middle;
@@ -536,7 +546,7 @@ td.tech-attributes.tech-name {
 
 /*#table-effl-standards th.tech-attributes.tech-name,
 #table-popeq td.popeq-row-header.popeq-row-param,*/
-td.tech-attributes.tech-score,
+/*td.tech-attributes.tech-score,
 td.tech-attributes.tech-cod,
 td.tech-attributes.tech-bod5,
 td.tech-attributes.tech-totn,
@@ -545,12 +555,26 @@ td.tech-attributes.tech-tss,
 td.tech-attributes.tech-capex,
 td.tech-attributes.tech-opex,
 td.tech-attributes.tech-landreq,
-td.tech-attributes.tech-landcost,
-#table-loading-tech th.tech-attributes.tech-name,
-#table-loading-tech td.tech-attributes.tech-name {
+td.tech-attributes.tech-landcost,*/
+
+#table-loading-tech td.tech-capex-pc,
+#table-loading-tech td.tech-opex-pc {
+	display:  none;
+}
+
+
+#table-loading-tech td.tech-attributes.tech-name,
+#table-loading-tech td.tech-score,
+#table-loading-tech td.tech-ww-attr,
+#table-loading-tech td.tech-financial-attr,
+#table-loading-tech td.tech-financial-attr-pc {
 	font-size: 12px;
+}
+
+#table-loading-tech th.tech-attributes.tech-name {
 	width: 275px !important;
 }
+
 
 #table-loading-tech {
 	width: 100%;

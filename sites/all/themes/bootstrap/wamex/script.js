@@ -277,8 +277,9 @@
 					//console.log($('.scenario-radio:checked').attr('id'));
 					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
 					//$('#collapse-scenario').collapse('toggle');
-					var projNID = Drupal.settings.node.values.field_land_cost;
-					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + projNID;// x|y|z&a|b|c
+					var landCost = Drupal.settings.node.values.field_land_cost;
+					var exchRate = Drupal.settings.node.values.field_exchange_rate;
+					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){
@@ -787,8 +788,66 @@
 						//showTechnologies('eto o');
 					//});
 				});
-			
 				
+				$('#tech-toggle-ww-attr').unbind('click').on('click', function(event){
+					//console.log('ww attr toggle');
+					$('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').toggle();
+					
+				});
+			
+				// TECHNOLOGIES
+				// financial info variables
+				var techFinancialDisplayStatus = true;	// default to displayed
+				var techTogglePerCapitaStatus = false;	// default to not displayed
+				var objFinancialControl = $('#tech-toggle-fn-attr');
+				var objFinancialCells = $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr');
+				var objPCToggleControl;	// per capita toggle control
+					objPCToggleControl = $('#tech-toggle-fn-per-capita')
+					objPCToggleLabel = $('#label-toggle-per-capita');
+				var objPCCells;		// per capita cells
+					objPCCells = $('#table-loading-tech td.tech-capex-pc, #table-loading-tech td.tech-opex-pc');
+					objPCCells.hide();
+				var objPECells;
+					objPECells = $('#table-loading-tech td.tech-capex-pe, #table-loading-tech td.tech-opex-pe');
+					objPECells.show();
+					
+				// enable per capita toggle on initial load
+				objPCToggleControl.unbind('click').on('click', function(event){
+					objPECells.toggle();
+					objPCCells.toggle();
+				});
+
+				// toggle financial info
+				objFinancialControl.unbind('click').on('click', function(event){
+					// financial info headers and cells
+					techFinancialDisplayStatus = $(this).prop('checked');
+					//console.log('techFinancialDisplayStatus='+techFinancialDisplayStatus)
+					// toggle display off Financial Tech Info
+					objFinancialCells.toggle(0, function(){
+						// if financial cells are displayed
+						if (techFinancialDisplayStatus === true){
+							// display Per Capita control and label
+							objPCToggleControl.show(0,function(){
+								$(this).unbind('click').on('click', function(event){
+									objPECells.toggle();
+									objPCCells.toggle();
+								});
+							});
+							objPCToggleLabel.show();
+						} else {
+							// uncheck toggle per capita checkbox
+							objPCToggleControl.prop('checked',false);
+							// hide Per Capita control and label
+							objPCToggleControl.hide();
+							objPCToggleLabel.hide();
+							objPCCells.hide();
+							$(this).hide();
+						}
+					});
+					
+				});
+				
+
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
 				+'<div class="modal-content">'
