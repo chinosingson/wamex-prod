@@ -363,6 +363,12 @@ function wamex_land_req($popeq,$land_values) {
 	return $land_req;
 }
 
+function wamex_future_value($p, $r, $n, $t) {
+	$future_value = $p*pow((1+($r/$n)),($n*$t));
+	return $future_value;
+}
+
+
 function wamex_select_tech($loading,$target,$popeq,$scenario){
 
 	global $debug;

@@ -502,6 +502,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 }
 
 #tech-count {
+	font-size: 12px;
 	margin: 5px 0px 5px 10px;
 	color: #666666;
 	float: left;
@@ -512,6 +513,19 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	color: #666666;
 	float: left;
 }
+
+.tech-display-controls .input-sm.form-control.form-text {
+	width: 50px;
+	height: 25px;
+	float: left;
+	font-size: 11px;
+}
+
+.tech-display-controls label {
+	font-size: 12px;
+	margin: 4px 0px 0px 4px;
+} 
+
 #table-scenario-form > tbody > tr > td.form-scenario-label,
 #table-popeq > tbody > tr > td.popeq-row-header {
 	vertical-align: middle;
@@ -523,6 +537,11 @@ input.popeq-parameter {
 	padding: 3px 5px 5px 5px;
 	height: 27px;
 }*/
+
+#table-popeq input.popeq-parameter-radio {
+	position: relative;
+	top: -18px;
+}
 
 
 table#table-loading-tech th.tech-attributes.tech-id {

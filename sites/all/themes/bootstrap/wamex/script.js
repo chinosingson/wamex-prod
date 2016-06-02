@@ -279,7 +279,11 @@
 					//$('#collapse-scenario').collapse('toggle');
 					var landCost = Drupal.settings.node.values.field_land_cost;
 					var exchRate = Drupal.settings.node.values.field_exchange_rate;
-					var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
+					var currCode = Drupal.settings.node.values.field_currency_code;
+					//var designHorizon = $('#tech-design-horizon').val();
+					//var inflationRate = $('#tech-inflation-rate').val();
+					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode].join('&');
+					//var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){
@@ -807,13 +811,31 @@
 				var objPCCells;		// per capita cells
 					objPCCells = $('#table-loading-tech td.tech-capex-pc, #table-loading-tech td.tech-opex-pc');
 					objPCCells.hide();
+				var objPCLabels;
+					objPCLabels = $('#table-loading-tech span.tech-financial-attr-pc-label-unit.label-unit');
+					objPCLabels.hide();
 				var objPECells;
 					objPECells = $('#table-loading-tech td.tech-capex-pe, #table-loading-tech td.tech-opex-pe');
 					objPECells.show();
+				var objPELabels;
+					objPELabels = $('#table-loading-tech span.tech-financial-attr-label-unit.label-unit');
+					objPELabels.show();
+					
+				/*
+				var objDesignHorizon;
+					objDesignHorizon = $('#tech-design-horizon');
+					//objDesignHorizon.attr('type','number');
+					//objDesignHorizon.attr('maxlength','2');
+				var objInflationRate;
+					objInflationRate = $('#tech-inflation-rate');
+					//objInflationRate.attr('type','number');
+				*/
 					
 				// enable per capita toggle on initial load
 				objPCToggleControl.unbind('click').on('click', function(event){
+					objPELabels.toggle();
 					objPECells.toggle();
+					objPCLabels.toggle();
 					objPCCells.toggle();
 				});
 
@@ -829,23 +851,38 @@
 							// display Per Capita control and label
 							objPCToggleControl.show(0,function(){
 								$(this).unbind('click').on('click', function(event){
+									objPELabels.toggle();
 									objPECells.toggle();
+									objPCLabels.toggle();
 									objPCCells.toggle();
 								});
 							});
 							objPCToggleLabel.show();
+							objPELabels.show();
 						} else {
 							// uncheck toggle per capita checkbox
 							objPCToggleControl.prop('checked',false);
 							// hide Per Capita control and label
 							objPCToggleControl.hide();
 							objPCToggleLabel.hide();
+							objPCLabels.hide();
 							objPCCells.hide();
 							$(this).hide();
 						}
 					});
 					
 				});
+				
+				// design horizon
+				/*
+				objDesignHorizon.unbind('click').on('change', function(){
+					console.log(objDesignHorizon.val());
+				});
+				// inflation rate
+				objInflationRate.unbind('click').on('change', function(){
+					console.log(objInflationRate.val());
+				});
+				*/
 				
 
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'

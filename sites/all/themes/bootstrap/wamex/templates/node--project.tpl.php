@@ -26,7 +26,7 @@
 	$field_ci_cost = field_get_items('node',$node,'field_ci_cost');
 	$field_discount_rate = field_get_items('node',$node,'field_discount_rate');
 	//$field_om_pct_treatment = field_get_items('node',$node,'field_om_pct_treatment');
-	$field_design_horizon_treatment = field_get_items('node',$node,'field_design_horizon_treatment');
+	//$field_design_horizon_treatment = field_get_items('node',$node,'field_design_horizon_treatment');
 	$field_currency = field_get_items('node',$node,'field_currency');
 	$field_exchange_rate_to_usd = field_get_items('node',$node,'field_exchange_rate_to_usd');
 	$field_effluent_standard = field_get_items('node',$node,'field_effluent_standard');
@@ -41,14 +41,18 @@
 	$addScenarioPerm = user_access('add scenario custom');
 	//
 
+	$term_currency = taxonomy_term_load($field_currency[0]['tid']);
+	$currency_code = $term_currency->field_currency_code[LANGUAGE_NONE][0]['value'];
+	
 	if (isset($nid)){
 		// set some node values to the jQuery extension
 		drupal_add_js(array('node' => array('values' => array('nid'=>$node->nid))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency[0]['tid']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_currency_code'=>$currency_code))), 'setting');
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate[0]['value']))),'setting');
 		//drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment[0]['value']))),'setting');
-		drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment[0]['value']))),'setting');
+		//drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard[0]['tid']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_effluent_cod[0]['value']))),'setting');
@@ -138,10 +142,10 @@ $view_scenario->set_display('block');
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>O&amp;M  % of CI Cost</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_om_pct_treatment) ? $field_om_pct_treatment[0]['value']: "-"); ?></td>
 					</tr-->
-					<tr>
+					<!--tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Design Horizon</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_design_horizon_treatment) ? $field_design_horizon_treatment[0]['value']: "-"); ?></td>
-					</tr>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_design_horizon_treatment) ? $field_design_horizon_treatment[0]['value']: "-"); ?></td>
+					</tr-->
 					<!--tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
@@ -149,7 +153,7 @@ $view_scenario->set_display('block');
 						</td>
 					</tr-->
 					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(per sq m)</span></label></td>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(<?php print $currency_code." "?>per sq m)</span></label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
 					</tr>
 					<?php 
