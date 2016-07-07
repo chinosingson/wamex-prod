@@ -287,6 +287,7 @@
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
 					if (avgLoading.length > 0){
+						//$('#collapse-tech').collapse('show');
 						viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
 							Drupal.attachBehaviors('#loading-tech-list');
 						});
@@ -769,12 +770,12 @@
 					if($('#project-effluent-standard').length > 0){ 
 						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
 					}
+					//$('#collapse-tech').collapse('show');
 					$('#loading-tech-list',context).once('display',function(){
 						var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
 						var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
 						showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
 					});
-					$('#collapse-tech').collapse('show');
 				}); 
 				
 				// TECHNOLOGIES

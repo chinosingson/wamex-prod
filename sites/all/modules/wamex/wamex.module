@@ -1887,8 +1887,8 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 			$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
 			$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
-			$newnode->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
-			$newnode->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
+			//$newnode->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
+			//$newnode->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
 			//$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
 			$newnode->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
 			$newnode->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
