@@ -405,18 +405,32 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	}
 }
 
-.col-cod { background-color: #e55934 !important; }
+/*.col-cod { background-color: #e55934 !important; }
 .col-bod5 { background-color: #fa7921 !important; }
 .col-totn { background-color: #fde74c !important; }
 .col-totp { background-color: #9bc53d !important; }
-.col-tss { background-color: #5bc0eb !important; }
+.col-tss { background-color: #5bc0eb !important; }*/
 
-.col-cod-selected { background-color: hotPink !important; }
+.col-cod { background-color: #aadf34 !important; }
+.col-bod5 { background-color: #b2e559 !important; }
+.col-totn { background-color: #bbec7e !important; }
+.col-totp { background-color: #c3f2a3 !important; }
+.col-tss { background-color: #ccf9c8 !important; }
+
+
+/*.col-cod-selected { background-color: hotPink !important; }
 .col-bod5-selected { background-color: coral !important; }
 .col-totn-selected { background-color: #FFDB58 !important; }
 .col-totp-selected { background-color: #5EFB6E !important; }
 .col-tss-selected { background-color: skyBlue !important; }
-.col-volc-selected { background-color: #eeeeee !important; }
+.col-volc-selected { background-color: #eeeeee !important; }*/
+
+.col-cod-selected { background-color: #ff4d56 !important; }
+.col-bod5-selected { background-color: #fc646d !important; }
+.col-totn-selected { background-color: #fa7c84 !important; }
+.col-totp-selected { background-color: #f8949b !important; }
+.col-tss-selected { background-color: #f6acb3 !important; }
+
 
 .col-cod,
 .col-bod5,
@@ -525,11 +539,23 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	font-size: 12px;
 	margin: 4px 0px 0px 4px;
 } 
-
 #table-scenario-form > tbody > tr > td.form-scenario-label,
-#table-popeq > tbody > tr > td.popeq-row-header {
+#table-popeq > tbody > tr > td.popeq-row-header,
+#table-retic-values > tbody > tr > td.retic-row-header
+{
 	vertical-align: middle;
 }
+
+
+#table-retic-values > tbody > tr > td > div.retic-pump-count-header {
+  padding: 10px;
+  font-weight: bold;
+}
+
+#table-retic-values > tbody > tr > td > div.well-sm {
+  margin-bottom: 0px;
+}
+
 
 /*tr#effluent-standard-values select,
 tr#effluent-standard-values input,
@@ -690,3 +716,26 @@ td.tech-attributes.tech-landcost,*/
 .view-empty {
 	margin: 10px;
 }
+
+
+.alert {
+  font-size: 12px;
+  padding: 10px;
+  margin: 10px;
+}
+
+#map-canvas {
+  width: 100%;
+  height:  200px;
+}
+
+
+#loading-retic-container .form-item.form-type-textfield {
+  margin-bottom: 0px;
+}
+
+.tech-score { background-color: #f9f9f9 !important;}
+.tech-capex { background-color: #61a3d4 !important; }
+.tech-opex { background-color: #83b9de !important; }
+.tech-landreq { background-color: #a5d0e9 !important; }
+.tech-landcost { background-color: #c7e7f4 !important; }

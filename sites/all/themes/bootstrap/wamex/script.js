@@ -267,10 +267,10 @@
 					//console.log('showTechnologies');
 					/*if (popeqValue) console.log(popeqValue);
 					// else console.log('popeqValue = wala');*/
-					var viewport = $('#loading-tech-list');
+					var techListViewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
 					//$('#collapse-tech').collapse('show');
-					viewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
+					techListViewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
 					var avgLoading = getAverageLoadings();
 					//console.log(avgLoading);
 					var stdValues = getEffluentStandardAttributes();
@@ -286,13 +286,18 @@
 					//var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
 					//console.log(techArgs);
+          var loadingListViewport = $('#loading-view-container > #loading-list-container > div');
+          //console.log(loadingListViewport.innerHTML);
+          //if(!loadingListViewport.innerHTML){
+          //  loadingListViewport.empty().html('<div id="loading-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button to create one or more profiles.</div>');
+          //}
 					if (avgLoading.length > 0){
 						//$('#collapse-tech').collapse('show');
-						viewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
+						techListViewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
 							Drupal.attachBehaviors('#loading-tech-list');
 						});
 					} else {
-						viewport.empty().html('There are no Wastewater Characterisations. Click on <i>Add Loading</i> above to create one or more profiles.');
+						techListViewport.empty().html('<div id="tech-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button in the Wastewater Characterisations panel to create one or more profiles.</div>');
 					}
 				}
 
@@ -301,11 +306,13 @@
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
 				$('.btn-add-loading').unbind('click').on('click',function(){
 					var viewport = $('#loading-form-container');
+          //var loadingListViewport = $('#loading-view-container > #loading-list-container > div');
 					if($('#cancel-loading').hasClass('hidden')) $('#cancel-loading').removeClass('hidden');
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
 					var projectId = idTokens[2];
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/loading/add/'+projectId;
+          //loadingListViewport.empty();
 					viewport.empty().html('Retrieving form <img src="' + throbberPath + '" />');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
@@ -530,11 +537,11 @@
 				function displayParamLevel(paramValue){
 					// display scenario parameter level in words
 					var paramText = Array();
-					paramText[1] = "N/A";
-					paramText[2] = "V. Low";
-					paramText[3] = "Low";
-					paramText[4] = "High";
-					paramText[5] = "V. High";
+					paramText[1] = "N/A"; // None
+					paramText[2] = "V. Low";  // Low
+					paramText[3] = "Low"; // Medium
+					paramText[4] = "High"; // High
+					paramText[5] = "V. High"; // V. High
 					
 					return paramText[paramValue];
 				}
@@ -676,6 +683,9 @@
 					$('#edit-pol-totp').attr('type','number');
 					$('#edit-pol-tss').attr('type','number');
 					$('#edit-pol-volc').attr('type','number');
+          $('#edit-field-land-area').attr('type','number');
+          $('#edit-field-population-density').attr('type','number');
+          $('#edit-field-pipe-length').attr('type','number');
 
 					// set PEs
 					$('.popeq-pe-cod').text(pe_cod.toFixed(4));
@@ -794,6 +804,7 @@
 					//});
 				});
 				
+        $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').hide();
 				$('#tech-toggle-ww-attr').unbind('click').on('click', function(event){
 					//console.log('ww attr toggle');
 					$('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').toggle();
@@ -885,6 +896,50 @@
 				});
 				*/
 				
+        // RETICULATION
+        function reticulationCost(area,density,sewerage,pop,pipe) {
+          var costSewerage = 0;
+          var costSeweragePC = 0/pop;
+          var numPumps6 = 0;
+          var numPumps12 = 0;
+          console.log(area+'|'+density+'|'+sewerage+'|'+pop+'|'+pipe);
+          console.log(costSewerage+'|'+costSeweragePC+'|'+numPumps6+'|'+numPumps12);
+          return [costSewerage, costSeweragePC, numPumps6, numPumps12];
+        }
+
+
+        var landArea = $('#edit-field-land-area').val();
+        var populationDensity = $('#edit-field-population-density').val();
+        var sewerageType = $('#edit-field-sewerage-type').val();
+        var pipeLength = $('#edit-field-pipe-length').val();
+        var reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength);
+        var reticCost = reticValues[0];
+        var reticCostPC = reticValues[1];
+        var pumps6 = reticValues[2];
+        var pumps12 = reticValues[3];
+        $('#retic-cost').text(reticCost);
+        $('#retic-cost-per-capita').text(reticCost);
+        $('#retic-pump-count-6').text(pumps6);
+        $('#retic-pump-count-12').text(pumps12);
+        
+        $('#edit-field-land-area, #edit-field-population-density, #edit-field-sewerage-type').unbind('change').on('change keyup', function(){
+          landArea = $('#edit-field-land-area').val();
+          populationDensity = $('#edit-field-population-density').val();
+          sewerageType = $('#edit-field-sewerage-type').val();
+          //console.log(landArea + '|' + populationDensity);
+          //console.log('population: '+$('#td-field-population')[0].innerHTML);
+          reticValues = reticulationCost(landArea,populationDensity,sewerageType,population);
+          reticCost = reticValues[0];
+          reticCostPC = reticValues[1];
+          pumps6 = reticValues[2];
+          pumps12 = reticValues[3];
+          $('#retic-cost').text(reticCost);
+          $('#retic-cost-per-capita').text(reticCost);
+          $('#retic-pump-count-6').text(pumps6);
+          $('#retic-pump-count-12').text(pumps12);
+        });
+        
+        
 
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'

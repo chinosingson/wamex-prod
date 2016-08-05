@@ -381,14 +381,14 @@ function wamex_display_tech($techArgs){
 		$output .= "<div class=\"col-sm-12 col-md-3 col-lg-3\" id=\"tech-count\">Displaying ".count($tech_ids)." Technology options.<br/>Population Equivalent: ".number_format($str_popeq,2)."</div>";
 		$output .= "<div class=\"col-sm-12 col-md-8 col-lg-8 row\">";
 		if ($str_scenario!=""){
-			$output .= "<div class=\"tech-display-controls \">";
-			$output .= "<input type=\"checkbox\" id=\"tech-toggle-ww-attr\" checked=\"checked\" name=\"tech-toggle-ww-attr\"><label for=\"tech-toggle-ww-attr\">Efficiency</label>";
-			$output .= "</div>";
 			$output .= "<div class=\"tech-display-controls\">";
 			$output .= "<input type=\"checkbox\" id=\"tech-toggle-fn-attr\" checked=\"checked\" name=\"tech-toggle-fn-attr\"><label for=\"tech-toggle-fn-attr\">Financial Info</label>";
 			$output .= "</div>";
 			$output .= "<div class=\"tech-display-controls\">";
 			$output .= "<input type=\"checkbox\" id=\"tech-toggle-fn-per-capita\" name=\"tech-toggle-fn-per-capita\"><label id=\"label-toggle-per-capita\" for=\"tech-toggle-fn-per-capita\">Per Capita</label>";
+			$output .= "</div>";
+			$output .= "<div class=\"tech-display-controls \">";
+			$output .= "<input type=\"checkbox\" id=\"tech-toggle-ww-attr\" name=\"tech-toggle-ww-attr\"><label for=\"tech-toggle-ww-attr\">Efficiency</label>";
 			$output .= "</div>";
 			//$output .= "<div class=\"tech-display-controls\">";	// design horizon
 			//$output .= "<input type=\"number\" id=\"tech-design-horizon\" name=\"tech-design-horizon\" class=\"input-sm form-control form-text\" min=\"1\" max=\"99\" size=\"5\"><label id=\"label-tech-design-horizon\" for=\"tech-design-horizon\">Design Horizon</label>";
@@ -401,41 +401,31 @@ function wamex_display_tech($techArgs){
 		$output .= "</div>";
 		
 		$header = array();
-		$header = array(
-			//array('data' => t('ID'), 'class'=>array('tech-attributes','tech-id','col-id')), 
-			array('data' => t('Name<br/>&nbsp;'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name'),'sort'=>'asc') ,
-			//array('data'=> t($score_header),'class'=>array('col-md-1','tech-attributes','col-volc')),
-			array('data' => t('COD<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-cod','tech-cod','col-cod')),
-			array('data' => t('BOD5<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-bod5','tech-bod5','col-bod5')),
-			array('data' => t('N<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totn','tech-totn','col-totn')),
-			//array('data' => t('N max'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
-			array('data' => t('P<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totp','tech-totp','col-totp')),
-			array('data' => t('TSS<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totp','tech-tss','col-tss')),
-			//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
-		);
 		
-		if ($str_scenario!="") {
-			$str_cost_units = "<span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code." M/yr)</span>";
-			$str_cost_units_pc = "<span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita/yr)</span>";
-			$score_header = "Score<br/>&nbsp;"; 
-			$capex_header = "CapEx<br/>".$str_cost_units.$str_cost_units_pc;
-			$opex_header = "OpEx<br/>".$str_cost_units.$str_cost_units_pc;
-			$land_req_header = "Land&nbsp;Req't<br/><span class=\"label-unit\">('000 sq m)</span>";
-			$land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr label-unit\">(".$str_curr_code." M)</span>";
-			//$future_value_header = "Future Value";
-			//$header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
-			//array_unshift($header,array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')));
-			//$header = array_merge(array_slice($header,0,1,true),array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')),array_slice($header,1,count($header)-1,true));
-			//$header = 
-			array_splice($header,1,0,array(array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','tech-score'))));
-			$header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-capex'));
-			$header[] = array('data'=>t($opex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-opex'));
-			$header[] = array('data'=>t($land_req_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landreq'));
-			$header[] = array('data'=>t($land_cost_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landcost'));
+		//if ($str_scenario!="") {
+    $str_cost_units = "<span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code." M/yr)</span>";
+    $str_cost_units_pc = "<span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita/yr)</span>";
+    $score_header = "Score<br/>&nbsp;"; 
+    $capex_header = "CapEx<br/>".$str_cost_units.$str_cost_units_pc;
+    $opex_header = "OpEx<br/>".$str_cost_units.$str_cost_units_pc;
+    $land_req_header = "Land&nbsp;Req't<br/><span class=\"label-unit\">('000 sq m)</span>";
+    $land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr label-unit\">(".$str_curr_code." M)</span>";
+    //$future_value_header = "Future Value";
+    //$header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
+    //array_unshift($header,array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')));
+    //$header = array_merge(array_slice($header,0,1,true),array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')),array_slice($header,1,count($header)-1,true));
+    //$header = 
+    //array_splice($header,1,0,array(array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','tech-score'))));
+		$header[] = array('data' => t('Name<br/>&nbsp;'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name'),'sort'=>'asc');
+    $header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','tech-score'));
+    $header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-capex'));
+    $header[] = array('data'=>t($opex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-opex'));
+    $header[] = array('data'=>t($land_req_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landreq'));
+    $header[] = array('data'=>t($land_cost_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landcost'));
 			//$header[] = array('data'=>t($future_value_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-future-value'));
 			
 			//echo "<pre>".print_r($header,1)."</pre>";
-		} 
+		//} 
 		/*else {
 			$score_header = "&nbsp;";
 			$capex_header = "&nbsp;";
@@ -443,6 +433,18 @@ function wamex_display_tech($techArgs){
 			$land_req_header = "&nbsp;";
 		}*/
 
+			//array('data' => t('ID'), 'class'=>array('tech-attributes','tech-id','col-id')), 
+			//array('data'=> t($score_header),'class'=>array('col-md-1','tech-attributes','col-volc')),
+			//array('data' => t('N max'), 'class'=>array('tech-attributes','tech-attributes-totn','tech-totn','col-totn')),
+			//array('data' => t('TSS max'), 'class'=>array('tech-attributes','tech-attributes-tss','tech-tss','col-tss')),
+		$header[] = array('data' => t('COD<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-cod','tech-cod','col-cod'));
+		$header[] = array('data' => t('BOD5<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-bod5','tech-bod5','col-bod5'));
+		$header[] = array('data' => t('N<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totn','tech-totn','col-totn'));
+		$header[] = array('data' => t('P<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totp','tech-totp','col-totp'));
+		$header[] = array('data' => t('TSS<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totp','tech-tss','col-tss'));
+		//);
+    
+    
 		$select = db_select('wamex_technology', 'wt'); //->extend('Tablesort');
 		//$fields = array('tid', 'name','cod', 'max_bod', 'max_n_p', 'max_n_a', 'max_p_p', 'max_p_a', 'max_tss_p', 'max_tss_a');
 		$query = $select->fields('wt') //, $fields)
@@ -474,42 +476,54 @@ function wamex_display_tech($techArgs){
 
 		foreach ($results as $key => $val) {
 			//if($str_scenario!="") $tech_score = $scenario_sorted_techs[$key]['score']; else $tech_score = "";
-			$ary_values = array(
-				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
-				'name'=>array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap')),
-				
-				'COD'=>array('data'=>(!is_null($val->cod) ? "<!--(p = ".$val->cod.") -->".number_format((1-$val->cod)*$arrayAverageLoad['COD'],1) : ""), 'class'=>array('tech-attributes','tech-ww-attr','tech-cod','col-cod')),
-				// ."/".(1-$val->cod)*$arrayAverageLoad['COD']
-				'BOD5'=>array('data'=>(!is_null($val->max_bod) ? number_format((1-$val->max_bod)*$arrayAverageLoad['BOD5'],1) : ""), 'class'=>array('tech-attributes','tech-ww-attr','tech-bod5','col-bod5')),
-				//."/".(1-$val->max_bod)*$arrayAverageLoad['BOD5']
-				'N'=>array('data'=>(!is_null($val->max_n_a) ? "<!--(a) -->".number_format($val->max_n_a,1) : (!is_null($val->max_n_p) ? "<!--(p = ".$val->max_n_p.") -->".number_format((1-$val->max_n_p)*$arrayAverageLoad['N'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-totn','col-totn')),
-				'P'=>array('data'=>(!is_null($val->max_p_a) ? "<!--(a) -->".number_format($val->max_p_a,1) : (!is_null($val->max_p_p) ? "<!--(p = ".$val->max_p_p.") -->".number_format((1-$val->max_p_p)*$arrayAverageLoad['P'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-totp','col-totp')),
-				'TSS'=>array('data'=>(!is_null($val->max_tss_a) ? "<!--(a)--> ".number_format($val->max_tss_a,1) : (!is_null($val->max_tss_p) ? "<!--(p = ".$val->max_tss_p.") -->".number_format((1-$val->max_tss_p)*$arrayAverageLoad['TSS'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-tss','col-tss')),
-				//array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
-			);
-			
-			if($str_scenario!=""){
+			//if($str_scenario!=""){
 				$financials_factor = 1/1000000;
 				$landreq_factor = 1/1000;
-				array_splice($ary_values,1,0,array('score'=>array('data'=>number_format($scenario_sorted_techs[$key]['score'],2), 'class'=>array('tech-attributes','tech-score'))));
+				//array_splice($ary_values,1,0,array('score'=>array('data'=>number_format($scenario_sorted_techs[$key]['score'],2), 'class'=>array('tech-attributes','tech-score'))));
+        $ary_values['name']=array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$val->tid.'">'.$val->name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap'));
+        $ary_values['score']=array('data'=>number_format($scenario_sorted_techs[$key]['score'],2), 'class'=>array('tech-attributes','tech-score'));
 				//$ary_values[] = array('capex'=>array('data'=>number_format($val->{'capex_'.$popeq_shortcut.'a'})));
 				$capex_tot = wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut[0]},$val->{'capex_'.$popeq_shortcut[1]})*$str_popeq*$str_exch_rate;
+        $capex_range = number_format(($capex_tot-$capex_tot*(0.2))*$financials_factor,2)." to ".number_format(($capex_tot+$capex_tot*(0.2))*$financials_factor,2); //."-".$capex_tot-$capex_tot*(0.2);
 				$opex_tot = wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut[0]},$val->{'opex_'.$popeq_shortcut[1]})*$str_popeq*$str_exch_rate;
+        $opex_range = number_format(($opex_tot-$opex_tot*(0.2))*$financials_factor,2)." to ".number_format(($opex_tot+$opex_tot*(0.2))*$financials_factor,2);
+        //$opex_range
 				$capex_per_capita = wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut[0]},$val->{'capex_'.$popeq_shortcut[1]})*$str_exch_rate; //*$str_popeq;
+        $capex_range_per_capita = number_format(round(($capex_per_capita-$capex_per_capita*(0.2)),-1),0)." to ".number_format(round(($capex_per_capita+$capex_per_capita*(0.2)),-1),0);
 				$opex_per_capita = wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut[0]},$val->{'opex_'.$popeq_shortcut[1]})*$str_exch_rate; //*$str_popeq;
-				$ary_values['capex'] = array('data'=>number_format($capex_tot*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
-				$ary_values['capex_full'] = array('data'=>$capex_tot,'class'=>array('hidden'),'id'=>array());
-				$ary_values['opex'] = array('data'=>number_format($opex_tot*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
-				$ary_values['capex_pc'] = array('data'=>number_format($capex_per_capita,2), 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
-				$ary_values['opex_pc'] = array('data'=>number_format($opex_per_capita,2), 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
+        $opex_range_per_capita = number_format(round(($opex_per_capita-$opex_per_capita*(0.2)),-1),0)." to ".number_format(round(($opex_per_capita+$opex_per_capita*(0.2)),-1),0);
+        //$opex_range_per_capita
+				//$ary_values['capex'] = array('data'=>number_format($capex_tot*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
+				$ary_values['capex'] = array('data'=>$capex_range,'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
+				//$ary_values['capex_full'] = array('data'=>$capex_tot,'class'=>array('hidden'),'id'=>array());
+				//$ary_values['opex'] = array('data'=>number_format($opex_tot*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
+				$ary_values['opex'] = array('data'=>$opex_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
+				//$ary_values['capex_pc'] = array('data'=>number_format($capex_per_capita,2), 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
+				$ary_values['capex_pc'] = array('data'=>$capex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
+				//$ary_values['opex_pc'] = array('data'=>number_format($opex_per_capita,2), 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
+				$ary_values['opex_pc'] = array('data'=>$opex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
 				$ary_land_values = array($val->land_200,$val->land_1k);
 				$landreq = wamex_land_req($str_popeq,$ary_land_values);
 				$ary_values['landreq'] = array('data'=>number_format($landreq*$landreq_factor,2), 'class'=>array('tech-attributes','tech-financial-attr','tech-landreq'));
-				$ary_values['landcost'] = array('data'=>number_format($landreq*$str_land_cost*$str_exch_rate*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost'));
+        
+        $land_cost = $landreq*$str_land_cost*$str_exch_rate*$financials_factor;
+        $land_cost_range = number_format(round($land_cost-($land_cost*(0.2)),2),2)." to ".number_format(round($land_cost+($land_cost*(0.2)),2),2);
+				$ary_values['landcost'] = array('data'=>$land_cost_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost'));
 				
 				//$future_value = wamex_future_value($capex_tot,$inflation_rate,1,$design_horizon);
 				//$ary_values['futurevalue'] = array('data'=>number_format($future_value*$financials_factor,3),'class'=>array('tech-attributes','tech-financial-attr','tech-future-value'));
-			}
+			//}
+				//'id'=>array('data'=>$val->tid,'class'=>array('tech-attributes','tech-id','col-id')),
+				// ."/".(1-$val->cod)*$arrayAverageLoad['COD']
+				//."/".(1-$val->max_bod)*$arrayAverageLoad['BOD5']
+				//array('data'=> t('&nbsp;'),'class'=>array('tech-attributes','col-volc')),
+				$ary_values['COD']=array('data'=>(!is_null($val->cod) ? "<!--(p = ".$val->cod.") -->".number_format((1-$val->cod)*$arrayAverageLoad['COD'],1) : ""), 'class'=>array('tech-attributes','tech-ww-attr','tech-cod','col-cod'));
+				$ary_values['BOD5']=array('data'=>(!is_null($val->max_bod) ? number_format((1-$val->max_bod)*$arrayAverageLoad['BOD5'],1) : ""), 'class'=>array('tech-attributes','tech-ww-attr','tech-bod5','col-bod5'));
+				$ary_values['N']=array('data'=>(!is_null($val->max_n_a) ? "<!--(a) -->".number_format($val->max_n_a,1) : (!is_null($val->max_n_p) ? "<!--(p = ".$val->max_n_p.") -->".number_format((1-$val->max_n_p)*$arrayAverageLoad['N'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-totn','col-totn'));
+				$ary_values['P']=array('data'=>(!is_null($val->max_p_a) ? "<!--(a) -->".number_format($val->max_p_a,1) : (!is_null($val->max_p_p) ? "<!--(p = ".$val->max_p_p.") -->".number_format((1-$val->max_p_p)*$arrayAverageLoad['P'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-totp','col-totp'));
+				$ary_values['TSS']=array('data'=>(!is_null($val->max_tss_a) ? "<!--(a)--> ".number_format($val->max_tss_a,1) : (!is_null($val->max_tss_p) ? "<!--(p = ".$val->max_tss_p.") -->".number_format((1-$val->max_tss_p)*$arrayAverageLoad['TSS'],1) : "")), 'class'=>array('tech-attributes','tech-ww-attr','tech-tss','col-tss'));
+			//);
+			
 			$rows[] = $ary_values;
 		}
 		
@@ -1428,6 +1442,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_totn = $node->field_loading_totn['und'][0]['value'];
 		$field_totp = $node->field_loading_totp['und'][0]['value'];
 		$field_tss = $node->field_loading_tss['und'][0]['value'];
+		$field_land_cost = $node->field_land_cost['und'][0]['value'];
+		$field_land_area = (isset($node->field_land_area['und']) ? $node->field_land_area['und'][0]['value'] : 0);
+		$field_population_density = (isset($node->field_population_density['und']) ? $node->field_population_density['und'][0]['value'] : 0);
 		if(arg(0) == 'project'){
 			drupal_add_js(drupal_get_path('module','wamex').'/js/formvalidation/js/formValidation.min.js',array('type'=>'file','group'=>JS_DEFAULT));
 			drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
@@ -1445,6 +1462,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 			drupal_add_js(array('node' => array('values' => array('field_totn'=>$field_totn))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_totp'=>$field_totp))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_tss'=>$field_tss))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_land_area'=>$field_land_area))),'setting');
+			drupal_add_js(array('node' => array('values' => array('field_population_density'=>$field_population_density))),'setting');
 		}
 	} else {
 		$node = NULL;
@@ -1466,6 +1486,8 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_totn = 0;
 		$field_totp = 0;
 		$field_tss = 0;
+    $field_land_area = 0;
+    $field_population_density = 0;
 	}
 
 	$form = array();
@@ -1578,7 +1600,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 
 	$form['field_land_cost_und_0_value'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Land Cost <span class="label-unit">(per sq m)</span>'),
+		'#title' => t('Land Cost <span class="label-unit">(per m<sup>2</sup>)</span>'),
 		'#default_value' => $field_land_cost,
 		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
@@ -1653,6 +1675,28 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div></div>',
 	);
+  
+  // land area
+  /*$form['field_land_area'] = array(
+    '#title' => t('<span class="label-name">Land Area</span> <span class="label-unit">(m<sup>2</sup>)</span>'),
+    '#type' => 'textfield',
+    '#default_value' => $field_land_area,
+		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
+		//'#suffix' => '</div></div>',
+  );
+  
+  // population density
+  $form['field_population_density'] = array(
+    '#title' => t('<span class="label-name">Population Density</span><br/><span class="label-unit">(persons per m<sup>2</sup>)</span>'),
+    '#type' => 'textfield',
+    '#default_value' => $field_population_density,
+		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
+		//'#suffix' => '</div></div>',
+  );
+  
+  hide($form['field_land_area']);
+  hide($form['field_population_density']);*/
+ 
 
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
@@ -1666,6 +1710,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	//$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
 	
+  
 	if ($nid){
 		// edit existing
 		$form['nid']['#type'] = 'hidden';
@@ -1679,6 +1724,119 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	return $form;
 	
 }
+
+function wamex_project_retic_form($form, &$form_state, $nid = null){
+  if ($nid) {
+    $node = node_load($nid);
+    $field_land_area = (isset($node->field_land_area['und']) ? $node->field_land_area['und'][0]['value'] : NULL);
+    $field_population_density = (isset($node->field_population_density['und']) ? $node->field_population_density['und'][0]['value'] : NULL);
+    $field_sewerage_type = (isset($node->field_sewerage_type['und']) ? $node->field_sewerage_type['und'][0]['value'] : NULL);
+    $field_pipe_length = (isset($node->field_pipe_length['und']) ? $node->field_pipe_length['und'][0]['value'] : NULL);
+  }
+  else {
+    $node = NULL;
+    $field_land_area = 0;
+    $field_population_density = 0;
+    $field_sewerage_type = null;
+    $field_pipe_length = 0;
+  }
+
+  // land area
+  $form['field_land_area'] = array(
+    '#title' => t('<span class="label-name">Land Area</span> <span class="label-unit">(m<sup>2</sup>)</span>'),
+    '#type' => 'textfield',
+    '#default_value' => $field_land_area,
+		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
+		//'#suffix' => '</div></div>',
+  );
+  
+  // population density
+  $form['field_population_density'] = array(
+    '#title' => t('<span class="label-name">Population Density</span><br/><span class="label-unit">(persons per m<sup>2</sup>)</span>'),
+    '#type' => 'textfield',
+    '#default_value' => $field_population_density,
+		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
+		//'#suffix' => '</div></div>',
+  );
+  
+  $field_sewerage_type_info = field_info_field('field_sewerage_type');
+  $field_sewerage_type_options = list_allowed_values($field_sewerage_type_info);
+  $form['field_sewerage_type'] = array(
+    '#title' => t('<span class="label-name">Type of Sewerage</span>'),
+    '#type' => 'select',
+    '#options' => $field_sewerage_type_options,
+    '#default_value' => $field_sewerage_type,
+  );
+  
+  $form['field_pipe_length'] = array(
+    '#title' => t('<span class="label-name">Pipe Length</span><br/><span class="label-unit">(m)</span>'),
+    '#type' => 'textfield',
+    '#default_value' => $field_pipe_length,
+  ); 
+  
+	$form['actions']['submit']['#type'] = 'button';
+	$form['actions']['submit']['#id'] = 'edit-retic-submit';
+  $form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+	$form['actions']['submit']['#ajax']['type'] = 'throbber';
+	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_retic_form_submit';
+	$form['nid']['#type'] = 'hidden';
+	$form['nid']['#value'] = $nid;
+  
+  return $form;  
+}
+
+function wamex_project_retic_form_submit($form, &$form_state){
+	ctools_include('ajax');
+	ctools_add_js('ajax-responder');
+	$errors = form_get_errors();
+	$commands = array();
+	drupal_get_messages();
+	
+	if(!empty($errors)){
+		$selector = '#retic-messages';
+		$error_variables = array(
+			'items' => $errors,
+			'title' => 'Edit Collection and Conveyance Errors',
+			'type' => 'ul',
+		);
+		drupal_set_message(theme_item_list($errors),'error');
+    $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
+		return array('#type' => 'ajax', '#commands' => $commands);
+	}
+	else {
+		
+		if (!empty($form_state['values']['nid'])){
+			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
+			$node = node_load($form_state['values']['nid']);
+			$node->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
+			$node->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
+			$node->field_sewerage_type[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_sewerage_type'];
+			$node->field_pipe_length[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_pipe_length'];
+			$node = node_submit($node);
+			try {
+				node_save($node);
+				$success = TRUE;
+				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
+			} 
+			catch (Exception $e) {
+				// Do your error handling here.
+				$success = FALSE;
+				drupal_set_message(t($e->getMessage().'<br/>Project not updated.'),'error');
+			}
+		}
+		else {
+			drupal_set_message('Error saving Project!','error');
+			$success = FALSE;
+		}
+		
+		if ($success){
+			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'reticulation'));
+			$commands[] = ctools_ajax_command_reload();
+			return array('#type' => 'ajax', '#commands' => $commands);
+		} 
+	}
+}
+
 
 function wamex_project_effl_form($form, &$form_state, $nid = null){
 	//drupal_set_message('nid = '.$nid,'status');
@@ -1899,6 +2057,8 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$newnode->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
+      $newnode->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
+      $newnode->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
 			// field_discount_rate_reticulation
 			// field_om_pct_treatment
 			// field_om_pct_reticulation
@@ -1939,6 +2099,8 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_loading_totn[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_totn'];
 			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$node->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
+      $node->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
+      $node->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
 			// field_discount_rate_reticulation
 			// field_om_pct_treatment
 			// field_om_pct_reticulation

@@ -36,6 +36,10 @@
 	$field_effluent_totp = field_get_items('node',$node,'field_loading_totp');
 	$field_effluent_tss = field_get_items('node',$node,'field_loading_tss');
 	$field_land_cost = field_get_items('node',$node,'field_land_cost');
+  $field_land_area = field_get_items('node',$node,'field_land_area');
+  $field_population_density = field_get_items('node',$node,'field_population_density');
+  $field_sewerage_type = field_get_items('node',$node,'field_sewerage_type');
+  $field_pipe_length = field_get_items('node',$node,'field_pipe_length');
 	$addLoadingPerm = user_access('add loading custom');
 	$editProjectPerm = user_access('edit project custom');
 	$addScenarioPerm = user_access('add scenario custom');
@@ -45,8 +49,17 @@
 	$currency_code = $term_currency->field_currency_code[LANGUAGE_NONE][0]['value'];
 	
 	if (isset($nid)){
+
+    //drupal_add_css(libraries_get_path('leaflet') . '/leaflet.css', array('type'=>'file','group'=>CSS_DEFAULT));
+    //drupal_add_css(libraries_get_path('leaflet.geosearch') . '/src/css/l.geosearch.css', array('type'=>'file','group'=>CSS_DEFAULT));
+    //drupal_add_js(libraries_get_path('leaflet') . '/leaflet.js');
+    //drupal_add_js(libraries_get_path('leaflet.geosearch') . '/src/js/l.control.geosearch.js');
+    //drupal_add_js(libraries_get_path('leaflet.geosearch') . '/src/js/l.geosearch.provider.openstreetmap.js');
+    //drupal_add_js(libraries_get_path('leaflet.geosearch') . '/src/js/l.geosearch.provider.google.js');
+    //drupal_add_js(base_path(). drupal_get_path('theme', 'wamex'). '/js/loc-map.js');
 		// set some node values to the jQuery extension
 		drupal_add_js(array('node' => array('values' => array('nid'=>$node->nid))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_location'=>$field_location[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency[0]['tid']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency_code'=>$currency_code))), 'setting');
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd[0]['value']))),'setting');
@@ -94,8 +107,11 @@ $view_scenario->set_display('block');
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Location</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_location) ? $field_location[0]['value']: "-"); ?></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7" id="project-location"><?php print (isset($field_location) ? $field_location[0]['value']: "-"); ?></td>
 					</tr>
+					<!--tr>
+						<td class="project-info-value col-sm-12 col-md-12 col-lg-12" colspan="2" id="map-container"><div id="project-location-name"></div><div id="map-canvas"></div></td>
+					</tr-->
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Population</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_population) ? number_format($field_population[0]['value']): "-"); ?>
@@ -189,9 +205,9 @@ $view_scenario->set_display('block');
 	<div id="standards-container" class="container-fluid panel panel-default">
 		<div id="heading-standards" class="panel-heading" role="tab">
 			<div id="standards-title-container">
-				<h3 id="standards-title" class="project-section-title panel-title"><a href="#collapse-standards" role="button" data-toggle="collapse"  aria-expanded="true" aria-controls="collapse-standards"><span id="toggle-standards" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Effluent Standards</a></h3>
+				<h3 id="standards-title" class="project-section-title panel-title"><a href="#collapse-standards" name="standards" role="button" data-toggle="collapse"  aria-expanded="true" aria-controls="collapse-standards"><span id="toggle-standards" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Effluent Standards</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="standards-help">?</button>
-				<div id="standards-messages"></div>
+				<div id="effluent-standards-messages"></div>
 			</div>
 		</div>
 		<div id="collapse-standards" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-standards">
@@ -343,7 +359,7 @@ $view_scenario->set_display('block');
 			<div id="tech-title-container">
 				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#collapse-tech" name="technologies" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="tech-help">?</button>
-				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
+				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php //print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
 				<div id="loading-popeq-selected-param"></div>
 			</div>
 		</div>
@@ -351,6 +367,89 @@ $view_scenario->set_display('block');
 			<div id="loading-tech-list"></div>
 		</div>
 	</div>
+
+	<div id="loading-retic-container" class="container-fluid panel panel-default">
+		<div id="heading-retic" class="panel-heading" role="tab">
+			<div id="retic-title-container">
+				<h3 id="loading-retic-title" class="project-section-title panel-title" ><a href="#collapse-retic" name="reticulation" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-retic"><span id="toggle-retic" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Collection and Conveyance</a></h3>
+				<button class="btn btn-xs btn-default section-help" id="retic-help">?</button>
+        <div id="retic-messages"></div>
+				<!--button class="btn btn-primary btn-sm btn-show-retic pull-right" id="show-retic-<?php //print $nid; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</button-->
+			</div>
+		</div>
+		<div id="collapse-retic" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-retic">
+			<div id="loading-retic-list">
+				<?php 
+          //echo $field_sewerage_type[0]['value'];
+          //echo "<br/>";
+          //echo $field_pipe_length[0]['value'];
+        
+					$retic_output = "";
+					$retic_form = drupal_get_form('wamex_project_retic_form',$nid);
+					//$retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
+          $retic_form['field_land_area']['#title'] = null;
+          $retic_form['field_land_area']['#value'] = $field_land_area[0]['value'];
+          $retic_form['field_population_density']['#title'] = null;
+          $retic_form['field_population_density']['#value'] = $field_population_density[0]['value'];
+          $retic_form['field_sewerage_type']['#title'] = null;
+          $retic_form['field_sewerage_type']['#value'] = $field_sewerage_type[0]['value'];
+          $retic_form['field_pipe_length']['#title'] = null;
+          $retic_form['field_pipe_length']['#value'] = $field_pipe_length[0]['value'];
+          $retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
+          $retic_header = null;
+					$retic_rows = array();
+          
+					$retic_rows[]['data'] = array(
+						array('data'=>t('<label>Land Area</label> (<span class="label-unit">m<sup>2</sup></span>)'), 'class'=>array('retic-row-header','col-sm-5')),
+						array('data'=>$retic_form['field_land_area'],'colspan'=>2),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Population Density</label> (<span class="label-unit">persons per m<sup>2</sup></span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>$retic_form['field_population_density'],'colspan'=>2),
+					);
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Type of Sewerage</label>'), 'class'=>array('retic-row-header')),
+            array('data'=>$retic_form['field_sewerage_type'], 'colspan'=>2),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Pipe Length</label> (<span class="label-unit">m</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>$retic_form['field_pipe_length'], 'colspan'=>2),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Number of Pumps</label>'), 'class'=>array('retic-row-header')),
+            array('data'=>'<div class="retic-pump-count-header col-sm-4">6L/s/day</div><div id="retic-pump-count-6" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-6L'),
+            array('data'=>'<div class="retic-pump-count-header col-sm-4">12L/s/day</div><div id="retic-pump-count-12" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-12L'),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.' M</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('retic-cost')),
+            array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.' `000</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('retic-cost-per-capita'), 'colspan'=>'2' ),
+            
+          );
+          
+					$retic_output .= theme('table', array('header' => $retic_header, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'panel-body')));
+					$retic_output .= drupal_render($retic_form['form_build_id']);
+					$retic_output .= drupal_render($retic_form['form_id']);
+					$retic_output .= drupal_render($retic_form['form_token']);
+					$variables['element'] = $retic_form;
+					$variables['element']['#children'] = $retic_output;
+					print theme_form($variables);
+				?>
+      
+      </div>
+		</div>
+	</div>
+
 	<hr/>
 </div>
 <?php else: ?>

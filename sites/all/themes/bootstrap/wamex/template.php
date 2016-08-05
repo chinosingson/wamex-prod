@@ -30,6 +30,8 @@ function wamex_preprocess_html(&$variables){
 		drupal_add_css(drupal_get_path('module','wamex').'/js/formvalidation/css/formValidation.min.css',array('type'=>'file','group'=>CSS_THEME));
 		//drupal_add_css(drupal_get_path('module','wamex').'/js/x-editable/css/bootstrap-editable.css',array('type'=>'file','group'=>CSS_THEME));
 		//drupal_add_css(drupal_get_path('module','wamex').'/formvalidation/js/framework/bootstrap-select.min.css',array('type'=>'file','group'=>CSS_THEME));
+    //drupal_add_css(libraries_get_path('leaflet') . '/leaflet.css', array('type'=>'file','group'=>CSS_DEFAULT));
+    //drupal_add_js(libraries_get_path('leaflet') . '/leaflet.js');
 	} /*else {
 		
 		drupal_set_message(print_r($variables),'error');
