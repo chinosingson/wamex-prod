@@ -169,7 +169,7 @@
 				$('#table-loading-tech').removeClass('table');
 				
 				// toggle expand/collapse arrows on sidebar collapse
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -178,7 +178,7 @@
 					toggleArrow(togglerElement[0].id);
 				});
 
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);

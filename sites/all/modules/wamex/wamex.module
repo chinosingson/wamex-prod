@@ -403,13 +403,13 @@ function wamex_display_tech($techArgs){
 		$header = array();
 		
 		//if ($str_scenario!="") {
-    $str_cost_units = "<span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code." M/yr)</span>";
-    $str_cost_units_pc = "<span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita/yr)</span>";
+    $str_cost_units = "<span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code."/year)</span>";
+    $str_cost_units_pc = "<span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita/year)</span>";
     $score_header = "Score<br/>&nbsp;"; 
     $capex_header = "CapEx<br/>".$str_cost_units.$str_cost_units_pc;
     $opex_header = "OpEx<br/>".$str_cost_units.$str_cost_units_pc;
-    $land_req_header = "Land&nbsp;Req't<br/><span class=\"label-unit\">('000 sq m)</span>";
-    $land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr label-unit\">(".$str_curr_code." M)</span>";
+    $land_req_header = "Land&nbsp;Req't<br/><span class=\"label-unit\">(sq m)</span>";
+    $land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr label-unit\">(".$str_curr_code.")</span>";
     //$future_value_header = "Future Value";
     //$header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc'));
     //array_unshift($header,array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','col-volc')));
@@ -484,14 +484,14 @@ function wamex_display_tech($techArgs){
         $ary_values['score']=array('data'=>number_format($scenario_sorted_techs[$key]['score'],2), 'class'=>array('tech-attributes','tech-score'));
 				//$ary_values[] = array('capex'=>array('data'=>number_format($val->{'capex_'.$popeq_shortcut.'a'})));
 				$capex_tot = wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut[0]},$val->{'capex_'.$popeq_shortcut[1]})*$str_popeq*$str_exch_rate;
-        $capex_range = number_format(($capex_tot-$capex_tot*(0.2))*$financials_factor,2)." to ".number_format(($capex_tot+$capex_tot*(0.2))*$financials_factor,2); //."-".$capex_tot-$capex_tot*(0.2);
+        $capex_range = number_format(round(($capex_tot-$capex_tot*(0.2)),-4))." to ".number_format(round(($capex_tot+$capex_tot*(0.2)),-4)); //."-".$capex_tot-$capex_tot*(0.2);
 				$opex_tot = wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut[0]},$val->{'opex_'.$popeq_shortcut[1]})*$str_popeq*$str_exch_rate;
-        $opex_range = number_format(($opex_tot-$opex_tot*(0.2))*$financials_factor,2)." to ".number_format(($opex_tot+$opex_tot*(0.2))*$financials_factor,2);
+        $opex_range = ($opex_tot > 0 ? number_format(round(($opex_tot-$opex_tot*(0.2)),-4))." to ".number_format(round(($opex_tot+$opex_tot*(0.2)),-4)): "-");
         //$opex_range
 				$capex_per_capita = wamex_capex($str_popeq,$val->{'capex_'.$popeq_shortcut[0]},$val->{'capex_'.$popeq_shortcut[1]})*$str_exch_rate; //*$str_popeq;
         $capex_range_per_capita = number_format(round(($capex_per_capita-$capex_per_capita*(0.2)),-1),0)." to ".number_format(round(($capex_per_capita+$capex_per_capita*(0.2)),-1),0);
 				$opex_per_capita = wamex_opex($str_popeq,$val->{'opex_'.$popeq_shortcut[0]},$val->{'opex_'.$popeq_shortcut[1]})*$str_exch_rate; //*$str_popeq;
-        $opex_range_per_capita = number_format(round(($opex_per_capita-$opex_per_capita*(0.2)),-1),0)." to ".number_format(round(($opex_per_capita+$opex_per_capita*(0.2)),-1),0);
+        $opex_range_per_capita = ($opex_tot > 0 ? number_format(round(($opex_per_capita-$opex_per_capita*(0.2)),-1),0)." to ".number_format(round(($opex_per_capita+$opex_per_capita*(0.2)),-1),0) : "-");
         //$opex_range_per_capita
 				//$ary_values['capex'] = array('data'=>number_format($capex_tot*$financials_factor,3), 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
 				$ary_values['capex'] = array('data'=>$capex_range,'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
@@ -504,10 +504,11 @@ function wamex_display_tech($techArgs){
 				$ary_values['opex_pc'] = array('data'=>$opex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
 				$ary_land_values = array($val->land_200,$val->land_1k);
 				$landreq = wamex_land_req($str_popeq,$ary_land_values);
-				$ary_values['landreq'] = array('data'=>number_format($landreq*$landreq_factor,2), 'class'=>array('tech-attributes','tech-financial-attr','tech-landreq'));
+        $landreq_display = ($landreq > 0 ? number_format($landreq*1000) : "-");
+				$ary_values['landreq'] = array('data'=>$landreq_display, 'class'=>array('tech-attributes','tech-financial-attr','tech-landreq'));
         
-        $land_cost = $landreq*$str_land_cost*$str_exch_rate*$financials_factor;
-        $land_cost_range = number_format(round($land_cost-($land_cost*(0.2)),2),2)." to ".number_format(round($land_cost+($land_cost*(0.2)),2),2);
+        $land_cost = $landreq*$str_land_cost*$str_exch_rate;
+        $land_cost_range = ($land_cost > 0 ? number_format(round($land_cost-($land_cost*(0.2)),-4))." to ".number_format(round($land_cost+($land_cost*(0.2)),-4)) : "-");
 				$ary_values['landcost'] = array('data'=>$land_cost_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost'));
 				
 				//$future_value = wamex_future_value($capex_tot,$inflation_rate,1,$design_horizon);
