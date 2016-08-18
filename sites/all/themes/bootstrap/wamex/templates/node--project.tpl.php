@@ -16,10 +16,13 @@
 	$nid = $node->nid;
 	//print "<pre style='display: block; '>".$user_scenarios."</pre>";
 	//print "<pre style='display: block; '>".$user_debug."</pre>";
-	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($user_fields,1)."</pre>";
+	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
 	//$nid = field_get_items('node',$node,'nid');
-	$nid = $node->nid;
+	//$nid = $node->nid;
+  
+  // NODE VALUES
 	$field_body = field_get_items('node',$node,'body');
+	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($field_body,1)."</pre>";
 	$field_author = field_get_items('node',$node,'field_author');
 	$field_location = field_get_items('node',$node,'field_location');
 	$field_population = field_get_items('node',$node,'field_population');
@@ -40,6 +43,8 @@
   $field_population_density = field_get_items('node',$node,'field_population_density');
   $field_sewerage_type = field_get_items('node',$node,'field_sewerage_type');
   $field_pipe_length = field_get_items('node',$node,'field_pipe_length');
+  
+  // PERMISSIONS
 	$addLoadingPerm = user_access('add loading custom');
 	$editProjectPerm = user_access('edit project custom');
 	$addScenarioPerm = user_access('add scenario custom');
@@ -59,8 +64,14 @@
     //drupal_add_js(base_path(). drupal_get_path('theme', 'wamex'). '/js/loc-map.js');
 		// set some node values to the jQuery extension
 		drupal_add_js(array('node' => array('values' => array('nid'=>$node->nid))),'setting');
+		drupal_add_js(array('node' => array('values' => array('title'=>$node->title))),'setting');
+		drupal_add_js(array('node' => array('values' => array('body'=>$field_body[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_author'=>$field_author[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_location'=>$field_location[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_population'=>$field_population[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_ci_cost'=>$field_ci_cost[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency[0]['tid']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_currency_name'=>$field_currency[0]['taxonomy_term']->name))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency_code'=>$currency_code))), 'setting');
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate[0]['value']))),'setting');
@@ -68,11 +79,18 @@
 		//drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard[0]['tid']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_effluent_standard_name'=>$field_effluent_standard[0]['taxonomy_term']->name))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_effluent_cod[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_bod5'=>$field_effluent_bod5[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_totn'=>$field_effluent_totn[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_totp'=>$field_effluent_totp[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_tss'=>$field_effluent_tss[0]['value']))),'setting');
+
+		drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_land_area'=>$field_land_area[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_population_density'=>$field_population_density[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_sewerage_type'=>$field_sewerage_type[0]['value']))),'setting');
+		drupal_add_js(array('node' => array('values' => array('field_pipe_length'=>$field_pipe_length[0]['value']))),'setting');
 	}
 //}
 
@@ -359,7 +377,9 @@ $view_scenario->set_display('block');
 			<div id="tech-title-container">
 				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#collapse-tech" name="technologies" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="tech-help">?</button>
-				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php //print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
+				<!--a href="<?php print base_path() ?>wamex-ajax/nojs/ARG1" class="btn btn-primary btn-sm btn-make-ajax pull-right use-ajax" id="make-ajax-<?php print $nid; ?>"><span class="glyphicon glyphicon-asterisk"></span>&nbsp;AJAX!</a-->
+				<!--button class="btn btn-primary btn-sm btn-make-json pull-right" id="make-json-<?php print $nid; ?>"><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Make JSON</button-->
+				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
 				<div id="loading-popeq-selected-param"></div>
 			</div>
 		</div>

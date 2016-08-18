@@ -22,11 +22,11 @@
 						$gridClass = '';
 					}
 					?>
-          <th <?php if ($header_classes[$field]) { print 'class="'.$gridClass.' '. $header_classes[$field] . ' col-'.$headerName.'" '; } ?>>
+          <th <?php if ($header_classes[$field]) { print 'class="'.$gridClass.' '. $header_classes[$field] . ' col-'.$headerName.'" '; } ?> <?php print (arg(0)=="printpdf" ? "nowrap=\"nowrap\"" : "")?>>
             <?php 
-							
 							if (in_array($label, array('Name', 'Type','%'))) $unit = '';
-							if ($label == '') $label = ''; else $label = '<span class="label-name">'.$label.'</span><br/><span class="label-unit">'.$unit.'</span>';
+							if ($label == '') { $label = ''; }
+              else { $label = '<span class="label-name">'.$label.'</span>'.(arg(0)!="printpdf" ? '<br/>':' ').'<span class="label-unit">'.$unit.'</span>'; }
 							print $label; 
 						?>
           </th>
@@ -43,11 +43,11 @@
 					$aryStrFieldClasses = explode('-',$field_classes[$field][$row_count]);
 					$colname = end($aryStrFieldClasses); 
 					?>
-          <td <?php if ($field_classes[$field][$row_count]) { print 'class="'. $field_classes[$field][$row_count] . ' col-'.$colname.'" '; } ?><?php print drupal_attributes($field_attributes[$field][$row_count]); ?>>
+          <td <?php if ($field_classes[$field][$row_count]) { print 'class="'. $field_classes[$field][$row_count] . ' col-'.$colname.'" '; } ?><?php print drupal_attributes($field_attributes[$field][$row_count]); ?> <?php print (arg(0)=="printpdf" ? "nowrap=\"nowrap\"" : "")?>>
             <?php print $content; ?>
           </td>
         <?php endforeach; ?>
-				<?php if ($editProjectPerm): ?>
+				<?php if ($editProjectPerm && arg(0)!="printpdf"): ?>
 					<td class="views-field views-field-nothing views-loading-field-value"><a class="btn btn-default btn-xs project-edit-loading-btn" id="edit-loading-<?php print $row['nid']?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a></td>
 					<td class="views-field views-field-nothing views-loading-field-value"><a class="btn btn-danger btn-xs project-delete-loading-btn" id="delete-loading-<?php print $row['nid']; ?>"><span class="glyphicon glyphicon-trash"></span>&nbsp;Delete</a></td>
 				<?php endif; ?>

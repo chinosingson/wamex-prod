@@ -49,7 +49,7 @@
           <td <?php if ($field_classes[$field][$row_count]) { print 'class="'. $field_classes[$field][$row_count] . '" '; } ?><?php print drupal_attributes($field_attributes[$field][$row_count]); ?>>
 						<?php //echo $field;?>
 					<?php if ($field == 'title'): ?>
-					<label class="scenario-title-label" for="scenario-radio-<?php print $row['nid']; ?>"><?php print $content; ?></label>
+					<label class="scenario-title-label" id="scenario-title-label-<?php print $row['nid']?>" for="scenario-radio-<?php print $row['nid']; ?>"><?php print $content; ?></label>
 					<?php elseif ($field != "nid"):?>
             <?php 
 							if (is_numeric($content))
@@ -63,7 +63,7 @@
 					<?php endif; ?>
 					</td>
         <?php endforeach; ?>
-				<?php if ($editProjectPerm): ?>
+				<?php if ($editProjectPerm && arg(0)!="printpdf"): ?>
 					<td class="views-field views-field-nothing views-scenario-field-value"><a class="btn btn-default btn-xs project-edit-scenario-btn" id="edit-scenario-<?php print $row['nid']; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a></td>
 					<td class="views-field views-field-nothing views-scenario-field-value"><a class="btn btn-danger btn-xs project-delete-scenario-btn" id="delete-scenario-<?php print $row['nid']; ?>"><span class="glyphicon glyphicon-trash"></span>&nbsp;Delete</a></td>
 				<?php endif; ?>

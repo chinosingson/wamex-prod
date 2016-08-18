@@ -739,3 +739,12 @@ td.tech-attributes.tech-landcost,*/
 .tech-opex { background-color: #83b9de !important; }
 .tech-landreq { background-color: #a5d0e9 !important; }
 .tech-landcost { background-color: #c7e7f4 !important; }
+
+
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}

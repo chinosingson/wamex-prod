@@ -169,7 +169,7 @@
 				$('#table-loading-tech').removeClass('table');
 				
 				// toggle expand/collapse arrows on sidebar collapse
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info, #collapse-retic').unbind('show.bs.collapse').on('show.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -178,7 +178,7 @@
 					toggleArrow(togglerElement[0].id);
 				});
 
-				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
+				$('#collapse-project-info, #collapse-loading-list, #collapse-standards, #collapse-tech, #collapse-popeq, #collapse-scenario, #collapse-financial-info, #collapse-retic').unbind('hide.bs.collapse').on('hide.bs.collapse',function(e){
 					//console.log(e.currentTarget.id+' '+e.type);
 					//console.log(e);
 					var collapseElement = $('#'+e.currentTarget.id);
@@ -255,6 +255,25 @@
 						return "";
 					}
 				}
+
+				function getScenarioRowValues(scenarioRadioId){
+					if(scenarioRadioId){
+						var radioIdTokens = scenarioRadioId.split("-");
+						var scenarioId = radioIdTokens[2];
+						return {
+              "name": $("#scenario-title-label-"+scenarioId)[0].innerHTML,
+              "land": $("#field_scenario_req_land_hidden_"+scenarioId)[0].innerHTML,
+							"chem":$("#field_scenario_req_chem_hidden_"+scenarioId)[0].innerHTML,
+							"energy":$("#field_scenario_req_energy_hidden_"+scenarioId)[0].innerHTML,
+							"om":$("#field_scenario_om_hidden_"+scenarioId)[0].innerHTML,
+							"shock":$("#field_scenario_shock_hidden_"+scenarioId)[0].innerHTML,
+							"flow":$("#field_scenario_flow_hidden_"+scenarioId)[0].innerHTML,
+							"toxic":$("#field_scenario_toxic_hidden_"+scenarioId)[0].innerHTML,
+              "sludge":$("#field_scenario_sludge_hidden_"+scenarioId)[0].innerHTML};
+					} else {
+						return {};
+					}
+				}
 				
 				// set COD as default parameter
 				$('#edit-popeq-parameter--2').attr('checked',true);
@@ -285,7 +304,7 @@
 					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode].join('&');
 					//var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
-					//console.log(techArgs);
+					console.log(techArgs);
           var loadingListViewport = $('#loading-view-container > #loading-list-container > div');
           //console.log(loadingListViewport.innerHTML);
           //if(!loadingListViewport.innerHTML){
@@ -683,9 +702,9 @@
 					$('#edit-pol-totp').attr('type','number');
 					$('#edit-pol-tss').attr('type','number');
 					$('#edit-pol-volc').attr('type','number');
-          $('#edit-field-land-area').attr('type','number');
-          $('#edit-field-population-density').attr('type','number');
-          $('#edit-field-pipe-length').attr('type','number');
+					$('#edit-field-land-area').attr('type','number');
+					$('#edit-field-population-density').attr('type','number');
+					$('#edit-field-pipe-length').attr('type','number');
 
 					// set PEs
 					$('.popeq-pe-cod').text(pe_cod.toFixed(4));
@@ -780,43 +799,136 @@
 					if($('#project-effluent-standard').length > 0){ 
 						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
 					}
+
 					//$('#collapse-tech').collapse('show');
+				// TECHNOLOGIES
 					$('#loading-tech-list',context).once('display',function(){
 						var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
 						var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
+            console.log('#loading-tech-list loaded. calculating suitable technologies');
 						showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
 					});
 				}); 
 				
 				// TECHNOLOGIES
 				$('.btn-show-tech').unbind('click').on('click',function(event){
-					//console.log('btn-show-tech clicked');
-					/*if($('#collapse-tech').hasClass('collapse')) {
-						$('#collapse-tech').collapse('show');
-						//$('#loading-tech-title').click();
-					}*/
-					//$('#loading-tech-list',context).once('display',function(){
-						//console.log();
 						var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
 						var techTdSelector2 = 'td.popeq-totpe-'+popeqParamName2;
 						showTechnologies($(techTdSelector2)[0].innerHTML.replace(/,/g,""));
-						//showTechnologies('eto o');
-					//});
 				});
+        
+        $('.btn-make-json').unbind('click').on('click', function(event){
+          console.log(Drupal.settings);
+          var projectObj = new Object();
+          
+          //projectObj['general']['title'] = Drupal.settings.node.values.title;
+          var scenarioValuesObj = getScenarioRowValues($('.scenario-radio:checked').attr('id'));
+          
+          projectObj = {
+            "general" : {
+              "title"    : Drupal.settings.node.values.title,
+              "author"   : Drupal.settings.node.values.field_author,
+              "location" : Drupal.settings.node.values.field_location,
+              "population" : parseInt(Drupal.settings.node.values.field_population),
+              "description" : Drupal.settings.node.values.body
+            },
+            "financial" : {
+              "currency" : Drupal.settings.node.values.field_currency_name,
+              "currencyCode" : Drupal.settings.node.values.field_currency_code,
+              "exchangeRate" : parseFloat(Drupal.settings.node.values.field_exchange_rate),
+              "landCost" : parseFloat(Drupal.settings.node.values.field_land_cost)
+            },
+            "wastewater": {
+              "loadings" : [],
+              "averageLoadings" : {
+                "adwf": parseFloat(adwf_avg),
+                "cod": parseFloat(cod_avg),
+                "bod5": parseFloat(bod5_avg),
+                "n": parseFloat(totn_avg),
+                "p": parseFloat(totp_avg),
+                "tss": parseFloat(tss_avg)
+              }
+            },
+            "standards" : {
+              "name" : Drupal.settings.node.values.field_effluent_standard_name,
+              "cod"  : parseFloat(Drupal.settings.node.values.field_cod),
+              "bod5" : parseFloat(Drupal.settings.node.values.field_bod5),
+              "totn" : parseFloat(Drupal.settings.node.values.field_totn),
+              "totp" : parseFloat(Drupal.settings.node.values.field_totp),
+              "tss"  : parseFloat(Drupal.settings.node.values.field_tss)
+            },
+            "popeq" : {
+              "pol": {
+                "cod": parseInt($('#edit-pol-cod').val()),
+                "bod5": parseInt($('#edit-pol-bod5').val()),
+                "n": parseInt($('#edit-pol-totn').val()),
+                "p": parseInt($('#edit-pol-totp').val()),
+                "tss": parseInt($('#edit-pol-tss').val()),
+                "volC": parseInt($('#edit-pol-volc').val())
+              },
+              "pe": {
+                "cod": pe_cod,
+                "bod5": pe_bod5,
+                "n": pe_totn,
+                "p": pe_totp,
+                "tss": pe_tss,
+                "volC": pe_volc
+              },
+              "totalPE": {
+                "cod": totpe_cod,
+                "bod5": totpe_bod5,
+                "n": totpe_totn,
+                "p": totpe_totp,
+                "tss": totpe_tss,
+                "volC": totpe_volc
+              },
+              "totalFlow": totflow
+            },
+            "scenarios" : {
+              "name": scenarioValuesObj.name,
+              "land": scenarioValuesObj.land,
+              "chemical": scenarioValuesObj.chem,
+              "energy": scenarioValuesObj.energy,
+              "om": scenarioValuesObj.om,
+              "shock": scenarioValuesObj.shock,
+              "flow": scenarioValuesObj.flow,
+              "toxic": scenarioValuesObj.toxic,
+              "sludge": scenarioValuesObj.sludge
+            },
+            "technologies" : [],
+            "reticulation" : {
+              "landArea": parseFloat(Drupal.settings.node.values.field_land_area),
+              "populationDensity" : parseFloat(Drupal.settings.node.values.field_population_density),
+              "typeSewerage": Drupal.settings.node.values.field_sewerage_type,	
+              "pipeLength": parseFloat(Drupal.settings.node.values.field_pipe_length),
+              "pumps":{
+                "6L": 99,
+                "12L":99
+              },
+              "costSewerage":0.99,
+              "costSeweragePC":0.99
+            }
+            
+          };
+          //projectObj.general.description = Drupal.settings.node.values.body;
+          //projectObj.financial.currency = Drupal.settings.node.values.field_currency_name;
+          //projectObj.standards.name = Drupal.settings.node.values.field_effluent_standard_name;
+          
+          console.log(projectObj);
+          //console.log(JSON.stringify(projectObj));
+          
+        });
 				
-        $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').hide();
-				$('#tech-toggle-ww-attr').unbind('click').on('click', function(event){
-					//console.log('ww attr toggle');
-					$('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').toggle();
-					
-				});
 			
 				// TECHNOLOGIES
 				// financial info variables
 				var techFinancialDisplayStatus = true;	// default to displayed
 				var techTogglePerCapitaStatus = false;	// default to not displayed
 				var objFinancialControl = $('#tech-toggle-fn-attr');
+        var objDisplayToggleControl = $('input[type=radio][name=tech-toggle-display]');
 				var objFinancialCells = $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr');
+        var objEfficiencyCells = $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr');
+          objEfficiencyCells.hide();
 				var objPCToggleControl;	// per capita toggle control
 					objPCToggleControl = $('#tech-toggle-fn-per-capita')
 					objPCToggleLabel = $('#label-toggle-per-capita');
@@ -833,6 +945,24 @@
 					objPELabels = $('#table-loading-tech span.tech-financial-attr-label-unit.label-unit');
 					objPELabels.show();
 					
+				//$('#tech-toggle-ww-attr, #tech-toggle-fn-attr').unbind('click').on('click', function(event){
+				objDisplayToggleControl.change(function(){
+					console.log(this.value);
+          //var techDisplayElementName = '
+					//$('#table-loading-tech th.tech-'+this.value+'-attr, #table-loading-tech td.tech-'+this.value+'-attr').show();
+					if (this.value == 'fn') {
+            $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr').show();
+            $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').hide();
+            objPCToggleControl.prop('disabled', false);
+          } else if (this.value == 'ww'){
+            $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').show();
+            $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr').hide();
+            objPCCells.hide();
+            objPCToggleControl.prop('checked', false);
+            objPCToggleControl.prop('disabled', true);
+          }
+				});
+
 				/*
 				var objDesignHorizon;
 					objDesignHorizon = $('#tech-design-horizon');
@@ -852,7 +982,7 @@
 				});
 
 				// toggle financial info
-				objFinancialControl.unbind('click').on('click', function(event){
+				/*objFinancialControl.unbind('click').on('click', function(event){
 					// financial info headers and cells
 					techFinancialDisplayStatus = $(this).prop('checked');
 					//console.log('techFinancialDisplayStatus='+techFinancialDisplayStatus)
@@ -883,7 +1013,7 @@
 						}
 					});
 					
-				});
+				});*/
 				
 				// design horizon
 				/*
@@ -902,8 +1032,8 @@
           var costSeweragePC = 0/pop;
           var numPumps6 = 0;
           var numPumps12 = 0;
-          console.log(area+'|'+density+'|'+sewerage+'|'+pop+'|'+pipe);
-          console.log(costSewerage+'|'+costSeweragePC+'|'+numPumps6+'|'+numPumps12);
+          //console.log(area+'|'+density+'|'+sewerage+'|'+pop+'|'+pipe);
+          //console.log(costSewerage+'|'+costSeweragePC+'|'+numPumps6+'|'+numPumps12);
           return [costSewerage, costSeweragePC, numPumps6, numPumps12];
         }
 
