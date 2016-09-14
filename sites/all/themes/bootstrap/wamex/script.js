@@ -277,6 +277,7 @@
 				
 				// set COD as default parameter
 				$('#edit-popeq-parameter--2').attr('checked',true);
+        Drupal.settings.node.values.popeq = {'param': 'cod'};
 				//$('#edit-popeq-parameter--2').click();
 				//console.log($('#edit-popeq-parameter--2').value);
 				//console.log($('[name="popeq_parameter"]').value);
@@ -299,12 +300,13 @@
 					var landCost = Drupal.settings.node.values.field_land_cost;
 					var exchRate = Drupal.settings.node.values.field_exchange_rate;
 					var currCode = Drupal.settings.node.values.field_currency_code;
+          var nodeID = Drupal.settings.node.values.nid;
 					//var designHorizon = $('#tech-design-horizon').val();
 					//var inflationRate = $('#tech-inflation-rate').val();
-					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode].join('&');
+					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode,nodeID].join('&');
 					//var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
 					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
-					console.log(techArgs);
+					//console.log(techArgs);
           var loadingListViewport = $('#loading-view-container > #loading-list-container > div');
           //console.log(loadingListViewport.innerHTML);
           //if(!loadingListViewport.innerHTML){
@@ -312,14 +314,38 @@
           //}
 					if (avgLoading.length > 0){
 						//$('#collapse-tech').collapse('show');
+            //techListViewport.empty().html('<div>123<br/></div>');
 						techListViewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
 							Drupal.attachBehaviors('#loading-tech-list');
 						});
 					} else {
 						techListViewport.empty().html('<div id="tech-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button in the Wastewater Characterisations panel to create one or more profiles.</div>');
 					}
+          //console.log(Drupal.settings.node.values);
 				}
-
+        
+        function getTechArgs() {
+          var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+          var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
+          var popeqValue = $(techTdSelector)[0].innerHTML.replace(/,/g,"");
+					var avgLoading = getAverageLoadings();
+					//console.log(avgLoading);
+					var stdValues = getEffluentStandardAttributes();
+					//console.log($('.scenario-radio:checked').attr('id'));
+					var scenarioValues = getScenarioValues($('.scenario-radio:checked').attr('id'));
+					//$('#collapse-scenario').collapse('toggle');
+					var landCost = Drupal.settings.node.values.field_land_cost;
+					var exchRate = Drupal.settings.node.values.field_exchange_rate;
+					var currCode = Drupal.settings.node.values.field_currency_code;
+          var nodeID = Drupal.settings.node.values.nid;
+          //console.log('nodeID = '+nodeID);
+					//var designHorizon = $('#tech-design-horizon').val();
+					//var inflationRate = $('#tech-inflation-rate').val();
+					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode,nodeID].join('&');
+          //console.log(techArgs);
+          return techArgs;
+        }
+        
 				// LOADING
 				$('.form-loading-attribute').attr('type','number');
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
@@ -442,7 +468,7 @@
 							sumProduct += parseFloat(attributes[x].innerHTML)*parseFloat(weights[x].innerHTML)*.01;
 						}
 					}
-					return sumProduct.toFixed(1);
+					return sumProduct;
 				}
 				
 				/*if($('#view-project-loadings tbody td.views-field-field-loading-weight a.loading-weight-editable').length > 0){
@@ -477,38 +503,46 @@
 					var adwf_values = $('#view-project-loadings tbody td.views-field-field-loading-adwf');
 					adwf_avg = getSumProduct(adwf_values,weight_values);
 					//console.log('adwf_avg: '+adwf_avg);
-					$('#ave_adwf').html(adwf_avg);
+					$('#ave_adwf').html(adwf_avg.toFixed(1));
 
 					var cod_avg = 0;
 					var cod_values = $('#view-project-loadings tbody td.views-field-field-loading-cod');
 					cod_avg = getSumProduct(cod_values,weight_values);
 					//console.log('cod_avg: '+cod_avg);
-					$('#ave_cod').html(cod_avg);
+					$('#ave_cod').html(cod_avg.toFixed(1));
 
 					var bod5_avg = 0;
 					var bod5_values = $('#view-project-loadings tbody td.views-field-field-loading-bod5');
 					bod5_avg = getSumProduct(bod5_values,weight_values);
 					//console.log('bod5_avg: '+cod_avg);
-					$('#ave_bod5').html(bod5_avg);
+					$('#ave_bod5').html(bod5_avg.toFixed(1));
 
 					var totn_avg = 0;
 					var totn_values = $('#view-project-loadings tbody td.views-field-field-loading-totn');
 					totn_avg = getSumProduct(totn_values,weight_values);
 					//console.log('totn_avg: '+totn_avg);
-					$('#ave_totn').html(totn_avg);
+					$('#ave_totn').html(totn_avg.toFixed(1));
 
 					var totp_avg = 0;
 					var totp_values = $('#view-project-loadings tbody td.views-field-field-loading-totp');
 					totp_avg = getSumProduct(totp_values,weight_values);
 					//console.log('totp_avg: '+totp_avg);
-					$('#ave_totp').html(totp_avg);
+					$('#ave_totp').html(totp_avg.toFixed(1));
 
 					var tss_avg = 0;
 					var tss_values = $('#view-project-loadings tbody td.views-field-field-loading-tss');
 					tss_avg = getSumProduct(tss_values,weight_values);
 					//console.log('tss_avg: '+tss_avg);
-					$('#ave_tss').html(tss_avg);
+					$('#ave_tss').html(tss_avg.toFixed(1));
 
+          Drupal.settings.node.values.loading = { 
+            'adwf_avg': adwf_avg, 
+            'cod_avg': cod_avg, 
+            'bod5_avg': bod5_avg, 
+            'totn_avg': totn_avg, 
+            'totp_avg': totp_avg, 
+            'tss_avg': adwf_avg 
+          };
 				}
 				
 				
@@ -642,10 +676,12 @@
 				// SCENARIO
 				// scenario radio button action
 				$('.scenario-radio').unbind('click').on('click',function(){
+          console.log($('.scenario-radio:checked').attr('id'));
 					var radioId = $(this).attr('id');
 					var idTokens = radioId.split("-");
 					var scenarioNodeId = idTokens[2];
 					var rowId = '#scenario-row-'+scenarioNodeId;
+          Drupal.settings.node.values.scenario = { 'selected': scenarioNodeId };
 				})
 				
 
@@ -690,6 +726,7 @@
 					//var pe_totn = (getTotPolV(totn_values,weight_values)/$('#edit-pol-totn').val());
 					//var pe_totp = (getTotPolV(totp_values,weight_values)/$('#edit-pol-totp').val());
 					//var pe_tss = (getTotPolV(tss_values,weight_values)/$('#edit-pol-tss').val());
+          
 					if($('#view-project-loadings').length > 0){
 						var pe_volc = (adwf_avg/$('#edit-pol-volc').val());
 					} else {
@@ -733,6 +770,20 @@
 					
 					// set total effluent flow
 					var totflow = adwf_avg*population*.001;
+          
+          Drupal.settings.node.values.popeq['pe_cod']= pe_cod;
+          Drupal.settings.node.values.popeq['pe_bod5']= pe_bod5;
+          Drupal.settings.node.values.popeq['pe_totn']= pe_totn;
+          Drupal.settings.node.values.popeq['pe_totp']= pe_totp;
+          Drupal.settings.node.values.popeq['pe_tss']= pe_tss;
+          Drupal.settings.node.values.popeq['pe_volc']= pe_volc;
+          Drupal.settings.node.values.popeq['totpe_cod']= totpe_cod;
+          Drupal.settings.node.values.popeq['totpe_bod5']= totpe_bod5;
+          Drupal.settings.node.values.popeq['totpe_totn']= totpe_totn;
+          Drupal.settings.node.values.popeq['totpe_totp']= totpe_totp;
+          Drupal.settings.node.values.popeq['totpe_tss']= totpe_tss;
+          Drupal.settings.node.values.popeq['totpe_volc']= totpe_volc;
+          Drupal.settings.node.values.popeq['tot_flow']= totflow;
 					$('.popeq-totflow').text(totflow.format(2,'.',','));
 					
 				}
@@ -740,7 +791,7 @@
 				// on change of any of the PopEq Parameters
 				$('#table-popeq input.popeq-parameter').unbind('change').unbind('keyup').unbind('blur').on('change keyup blur', function(e){
 					var selectedParam = this.id.split("-")[2];
-					//console.log(selectedParam);
+					console.log(selectedParam);
 					var popEq = calcPE(selectedParam,weight_values);
 					var popEqDisplay = '';
 					var totPopEqDisplay = '';
@@ -752,6 +803,7 @@
 						popEqDisplay = popEq;
 						totPopEqDisplay = '-';
 					}
+          console.log(totPopEqDisplay);
 					$('.popeq-pe-'+selectedParam).text(popEqDisplay);
 					$('.popeq-totpe-'+selectedParam).text(totPopEqDisplay);
 					//calcPE(selectedParam, weight_values);
@@ -771,26 +823,34 @@
 						// remove the -selected class
 						$(colSelector).removeClass('col-'+selPar+'-selected');
 					}
+          // always set currently selected popeq parameter
+          Drupal.settings.node.values.popeq.param = selPar;
 				}
 				
+        // POPEQ
+        // column highlighting behaviors
+        
 				$('#table-popeq input.popeq-parameter').unbind('blur').on('blur',function(){
+          // activate unhighlight when blurring away from a person load equivalent input
 					var selectedParam = this.id.split("-")[2];
 					highlightColumn(selectedParam,'unhighlight');
 				});
 
-				$('[name="popeq_parameter"]').unbind('blur').on('blur',function(){
-					var selectedParam = this.value; //.split("-")[2];
-					highlightColumn(selectedParam,'unhighlight');
-				});
-				
 				$('#table-popeq input.popeq-parameter').unbind('focus').unbind('click').on('focus click',function(e) {
+          // activate unhighlight when focusing or clicking on a person load equivalent input
 					var selectedParam = this.id.split("-")[2];
 					highlightColumn(selectedParam,'highlight');
 				});
 				
 				
+				$('[name="popeq_parameter"]').unbind('blur').on('blur',function(){
+          // activate unhighlight when blurring away from a popeq radio button
+					var selectedParam = this.value; //.split("-")[2];
+					highlightColumn(selectedParam,'unhighlight');
+				});
+				
 				$('[name="popeq_parameter"]').unbind('focus').unbind('click').on('focus click',function(e){
-					//console.log(this.value);
+          // activate unhighlight when focusing or clicking on a popeq radio button
 					var selectedParam = this.value;
 					highlightColumn(selectedParam,'highlight');
 				});
@@ -800,21 +860,32 @@
 						loadEffluentStandardAttributes($('#project-effluent-standard')[0].selectedIndex,0);
 					}
 
+          
 					//$('#collapse-tech').collapse('show');
 				// TECHNOLOGIES
 					$('#loading-tech-list',context).once('display',function(){
-						var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-						var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
-            console.log('#loading-tech-list loaded. calculating suitable technologies');
-						showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+						//var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+						//var techTdSelector = 'td.popeq-totpe-'+popeqParamName; 
+            //console.log('#loading-tech-list loaded. calculating suitable technologies');
+            var ajaxTechHref = $('.btn-ajax-tech').attr('href');
+            var _techArgs = getTechArgs();
+            $('.btn-ajax-tech').attr('href', ajaxTechHref+'/'+_techArgs);
+            //console.log($('.btn-ajax-tech').attr('href'));
+						//showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
 					});
 				}); 
 				
+        function getPopeqValue() {
+          var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+          var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+          return ($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+        }  
 				// TECHNOLOGIES
 				$('.btn-show-tech').unbind('click').on('click',function(event){
-						var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-						var techTdSelector2 = 'td.popeq-totpe-'+popeqParamName2;
-						showTechnologies($(techTdSelector2)[0].innerHTML.replace(/,/g,""));
+						//var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+						//var techTdSelector2 = 'td.popeq-totpe-'+popeqParamName2;
+            console.log(Drupal.settings.node.values);
+						showTechnologies(getPopeqValue());
 				});
         
         $('.btn-make-json').unbind('click').on('click', function(event){
@@ -895,7 +966,7 @@
               "toxic": scenarioValuesObj.toxic,
               "sludge": scenarioValuesObj.sludge
             },
-            "technologies" : [],
+            "technologies" : Drupal.settings.node.values.technologies,
             "reticulation" : {
               "landArea": parseFloat(Drupal.settings.node.values.field_land_area),
               "populationDensity" : parseFloat(Drupal.settings.node.values.field_population_density),
@@ -947,7 +1018,6 @@
 					
 				//$('#tech-toggle-ww-attr, #tech-toggle-fn-attr').unbind('click').on('click', function(event){
 				objDisplayToggleControl.change(function(){
-					console.log(this.value);
           //var techDisplayElementName = '
 					//$('#table-loading-tech th.tech-'+this.value+'-attr, #table-loading-tech td.tech-'+this.value+'-attr').show();
 					if (this.value == 'fn') {
@@ -1025,16 +1095,22 @@
 					console.log(objInflationRate.val());
 				});
 				*/
+        
+        //  TECHNOLOGIES
+        //$('.btn-make-ajax').on('click')
+        
 				
         // RETICULATION
-        function reticulationCost(area,density,sewerage,pop,pipe) {
-          var costSewerage = 0;
-          var costSeweragePC = 0/pop;
-          var numPumps6 = 0;
-          var numPumps12 = 0;
+        function reticulationCost(area,density,sewerage,pop,pipe,terrain) {
+          var costSewerage = costOfSewerage(getPopeqValue());
+          var costSeweragePC = costSewerage/pop;
+          //var numPumps6 = 0;
+          //var numPumps12 = 0;
+          var costPumps = costOfPumps(terrain,pipe,area);
           //console.log(area+'|'+density+'|'+sewerage+'|'+pop+'|'+pipe);
-          //console.log(costSewerage+'|'+costSeweragePC+'|'+numPumps6+'|'+numPumps12);
-          return [costSewerage, costSeweragePC, numPumps6, numPumps12];
+          console.log(costSewerage+'|'+costSeweragePC+'|'+costPumps);
+          //'|'+numPumps6+'|'+numPumps12);
+          return [costSewerage, costSeweragePC, costPumps];
         }
 
 
@@ -1042,33 +1118,131 @@
         var populationDensity = $('#edit-field-population-density').val();
         var sewerageType = $('#edit-field-sewerage-type').val();
         var pipeLength = $('#edit-field-pipe-length').val();
-        var reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength);
+        var terrainType = $('#edit-field-terrain-type').val();
+        var reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength,terrainType);
         var reticCost = reticValues[0];
         var reticCostPC = reticValues[1];
-        var pumps6 = reticValues[2];
-        var pumps12 = reticValues[3];
-        $('#retic-cost').text(reticCost);
-        $('#retic-cost-per-capita').text(reticCost);
-        $('#retic-pump-count-6').text(pumps6);
-        $('#retic-pump-count-12').text(pumps12);
+        var reticCostPumps = reticValues[2];
+        //var pumps6 = reticValues[2];
+        //var pumps12 = reticValues[3];
+        //var pumpCost = costOfPumps(terrainType,pipeLength,landArea);
+        $('#retic-cost').text(reticCost.format(2,'.',','));
+        $('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
+        $('#pump-cost').text(reticCostPumps.format(2,'.',','));
+        //$('#retic-pump-count-6').text(pumps6);
+        //$('#retic-pump-count-12').text(pumps12);
         
-        $('#edit-field-land-area, #edit-field-population-density, #edit-field-sewerage-type').unbind('change').on('change keyup', function(){
+        $('#edit-field-land-area, #edit-field-population-density, #edit-field-sewerage-type, #edit-field-terrain-type, #edit-field-pipe-length, input[name="popeq_parameter"]').unbind('change').on('change keyup focus click', function(){
           landArea = $('#edit-field-land-area').val();
           populationDensity = $('#edit-field-population-density').val();
           sewerageType = $('#edit-field-sewerage-type').val();
+          pipeLength = $('#edit-field-pipe-length').val();
+          terrainType = $('#edit-field-terrain-type').val();
           //console.log(landArea + '|' + populationDensity);
           //console.log('population: '+$('#td-field-population')[0].innerHTML);
-          reticValues = reticulationCost(landArea,populationDensity,sewerageType,population);
+          //console.log($('input[name="popeq_parameter"]:checked').val());
+          reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength,terrainType);
           reticCost = reticValues[0];
           reticCostPC = reticValues[1];
-          pumps6 = reticValues[2];
-          pumps12 = reticValues[3];
-          $('#retic-cost').text(reticCost);
-          $('#retic-cost-per-capita').text(reticCost);
-          $('#retic-pump-count-6').text(pumps6);
-          $('#retic-pump-count-12').text(pumps12);
+          reticCostPumps = reticValues[2];
+          //pumps6 = reticValues[2];
+          //pumps12 = reticValues[3];
+          //var pumpCost = costOfPumps(terrainType,pipeLength,landArea);
+          $('#retic-cost').text(reticCost.format(2,'.',','));
+          $('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
+          $('#pump-cost').text(reticCostPumps.format(2,'.',','));
+          //$('#retic-pump-count-6').text(pumps6);
+          //$('#retic-pump-count-12').text(pumps12);
+          
         });
         
+        function costOfSewerage(popeqValue) {
+          c1 = 104.53; // currency factor
+          //c1 = 0.035; // currency factor
+          c2 = 0.7054; // escalation
+          return c1*(Math.pow(popeqValue,c2))*Drupal.settings.node.values.field_exchange_rate;
+        }
+        
+        function costOfPumps(terrain,pipeLen,landArea) {   // ADWF!
+          //var output = '';
+          //console.log('type: '+(terrain));
+          
+          // step 1: calculate flow (Q)
+          var q = Drupal.settings.node.values.loading.adwf_avg*Drupal.settings.node.values.popeq['totpe_'+Drupal.settings.node.values.popeq.param];
+          console.log ('q:'+q);
+          
+          // step 2: determine pump costs based on flow
+          
+          
+          // step 3: calculate minimum pipe length
+          var pipeLengthMin = Math.round(Math.sqrt(landArea/Math.PI)*4,0)/1000;
+          console.log('pipeLengthMin:'+pipeLengthMin);
+          
+          // step 4: calculate number of pumps
+          var pumps6 = 0; // 6 liters per second pumps
+          var pumps12 = 0; // 12 liters per second pumps
+          var totPumps6 = 0;
+          var totPumps12 = 0;
+          
+          // number of pumps per 1.6km -- pressurized pumps
+          switch (terrain) {
+            case 'Flat':
+              // -- gravity
+              //pumps6 = 2;
+              //pumps12 = 1;
+              pumps6 = 0;
+              pumps12 = 0;
+              break;
+            case 'Rolling':
+              pumps6 = 1;
+              pumps12 = 0;
+              break;
+            case 'Steep':
+              pumps6 = 2;
+              pumps12 = 2;
+              break;
+            default:
+              pumps6 = 2;
+              pumps12 = 1;
+          }
+          
+          console.log('pumps6:'+pumps6);
+          console.log('pumps12:'+pumps12);
+          
+          totPumps6 = pumpTotal(pipeLengthMin,pumps6);
+          totPumps12 = pumpTotal(pipeLengthMin,pumps12);
+          console.log("totPumps6: "+totPumps6);
+          console.log("totPumps12: "+totPumps12);
+          
+          
+          // step 5: calculate total pump cost (USD)
+          var cost6 = 10500;
+          var cost12 = 13900;
+          
+          var totCost6 = totPumps6*cost6*Drupal.settings.node.values.field_exchange_rate;
+          var totCost12 = totPumps12*cost12*Drupal.settings.node.values.field_exchange_rate;
+          console.log("cost6: "+totCost6);
+          console.log("cost12: "+totCost12);
+          
+          //return [totPumps6,totPumps12,pipeLengthMin,totCost6,totCost12];
+          return totCost6+totCost12;
+        }
+        
+        //function getSelectedPopeq() {
+        //  return $('');
+        //}
+        
+        
+        function pumpTotal(length,count){
+          var total = 0;
+          if (count == 0){
+            total =  0;
+          } else {
+            //total =  Math.round(length/1.6*count);
+            total =  Math.round((length/1.6)*count);
+          }
+          return total;
+        }
         
 
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'

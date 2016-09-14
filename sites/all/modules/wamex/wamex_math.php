@@ -106,6 +106,9 @@ function wamex_get_all_tech($popeqV,$scenarioV){ // scenario on/off
 	//echo "<br/>";
 	$results = $query->execute();
 						 
+  // $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+  // echo "wamex_get_all_tech: query time: {$time}<br/>";
+
   $rows = array();
 	$arrayTechnology = array();
    //$destination = drupal_get_destination();
@@ -142,6 +145,8 @@ function wamex_get_all_tech($popeqV,$scenarioV){ // scenario on/off
 		
 		$arrayTechnology[] = $val;
 	}
+  // $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+  // echo "wamex_get_all_tech: prepare array time: {$time}<br/>";
 	
 	if($debug){
 		//print '<pre>'.print_r($rows,1).'</pre>';
@@ -163,6 +168,10 @@ function wamex_get_all_tech($popeqV,$scenarioV){ // scenario on/off
 		echo "</pre>";
 
 	}
+  
+  //$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+  //echo "wamex_get_all_tech: total exec time: {$time}<br/>";
+
 	return $arrayTechnology;
 
 }

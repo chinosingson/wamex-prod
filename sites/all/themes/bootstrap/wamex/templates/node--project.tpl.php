@@ -43,6 +43,8 @@
   $field_population_density = field_get_items('node',$node,'field_population_density');
   $field_sewerage_type = field_get_items('node',$node,'field_sewerage_type');
   $field_pipe_length = field_get_items('node',$node,'field_pipe_length');
+  $field_terrain_type = field_get_items('node',$node,'field_terrain_type');
+  $field_technology_data = field_get_items('node',$node,'field_technology_data');
   
   // PERMISSIONS
 	$addLoadingPerm = user_access('add loading custom');
@@ -91,6 +93,12 @@
 		drupal_add_js(array('node' => array('values' => array('field_population_density'=>$field_population_density[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_sewerage_type'=>$field_sewerage_type[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_pipe_length'=>$field_pipe_length[0]['value']))),'setting');
+    
+    $techData = json_decode($field_technology_data[0]['value'],TRUE);
+    
+		drupal_add_js(array('node' => array('values' => array('technologies'=>$techData['table']))),'setting');
+    
+    print "<pre style='display: block; '>".print_r($techData['args'],1)."</pre>";
 	}
 //}
 
@@ -377,14 +385,15 @@ $view_scenario->set_display('block');
 			<div id="tech-title-container">
 				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#collapse-tech" name="technologies" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="tech-help">?</button>
-				<!--a href="<?php print base_path() ?>wamex-ajax/nojs/ARG1" class="btn btn-primary btn-sm btn-make-ajax pull-right use-ajax" id="make-ajax-<?php print $nid; ?>"><span class="glyphicon glyphicon-asterisk"></span>&nbsp;AJAX!</a-->
+				<!--a href="<?php print base_path() ?>wamex-ajax-tech/nojs" class="btn btn-primary btn-sm btn-ajax-tech pull-right use-ajax" id="make-ajax-<?php print $nid; ?>"><span class="glyphicon glyphicon-asterisk"></span>&nbsp;AJAX!</a-->
 				<!--button class="btn btn-primary btn-sm btn-make-json pull-right" id="make-json-<?php print $nid; ?>"><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Make JSON</button-->
 				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
 				<div id="loading-popeq-selected-param"></div>
 			</div>
 		</div>
 		<div id="collapse-tech" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-tech">
-			<div id="loading-tech-list"></div>
+      <div id="loading-ajax-tech-list"></div>
+			<div id="loading-tech-list"><?php print wamex_display_tech(json_decode($node->field_technology_data[LANGUAGE_NONE][0]['value'],TRUE),TRUE); ?></div>
 		</div>
 	</div>
 
@@ -415,6 +424,8 @@ $view_scenario->set_display('block');
           $retic_form['field_sewerage_type']['#value'] = $field_sewerage_type[0]['value'];
           $retic_form['field_pipe_length']['#title'] = null;
           $retic_form['field_pipe_length']['#value'] = $field_pipe_length[0]['value'];
+          $retic_form['field_terrain_type']['#title'] = null;
+          $retic_form['field_terrain_type']['#value'] = $field_terrain_type[0]['value'];
           $retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
           $retic_header = null;
 					$retic_rows = array();
@@ -440,21 +451,30 @@ $view_scenario->set_display('block');
           );
           
           $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Type of Terrain</label>'), 'class'=>array('retic-row-header')),
+            array('data'=>$retic_form['field_terrain_type'], 'colspan'=>2),
+          );
+          
+          /* $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Number of Pumps</label>'), 'class'=>array('retic-row-header')),
             array('data'=>'<div class="retic-pump-count-header col-sm-4">6L/s/day</div><div id="retic-pump-count-6" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-6L'),
             array('data'=>'<div class="retic-pump-count-header col-sm-4">12L/s/day</div><div id="retic-pump-count-12" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-12L'),
-          );
+          ); */
           
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.' M</span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('retic-cost')),
             array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
           );
           
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.' `000</span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('retic-cost-per-capita'), 'colspan'=>'2' ),
-            
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Cost of Pumps</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('pump-cost'), 'colspan'=>'2' ),
           );
           
 					$retic_output .= theme('table', array('header' => $retic_header, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'panel-body')));
