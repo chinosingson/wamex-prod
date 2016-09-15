@@ -1177,50 +1177,25 @@
           // step 3: calculate minimum pipe length
           var pipeLengthMin = Math.round(Math.sqrt(landArea/Math.PI)*4,0)/1000;
           console.log('pipeLengthMin:'+pipeLengthMin);
+		  $('#edit-field-pipe-length').val(pipeLengthMin);
           
           // step 4: calculate number of pumps
-          var pumps6 = 0; // 6 liters per second pumps
-          var pumps12 = 0; // 12 liters per second pumps
-          var totPumps6 = 0;
-          var totPumps12 = 0;
-          
-          // number of pumps per 1.6km -- pressurized pumps
-          switch (terrain) {
-            case 'Flat':
-              // -- gravity
-              //pumps6 = 2;
-              //pumps12 = 1;
-              pumps6 = 0;
-              pumps12 = 0;
-              break;
-            case 'Rolling':
-              pumps6 = 1;
-              pumps12 = 0;
-              break;
-            case 'Steep':
-              pumps6 = 2;
-              pumps12 = 2;
-              break;
-            default:
-              pumps6 = 2;
-              pumps12 = 1;
-          }
-          
-          console.log('pumps6:'+pumps6);
-          console.log('pumps12:'+pumps12);
-          
-          totPumps6 = pumpTotal(pipeLengthMin,pumps6);
-          totPumps12 = pumpTotal(pipeLengthMin,pumps12);
-          console.log("totPumps6: "+totPumps6);
-          console.log("totPumps12: "+totPumps12);
-          
+          var pumps6 = 0;
+		  var pumps12 = 0;
+		  var pumpCount = 0;
+		  
+		  pumpCount = pumpTotal(pipeLengthMin,terrain)
+		  pumps6 = pumpCount[0];
+		  pumps12 = pumpCount[1];
+		  console.log('pumps6: '+pumps6);
+		  console.log('pumps12: '+pumps12);
           
           // step 5: calculate total pump cost (USD)
           var cost6 = 10500;
           var cost12 = 13900;
           
-          var totCost6 = totPumps6*cost6*Drupal.settings.node.values.field_exchange_rate;
-          var totCost12 = totPumps12*cost12*Drupal.settings.node.values.field_exchange_rate;
+          var totCost6 = pumps6*cost6*Drupal.settings.node.values.field_exchange_rate;
+          var totCost12 = pumps12*cost12*Drupal.settings.node.values.field_exchange_rate;
           console.log("cost6: "+totCost6);
           console.log("cost12: "+totCost12);
           
@@ -1233,15 +1208,49 @@
         //}
         
         
-        function pumpTotal(length,count){
+        function pumpTotal(length,terrain){ // type
           var total = 0;
-          if (count == 0){
+          var p6 = 0; // 6 liters per second pumps
+          var p12 = 0; // 12 liters per second pumps
+          // number of pumps per 1.6km -- pressurized pumps
+		  console.log('terrain: '+terrain);
+          switch (terrain) {
+            case 'Flat':
+              // -- gravity
+              //pumps6 = 2;
+              //pumps12 = 1;
+              p6 = 0;
+              p12 = 0;
+              break;
+            case 'Rolling':
+              //p6 = 1; // set to 1 for pipeLength < 1.6km
+              // int(pipelen/1.609)+1
+              // int(pipelen/1.609)+2
+			  p6 = parseInt(length/1.609)+1;
+              p12 = 0;
+              break;
+            case 'Steep':
+              // int(pipelen/1.609)+2
+              p6 = parseInt(length/1.609)+2;
+              p12 = parseInt(length/1.609)+2;
+              break;
+            default:
+              p6 = 2;
+              p12 = 1;
+          }
+          
+          //totPumps6 = pumpTotal(pipeLengthMin,6);
+          //totPumps12 = pumpTotal(pipeLengthMin,pumps12);
+          //console.log("p6: "+p6);
+          //console.log("p12: "+p12);
+          /*if (count == 0){
             total =  0;
           } else {
             //total =  Math.round(length/1.6*count);
-            total =  Math.round((length/1.6)*count);
-          }
-          return total;
+            total =  Math.round((length/1.609)*count);
+          }*/
+          //return total;
+		  return [p6,p12]
         }
         
 
