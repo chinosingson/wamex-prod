@@ -418,10 +418,12 @@ $view_scenario->set_display('block');
 					//$retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
           $retic_form['field_land_area']['#title'] = null;
           $retic_form['field_land_area']['#value'] = $field_land_area[0]['value'];
-          $retic_form['field_population_density']['#title'] = null;
-          $retic_form['field_population_density']['#value'] = $field_population_density[0]['value'];
+          //$retic_form['field_population_density']['#title'] = null;
+          //$retic_form['field_population_density']['#value'] = $field_population_density[0]['value'];
           $retic_form['field_sewerage_type']['#title'] = null;
-          $retic_form['field_sewerage_type']['#value'] = $field_sewerage_type[0]['value'];
+          //$retic_form['field_sewerage_type']['#value'] = $field_sewerage_type[0]['value'];
+          $retic_form['field_sewerage_type']['#value'] = t('Conventional');
+          $retic_form['field_sewerage_type']['#attributes']['disabled'] = 'disabled';
           $retic_form['field_pipe_length']['#title'] = null;
           $retic_form['field_pipe_length']['#value'] = $field_pipe_length[0]['value'];
           $retic_form['field_terrain_type']['#title'] = null;
@@ -430,29 +432,40 @@ $view_scenario->set_display('block');
           $retic_header = null;
 					$retic_rows = array();
           
-					$retic_rows[]['data'] = array(
-						array('data'=>t('<label>Land Area</label> (<span class="label-unit">m<sup>2</sup></span>)'), 'class'=>array('retic-row-header','col-sm-5')),
-						array('data'=>$retic_form['field_land_area'],'colspan'=>2),
-          );
-          
-          $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Population Density</label> (<span class="label-unit">persons per m<sup>2</sup></span>)'), 'class'=>array('retic-row-header')),
-						array('data'=>$retic_form['field_population_density'],'colspan'=>2),
-					);
-          
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Type of Sewerage</label>'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_sewerage_type'], 'colspan'=>2),
           );
           
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Pipe Length</label> (<span class="label-unit">m</span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('retic-cost')),
+          );
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('retic-cost-per-capita'), 'colspan'=>'2' ),
+          );
+          
+					$retic_rows[]['data'] = array(
+						array('data'=>t('<label>Land Area</label> (<span class="label-unit">m<sup>2</sup></span>)'), 'class'=>array('retic-row-header','col-sm-5')),
+						array('data'=>$retic_form['field_land_area'],'colspan'=>2),
+          );
+          
+          /*$retic_rows[]['data'] = array(
+						array('data'=>t('<label>Population Density</label> (<span class="label-unit">persons per m<sup>2</sup></span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>$retic_form['field_population_density'],'colspan'=>2),
+					);*/
+          
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Pipe Length</label> (<span class="label-unit">km</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_pipe_length'], 'colspan'=>2),
           );
           
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Type of Terrain</label>'), 'class'=>array('retic-row-header')),
-            array('data'=>$retic_form['field_terrain_type'], 'colspan'=>2),
+            array('data'=>$retic_form['field_terrain_type']),
+            array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
           );
           
           /* $retic_rows[]['data'] = array(
@@ -460,17 +473,6 @@ $view_scenario->set_display('block');
             array('data'=>'<div class="retic-pump-count-header col-sm-4">6L/s/day</div><div id="retic-pump-count-6" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-6L'),
             array('data'=>'<div class="retic-pump-count-header col-sm-4">12L/s/day</div><div id="retic-pump-count-12" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-12L'),
           ); */
-          
-          $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
-            array('data'=>'', 'id'=>array('retic-cost')),
-            array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
-          );
-          
-          $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
-            array('data'=>'', 'id'=>array('retic-cost-per-capita'), 'colspan'=>'2' ),
-          );
           
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Cost of Pumps</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),

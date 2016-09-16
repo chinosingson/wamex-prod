@@ -1869,13 +1869,13 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
   );
   
   // population density
-  $form['field_population_density'] = array(
+  /*$form['field_population_density'] = array(
     '#title' => t('<span class="label-name">Population Density</span><br/><span class="label-unit">(persons per m<sup>2</sup>)</span>'),
     '#type' => 'textfield',
     '#default_value' => $field_population_density,
 		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		//'#suffix' => '</div></div>',
-  );
+  );*/
   
   $field_sewerage_type_info = field_info_field('field_sewerage_type');
   $field_sewerage_type_options = list_allowed_values($field_sewerage_type_info);

@@ -619,7 +619,7 @@
 					$(displayBoxSelector).html(displayParamLevel($(this).val()));
 				});
 				
-				// scenario
+				// SCENARIO 
 				// delete scenario button action
 				$('.project-delete-scenario-btn').unbind('click').on('click',function(event){
 					var viewport = $('#scenario-form-container');
@@ -741,7 +741,7 @@
 					$('#edit-pol-volc').attr('type','number');
 					$('#edit-field-land-area').attr('type','number');
 					$('#edit-field-population-density').attr('type','number');
-					$('#edit-field-pipe-length').attr('type','number');
+					//$('#edit-field-pipe-length').attr('type','number');
 
 					// set PEs
 					$('.popeq-pe-cod').text(pe_cod.toFixed(4));
@@ -1113,26 +1113,48 @@
           return [costSewerage, costSeweragePC, costPumps];
         }
 
+        function makeRange(number) {
+          var lowEnd = "";
+          var topEnd = "";
+          lowEnd = Math.round(number-(number*.2),0);
+          topEnd = Math.round(number+(number*.2),0);
+          lowEnd = lowEnd.format(0,'.',',');
+          topEnd = topEnd.format(0,'.',',');
+          if (number > 0) {
+            return lowEnd+ " to " + topEnd;
+          } else {
+            return "-";
+          }
+        }
 
+        // On page load, initialize reticulation values
         var landArea = $('#edit-field-land-area').val();
         var populationDensity = $('#edit-field-population-density').val();
         var sewerageType = $('#edit-field-sewerage-type').val();
-        var pipeLength = $('#edit-field-pipe-length').val();
         var terrainType = $('#edit-field-terrain-type').val();
-        var reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength,terrainType);
-        var reticCost = reticValues[0];
-        var reticCostPC = reticValues[1];
-        var reticCostPumps = reticValues[2];
+        
+        //var reticValues = reticulationCost(landArea,populationDensity,sewerageType,population,pipeLength,terrainType);
+        //var reticCost = reticValues[0];
+        //var reticCostPC = reticValues[1];
+        //var reticCostPumps = reticValues[2];
+        var reticCost = costOfSewerage(getPopeqValue());
+        var reticCostPC = reticCost/population;
         //var pumps6 = reticValues[2];
         //var pumps12 = reticValues[3];
         //var pumpCost = costOfPumps(terrainType,pipeLength,landArea);
-        $('#retic-cost').text(reticCost.format(2,'.',','));
-        $('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
-        $('#pump-cost').text(reticCostPumps.format(2,'.',','));
+        //$('#retic-cost').text(reticCost.format(2,'.',','));
+        //$('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
+        //$('#pump-cost').text(reticCostPumps.format(2,'.',','));
+        $('#retic-cost').text(makeRange(reticCost));
+        $('#retic-cost-per-capita').text(makeRange(reticCostPC));
+        //$('#edit-field-pipe-length').val(minPipeLength(landArea));
+        var pipeLength = $('#edit-field-pipe-length').val();
+        var reticCostPumps = costOfPumps(terrainType,landArea,pipeLength);
+        $('#pump-cost').text(makeRange(reticCostPumps));
         //$('#retic-pump-count-6').text(pumps6);
         //$('#retic-pump-count-12').text(pumps12);
         
-        $('#edit-field-land-area, #edit-field-population-density, #edit-field-sewerage-type, #edit-field-terrain-type, #edit-field-pipe-length, input[name="popeq_parameter"]').unbind('change').on('change keyup focus click', function(){
+        /*$('#edit-field-land-area, #edit-field-population-density, #edit-field-sewerage-type, #edit-field-terrain-type, #edit-field-pipe-length, input[name="popeq_parameter"]').unbind('change').on('change keyup focus click', function(){
           landArea = $('#edit-field-land-area').val();
           populationDensity = $('#edit-field-population-density').val();
           sewerageType = $('#edit-field-sewerage-type').val();
@@ -1148,13 +1170,16 @@
           //pumps6 = reticValues[2];
           //pumps12 = reticValues[3];
           //var pumpCost = costOfPumps(terrainType,pipeLength,landArea);
-          $('#retic-cost').text(reticCost.format(2,'.',','));
-          $('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
-          $('#pump-cost').text(reticCostPumps.format(2,'.',','));
+          //$('#retic-cost').text(reticCost.format(2,'.',','));
+          //$('#retic-cost-per-capita').text(reticCostPC.format(2,'.',','));
+          //$('#pump-cost').text(reticCostPumps.format(2,'.',','));
+          $('#retic-cost').text(makeRange(reticCost));
+          $('#retic-cost-per-capita').text(makeRange(reticCostPC));
+          $('#pump-cost').text(makeRange(reticCostPumps));
           //$('#retic-pump-count-6').text(pumps6);
           //$('#retic-pump-count-12').text(pumps12);
           
-        });
+        });*/
         
         function costOfSewerage(popeqValue) {
           c1 = 104.53; // currency factor
@@ -1163,7 +1188,12 @@
           return c1*(Math.pow(popeqValue,c2))*Drupal.settings.node.values.field_exchange_rate;
         }
         
-        function costOfPumps(terrain,pipeLen,landArea) {   // ADWF!
+        function minPipeLength(area) {
+          return Math.round(Math.sqrt(area/Math.PI)*4,0)/1000;
+        }
+        
+        function costOfPumps(terrain, landArea, pipeLengthMin) {   // ADWF!
+          //terrain = $('#edit-field-terrain-type').val();
           //var output = '';
           //console.log('type: '+(terrain));
           
@@ -1175,20 +1205,21 @@
           
           
           // step 3: calculate minimum pipe length
-          var pipeLengthMin = Math.round(Math.sqrt(landArea/Math.PI)*4,0)/1000;
-          console.log('pipeLengthMin:'+pipeLengthMin);
-		  $('#edit-field-pipe-length').val(pipeLengthMin);
+          //var pipeLengthMin = minPipeLength(landArea);
+          //var pipeLengthMin = $('#edit-field-pipe-length').val();
+          //console.log('pipeLengthMin:'+pipeLengthMin);
+          //$('#edit-field-pipe-length').val(pipeLengthMin);
           
           // step 4: calculate number of pumps
           var pumps6 = 0;
-		  var pumps12 = 0;
-		  var pumpCount = 0;
+          var pumps12 = 0;
+          var pumpCount = 0;
 		  
-		  pumpCount = pumpTotal(pipeLengthMin,terrain)
-		  pumps6 = pumpCount[0];
-		  pumps12 = pumpCount[1];
-		  console.log('pumps6: '+pumps6);
-		  console.log('pumps12: '+pumps12);
+          pumpCount = pumpTotal(pipeLengthMin,terrain)
+          pumps6 = pumpCount[0];
+          pumps12 = pumpCount[1];
+          console.log('pumps6: '+pumps6);
+          console.log('pumps12: '+pumps12);
           
           // step 5: calculate total pump cost (USD)
           var cost6 = 10500;
@@ -1203,34 +1234,23 @@
           return totCost6+totCost12;
         }
         
-        //function getSelectedPopeq() {
-        //  return $('');
-        //}
-        
-        
         function pumpTotal(length,terrain){ // type
+          // assume Type of Sewerage = Conventional 
           var total = 0;
           var p6 = 0; // 6 liters per second pumps
           var p12 = 0; // 12 liters per second pumps
           // number of pumps per 1.6km -- pressurized pumps
-		  console.log('terrain: '+terrain);
+          console.log('terrain: '+terrain);
           switch (terrain) {
             case 'Flat':
-              // -- gravity
-              //pumps6 = 2;
-              //pumps12 = 1;
               p6 = 0;
               p12 = 0;
               break;
             case 'Rolling':
-              //p6 = 1; // set to 1 for pipeLength < 1.6km
-              // int(pipelen/1.609)+1
-              // int(pipelen/1.609)+2
-			  p6 = parseInt(length/1.609)+1;
+              p6 = parseInt(length/1.609)+1;
               p12 = 0;
               break;
             case 'Steep':
-              // int(pipelen/1.609)+2
               p6 = parseInt(length/1.609)+2;
               p12 = parseInt(length/1.609)+2;
               break;
@@ -1239,20 +1259,31 @@
               p12 = 1;
           }
           
-          //totPumps6 = pumpTotal(pipeLengthMin,6);
-          //totPumps12 = pumpTotal(pipeLengthMin,pumps12);
-          //console.log("p6: "+p6);
-          //console.log("p12: "+p12);
-          /*if (count == 0){
-            total =  0;
-          } else {
-            //total =  Math.round(length/1.6*count);
-            total =  Math.round((length/1.609)*count);
-          }*/
-          //return total;
-		  return [p6,p12]
+          return [p6,p12]
         }
         
+        
+        $('#edit-field-land-area').unbind('change').on('change keyup', function(){
+          //console.log($(this).val());
+          //console.log(minPipeLength($(this).val()));
+          // update pipe length value
+          $('#edit-field-pipe-length').val(minPipeLength($(this).val())).change();
+        });
+        
+        $('#edit-field-pipe-length, #edit-field-terrain-type').unbind('change').on('change keyup', function(){
+          //console.log($(this));
+          //console.log($(this).val());
+          // update cost of pumps value
+          _t = $('#edit-field-terrain-type').val();
+          _la = $('#edit-field-land-area').val();
+          _pl = $('#edit-field-pipe-length').val();
+          $('#pump-cost').text(makeRange(costOfPumps(_t,_la,_pl)));
+        });
+        
+        //$('#edit-field-terrain-type').unbind('change').on('change', function(){
+          // update cost of pumps value
+          //$
+        //});
 
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
