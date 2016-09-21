@@ -312,6 +312,7 @@
           //if(!loadingListViewport.innerHTML){
           //  loadingListViewport.empty().html('<div id="loading-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button to create one or more profiles.</div>');
           //}
+          //console.log('AVGLOADING: '+avgLoading.length);
 					if (avgLoading.length > 0){
 						//$('#collapse-tech').collapse('show');
             //techListViewport.empty().html('<div>123<br/></div>');
@@ -877,8 +878,11 @@
 				
         function getPopeqValue() {
           var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-          var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
-          return ($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+          if (popeqParamName){
+            var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+            //console.log(popeqParamName);
+            return ($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+          }
         }  
 				// TECHNOLOGIES
 				$('.btn-show-tech').unbind('click').on('click',function(event){
@@ -997,20 +1001,20 @@
 				var techTogglePerCapitaStatus = false;	// default to not displayed
 				var objFinancialControl = $('#tech-toggle-fn-attr');
         var objDisplayToggleControl = $('input[type=radio][name=tech-toggle-display]');
-				var objFinancialCells = $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr');
+				var objFinancialCells = $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr, #table-loading-tech td.tech-totinv, #table-loading-tech td.tech-landcost');
         var objEfficiencyCells = $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr');
           objEfficiencyCells.hide();
 				var objPCToggleControl;	// per capita toggle control
 					objPCToggleControl = $('#tech-toggle-fn-per-capita')
 					objPCToggleLabel = $('#label-toggle-per-capita');
 				var objPCCells;		// per capita cells
-					objPCCells = $('#table-loading-tech td.tech-capex-pc, #table-loading-tech td.tech-opex-pc');
+					objPCCells = $('#table-loading-tech td.tech-capex-pc, #table-loading-tech td.tech-opex-pc, #table-loading-tech td.tech-totinv-pc, #table-loading-tech td.tech-landcost-pc');
 					objPCCells.hide();
 				var objPCLabels;
 					objPCLabels = $('#table-loading-tech span.tech-financial-attr-pc-label-unit.label-unit');
 					objPCLabels.hide();
 				var objPECells;
-					objPECells = $('#table-loading-tech td.tech-capex-pe, #table-loading-tech td.tech-opex-pe');
+					objPECells = $('#table-loading-tech td.tech-capex-pe, #table-loading-tech td.tech-opex-pe, #table-loading-tech td.tech-totinv-pe, #table-loading-tech td.tech-landcost-pe');
 					objPECells.show();
 				var objPELabels;
 					objPELabels = $('#table-loading-tech span.tech-financial-attr-label-unit.label-unit');
@@ -1023,10 +1027,12 @@
 					if (this.value == 'fn') {
             $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr').show();
             $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').hide();
+            objPELabels.show();
             objPCToggleControl.prop('disabled', false);
           } else if (this.value == 'ww'){
             $('#table-loading-tech th.tech-ww-attr, #table-loading-tech td.tech-ww-attr').show();
             $('#table-loading-tech th.tech-financial-attr, #table-loading-tech td.tech-financial-attr').hide();
+            objPCLabels.hide();
             objPCCells.hide();
             objPCToggleControl.prop('checked', false);
             objPCToggleControl.prop('disabled', true);
@@ -1116,8 +1122,8 @@
         function makeRange(number) {
           var lowEnd = "";
           var topEnd = "";
-          lowEnd = Math.round(number-(number*.2),0);
-          topEnd = Math.round(number+(number*.2),0);
+          lowEnd = Math.round(number/100)*100;
+          topEnd = Math.round((number*1.2)/100)*100;
           lowEnd = lowEnd.format(0,'.',',');
           topEnd = topEnd.format(0,'.',',');
           if (number > 0) {
@@ -1150,7 +1156,9 @@
         //$('#edit-field-pipe-length').val(minPipeLength(landArea));
         var pipeLength = $('#edit-field-pipe-length').val();
         var reticCostPumps = costOfPumps(terrainType,landArea,pipeLength);
+        var reticCostPumpsPC = reticCostPumps/population;
         $('#pump-cost').text(makeRange(reticCostPumps));
+        $('#pump-cost-per-capita').text(makeRange(reticCostPumpsPC));
         //$('#retic-pump-count-6').text(pumps6);
         //$('#retic-pump-count-12').text(pumps12);
         
@@ -1189,7 +1197,7 @@
         }
         
         function minPipeLength(area) {
-          return Math.round(Math.sqrt(area/Math.PI)*4,0)/1000;
+          return Math.round(Math.sqrt(area/Math.PI)*4)/1000;
         }
         
         function costOfPumps(terrain, landArea, pipeLengthMin) {   // ADWF!
@@ -1198,8 +1206,8 @@
           //console.log('type: '+(terrain));
           
           // step 1: calculate flow (Q)
-          var q = Drupal.settings.node.values.loading.adwf_avg*Drupal.settings.node.values.popeq['totpe_'+Drupal.settings.node.values.popeq.param];
-          console.log ('q:'+q);
+          //var q = Drupal.settings.node.values.loading.adwf_avg*Drupal.settings.node.values.popeq['totpe_'+Drupal.settings.node.values.popeq.param];
+          //console.log ('q:'+q);
           
           // step 2: determine pump costs based on flow
           
@@ -1218,8 +1226,8 @@
           pumpCount = pumpTotal(pipeLengthMin,terrain)
           pumps6 = pumpCount[0];
           pumps12 = pumpCount[1];
-          console.log('pumps6: '+pumps6);
-          console.log('pumps12: '+pumps12);
+          //console.log('pumps6: '+pumps6);
+          //console.log('pumps12: '+pumps12);
           
           // step 5: calculate total pump cost (USD)
           var cost6 = 10500;
@@ -1227,8 +1235,8 @@
           
           var totCost6 = pumps6*cost6*Drupal.settings.node.values.field_exchange_rate;
           var totCost12 = pumps12*cost12*Drupal.settings.node.values.field_exchange_rate;
-          console.log("cost6: "+totCost6);
-          console.log("cost12: "+totCost12);
+          //console.log("cost6: "+totCost6);
+          //console.log("cost12: "+totCost12);
           
           //return [totPumps6,totPumps12,pipeLengthMin,totCost6,totCost12];
           return totCost6+totCost12;
@@ -1240,7 +1248,7 @@
           var p6 = 0; // 6 liters per second pumps
           var p12 = 0; // 12 liters per second pumps
           // number of pumps per 1.6km -- pressurized pumps
-          console.log('terrain: '+terrain);
+          //console.log('terrain: '+terrain);
           switch (terrain) {
             case 'Flat':
               p6 = 0;
@@ -1274,10 +1282,13 @@
           //console.log($(this));
           //console.log($(this).val());
           // update cost of pumps value
-          _t = $('#edit-field-terrain-type').val();
-          _la = $('#edit-field-land-area').val();
-          _pl = $('#edit-field-pipe-length').val();
-          $('#pump-cost').text(makeRange(costOfPumps(_t,_la,_pl)));
+          var _t = $('#edit-field-terrain-type').val();
+          var _la = $('#edit-field-land-area').val();
+          var _pl = $('#edit-field-pipe-length').val();
+          var _cp = costOfPumps(_t,_la,_pl);
+          var _cpPc = _cp/Drupal.settings.node.values.field_population;
+          $('#pump-cost').text(makeRange(_cp));
+          $('#pump-cost-per-capita').text(makeRange(_cpPc));
         });
         
         //$('#edit-field-terrain-type').unbind('change').on('change', function(){

@@ -98,7 +98,7 @@
     
 		drupal_add_js(array('node' => array('values' => array('technologies'=>$techData['table']))),'setting');
     
-    print "<pre style='display: block; '>".print_r($techData['args'],1)."</pre>";
+    //print "<pre style='display: block; '>".print_r($techData['args'],1)."</pre>";
 	}
 //}
 
@@ -477,6 +477,11 @@ $view_scenario->set_display('block');
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Cost of Pumps</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('pump-cost'), 'colspan'=>'2' ),
+          );
+
+          $retic_rows[]['data'] = array(
+						array('data'=>t('<label>Cost of Pumps Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
+            array('data'=>'', 'id'=>array('pump-cost-per-capita'), 'colspan'=>'2' ),
           );
           
 					$retic_output .= theme('table', array('header' => $retic_header, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'panel-body')));

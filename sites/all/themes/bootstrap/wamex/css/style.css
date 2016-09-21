@@ -603,7 +603,8 @@ td.tech-attributes.tech-landreq,
 td.tech-attributes.tech-landcost,*/
 
 #table-loading-tech td.tech-capex-pc,
-#table-loading-tech td.tech-opex-pc {
+#table-loading-tech td.tech-opex-pc,
+#table-loading-tech td.tech-totinv-pc {
 	display:  none;
 }
 
@@ -736,9 +737,10 @@ td.tech-attributes.tech-landcost,*/
 
 .tech-score { background-color: #f9f9f9 !important;}
 .tech-capex { background-color: #61a3d4 !important; }
-.tech-opex { background-color: #83b9de !important; }
-.tech-landreq { background-color: #a5d0e9 !important; }
-.tech-landcost { background-color: #c7e7f4 !important; }
+.tech-opex { background-color: #79b4dc !important; }
+.tech-landreq { background-color: #94c5e4 !important; }
+.tech-landcost { background-color: #add6ec !important; }
+.tech-totinv { background-color: #c7e7f4 !important; }
 
 
 @media print
