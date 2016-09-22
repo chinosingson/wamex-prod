@@ -258,6 +258,10 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	margin: 10px 10px 10px 0px;
 }
 
+#view-project-loadings {
+  margin-top: -20px !important;
+}
+
 #view-project-loadings tfoot td.average-loading {
 	font-weight: bold;
 }
@@ -681,6 +685,7 @@ td.tech-attributes.tech-landcost,*/
 
 
 #view-project-scenarios {
+  margin-top: -20px !important;
 	margin-bottom: 0px;
 }
 

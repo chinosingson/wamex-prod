@@ -1,6 +1,4 @@
-﻿<?php 	$node = menu_get_object(); 
- $editProjectPerm = user_access('edit project custom');
-?><div class=""><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
+﻿<?php 	$node = menu_get_object(); $editProjectPerm = user_access('edit project custom'); ?><table <?php if ($classes) { print 'class="'. $classes . '" '; } ?><?php print $attributes; ?> id="view-project-loadings">
 <?php if (!empty($title) || !empty($caption)) : ?>
 <caption><?php print $caption . $title; ?></caption>
 <?php endif; ?><?php if (!empty($header)) : ?>
@@ -31,6 +29,8 @@
 						?>
           </th>
         <?php endforeach; ?>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
       </tr>
     </thead>
   <?php endif; ?>
@@ -69,4 +69,4 @@
 			<td>&nbsp;</td>
 		</tr>
 	</tfoot>
-</table></div>
+</table>

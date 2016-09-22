@@ -121,7 +121,7 @@ $view_scenario->set_display('block');
 			</div>
 		</div>
 		<div class="panel-collapse collapse in" id="collapse-project-info" role="tabpanel" aria-labelledby="heading-project-info">
-			<table class="table panel-body">
+			<table class="table">
 				<tbody>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Project Name</label></td>
@@ -164,51 +164,43 @@ $view_scenario->set_display('block');
 			</div>
 		</div>
 		<div class="panel-collapse collapse in" id="collapse-financial-info" role="tabpanel" aria-labelledby="heading-financial-info">
-			<table class="table panel-body">
-				<tbody>
-					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Currency</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php 
-							//echo print_r($field_currency[0]['taxonomy_term'],1);
-							print (isset($field_currency[0]['taxonomy_term']->name) ? $field_currency[0]['taxonomy_term']->name : "-"); ?></td>
-					</tr>
-					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Exchange Rate</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_exchange_rate_to_usd) ? $field_exchange_rate_to_usd[0]['value']: "-"); ?></td>
-					</tr>
-					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Discount Rate</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></td>
-					</tr>
-					<!--tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>O&amp;M  % of CI Cost</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_om_pct_treatment) ? $field_om_pct_treatment[0]['value']: "-"); ?></td>
-					</tr-->
-					<!--tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Design Horizon</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_design_horizon_treatment) ? $field_design_horizon_treatment[0]['value']: "-"); ?></td>
-					</tr-->
-					<!--tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
-						<span class="hidden" id="td-field-ci-cost"><?php //print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
-						</td>
-					</tr-->
-					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(<?php print $currency_code." "?>per sq m)</span></label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
-					</tr>
-					<?php 
-					
-						// field_discount_rate_reticulation
-						// field_om_pct_reticulation
-						// field_design_horizon_reticulatn
-					?>
-				</tbody>
+			<table class="table" id="financial-info-table">
+        <tbody>
+        <tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Currency</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_currency[0]['taxonomy_term']->name) ? $field_currency[0]['taxonomy_term']->name : "-"); ?>&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Exchange Rate</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_exchange_rate_to_usd) ? $field_exchange_rate_to_usd[0]['value']: "-"); ?></td>
+        </tr>
+        <tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Discount Rate</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></td>
+        </tr>
+        <!--tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>O&amp;M  % of CI Cost</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_om_pct_treatment) ? $field_om_pct_treatment[0]['value']: "-"); ?></td>
+        </tr-->
+        <!--tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Design Horizon</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_design_horizon_treatment) ? $field_design_horizon_treatment[0]['value']: "-"); ?></td>
+        </tr-->
+        <!--tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Capital Investment Cost</label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_ci_cost) ? number_format($field_ci_cost[0]['value']): "-"); ?>
+          <span class="hidden" id="td-field-ci-cost"><?php //print (isset($field_ci_cost) ? $field_ci_cost[0]['value']: "-"); ?></span>
+          </td>
+        </tr-->
+        <tr>
+          <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Land Cost <span class="label-unit">(<?php print $currency_code." "?>per sq m)</span></label></td>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_land_cost) ? $field_land_cost[0]['value']: "-"); ?></td>
+        </tr>
+        </tbody>
 			</table>
 		</div>
 	</div>
-
+  <?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute();  ?>
 	<div id="loading-list-container" class="container-fluid panel panel-default">
 		<div id="heading-loading-list" class="panel-heading" role="tab">
 			<div id="loading-title-container">
@@ -221,7 +213,7 @@ $view_scenario->set_display('block');
 			<div class="panel-body">
 				<div class="table-responsive" id="loading-form-container"></div>
 				<div id="loading-view-container">
-					<div id="loading-list-container"><?php $view_loading->set_arguments(array($nid)); $view_loading->pre_execute(); $view_loading->execute(); print $view_loading->render(); ?></div>
+					<div id="loading-list-container"><?php print $view_loading->render(); ?></div>
 				</div>
 				<div id="loading-actions-container"></div>
 			</div>
@@ -243,6 +235,9 @@ $view_scenario->set_display('block');
 					$effl_form = drupal_get_form('wamex_project_effl_form',$nid);
 					$effl_form['field_effluent_standard']['#title'] = t('Standard');
 					$effl_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
+          $effl_form['actions']['submit']['#attributes']['data-toggle'][] = 'tooltip';
+          $effl_form['actions']['submit']['#attributes']['data-placement'][] = 'auto';
+          //$effl_form['actions']['submit']['#attributes']['title'][] = '_';
 					$effl_header = array(
 						//array('data' => t('Standard'), 'class'=>array('tech-attributes','tech-attributes-header','tech-name','col-name')) ,
 						array('data' => $effl_form['field_effluent_standard']['#title'], 'class'=>array('col-md-3','tech-attributes','tech-attributes-header','tech-name','col-name')) ,
@@ -356,7 +351,7 @@ $view_scenario->set_display('block');
 			<div id="scenario-title-container">
 				<h3 id="scenario-title" class="project-section-title panel-title"><a href="#collapse-scenario" name="scenario-list" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-scenario"><span id="toggle-scenario" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Scenarios</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="scenario-help">?</button>
-				<?php if ($addScenarioPerm):?><button class="btn btn-primary btn-sm btn-add-scenario pull-right" id="add-scenario-<?php print $nid; ?>"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
+				<?php if ($addScenarioPerm):?><button class="btn btn-primary btn-sm btn-add-scenario pull-right" id="add-scenario-<?php print $nid; ?>" data-toggle="tooltip" data-placement="auto"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</button><?php endif; ?>
 				<div class="form-group pull-right" id="scenario-toggle-container">
 					<div id="user-scenarios-toggle-hidden"><?php //print ($user_scenarios ? "ON" : "OFF");?></div>
 					<div class="col-sm-offset-2 col-sm-10 hidden">
@@ -429,7 +424,7 @@ $view_scenario->set_display('block');
           $retic_form['field_terrain_type']['#title'] = null;
           $retic_form['field_terrain_type']['#value'] = $field_terrain_type[0]['value'];
           $retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
-          $retic_header = null;
+          $retic_header = array();
 					$retic_rows = array();
           
           $retic_rows[]['data'] = array(
@@ -484,7 +479,7 @@ $view_scenario->set_display('block');
             array('data'=>'', 'id'=>array('pump-cost-per-capita'), 'colspan'=>'2' ),
           );
           
-					$retic_output .= theme('table', array('header' => $retic_header, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'panel-body')));
+					$retic_output .= theme('table', array('header' => null, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'table')));
 					$retic_output .= drupal_render($retic_form['form_build_id']);
 					$retic_output .= drupal_render($retic_form['form_id']);
 					$retic_output .= drupal_render($retic_form['form_token']);

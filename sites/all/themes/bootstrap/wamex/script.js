@@ -164,6 +164,8 @@
 				//console.log('here');
 				$('#project-effluent-standard, #edit-field-effluent-standard').unbind('change').on('change',function(event){
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
+          // display save tooltip on change
+          $('#edit-effl-submit').attr('title','You\'ve selected a new Effluent Standard. Click here to save your changes').tooltip({'container':'body'}).tooltip('fixTitle').tooltip('show');
 				});
 				
 				$('#table-loading-tech').removeClass('table');
@@ -837,6 +839,10 @@
 					highlightColumn(selectedParam,'unhighlight');
 				});
 
+				$('#table-popeq input.popeq-parameter').unbind('change').on('change',function(){
+          $('#show-tech-'+Drupal.settings.node.values.nid).attr('title','You\'ve modified the Person Load Equivalent (POL). Click here to refresh this list').tooltip({'container':'body'}).tooltip('fixTitle').tooltip('show');
+				});
+
 				$('#table-popeq input.popeq-parameter').unbind('focus').unbind('click').on('focus click',function(e) {
           // activate unhighlight when focusing or clicking on a person load equivalent input
 					var selectedParam = this.id.split("-")[2];
@@ -854,6 +860,7 @@
           // activate unhighlight when focusing or clicking on a popeq radio button
 					var selectedParam = this.value;
 					highlightColumn(selectedParam,'highlight');
+          $('#show-tech-'+Drupal.settings.node.values.nid).attr('title','You\'ve selected a new Total Population Equivalent. Click here to refresh this list').tooltip({'container':'body'}).tooltip('fixTitle').tooltip('show');
 				});
 
 				$('body.node-type-project, body.page-project-edit').ready(function(event){

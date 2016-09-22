@@ -1,0 +1,102 @@
+body {
+  margin: 1em;
+  background-color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif !important;
+  font-size: 80%;
+}
+th {
+  text-align: left; 
+  color: #333333;
+  border-bottom: 0px solid #ccc;
+	max-width: 100px !important;
+	vertical-align: top;
+}
+tr.odd {background-color: #ffffff;}
+tr.even {background-color: #ffffff;}
+td {padding: 5px; }
+#menu {visibility: hidden;}
+#main {margin: 1em;}
+a:link {color: #000;}
+a:visited {color: #000;}
+a:hover {color: #00f;}
+a:link img, a:visited img {border: 0;}
+.print-footnote {font-size: xx-small;}
+img.print-logo {border: 0;}
+.print-site_name {}
+.print-breadcrumb {font-size: x-small;}
+.print-title {}
+.print-submitted {font-size: small;}
+.print-created {font-size: small;}
+.print-taxonomy {text-align: right;}
+.print-taxonomy li {display: inline;}
+.print-content {}
+.print-hr {
+  border: 0;
+  height: 1px;
+  width: 100%;
+  color: #9E9E9E;
+  background-color: #9E9E9E;
+  display: none;
+}
+.print-message {
+  border: medium dotted blue;
+  padding: 1em;
+}
+.print-source_url {font-size: small;}
+.print-links {font-size: small;}
+.print-footer {text-align: center;}
+
+/* CUSTOM PRINT CSS */
+.print-logo{padding:8px 8px;}
+.print-name{display:none;}
+.print-breadcrumb {display:none;}
+/*.print-site_name{display:none !important;}*/
+.print-footer {display:none;}
+#edit-basic{display:none;}
+.print-title {padding-left:20px;}
+.print-content{margin-top:-20px !important;}
+
+
+.print-title {padding:0px !important;}
+
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td,
+{
+	background-color: #ffffff !important;
+  border:0px !important;
+}
+
+.print-site_name {
+  float: right;
+  position: absolute;
+  margin-top: -60px;
+  color: #fff;
+  margin-left: 60px;
+
+}
+
+h3.print-title {
+	font-weight: bold;
+	padding-top: 10px;
+}
+
+
+h4.print-title {
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+
+.label-unit {
+  font-weight:  normal;
+}
+
+hr.print-hr {
+	margin-top: 5px;
+	margin-bottom: 8px;
+	color: #999999;
+}
+
+#view-project-loadings th {
+  width: auto !important;
+  
+}

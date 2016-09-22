@@ -259,7 +259,26 @@ function wamex_menu() {
 }*/
 
 function make_range($value,$digits){
-  $range = number_format(round($value,$digits),0)." to ".number_format(round($value*1.2,$digits),0);
+  $range = "";
+  $low = "";
+  $high = "";
+  if ($value < 10) {
+    $digits+=2;
+  } elseif ($value > 10 && $value < 100) {
+    $digits+=1;
+  }
+  
+  $l = $value;
+  $h = $value*1.2;
+  
+  $low = number_format(round($l,$digits),0);
+  $high = number_format(round($h*1.2,$digits),0);
+  
+  if ($low == $high) {
+    $range .= $low;
+  } else {
+    $range .= $low." to ".$high;
+  }
   return $range;
 }
 
@@ -418,7 +437,7 @@ function wamex_get_tech_data($techArgs){
     $land_cost = $landreq*$str_land_cost*$str_exch_rate;
     $land_cost_range = ($land_cost > 0 ? make_range($land_cost,-2) : "-");
     $land_cost_per_capita = $land_cost/$pop;
-    $land_costs_range_per_capita = ($land_cost_per_capita > 0 ? number_format(round($land_cost_per_capita,-2))." to ".number_format(round($land_cost_per_capita*1.2,-2)) : "-");
+    $land_costs_range_per_capita = ($land_cost_per_capita > 0 ? make_range($land_cost_per_capita,-2) : "-");
     $tot_inv = $capex_tot+$land_cost;
     $tot_inv_range = ($tot_inv > 0 ? make_range($tot_inv,-2) : "-");
     $tot_inv_per_capita = $tot_inv/$pop;
@@ -2094,7 +2113,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-effl-submit';
 	//$form['actions']['submit']['#attributes']['class'][] = 'hidden';
-	$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
+	$form['actions']['submit']['#value'] = t("<span class='glyphicon glyphicon-floppy-save'></span>&nbsp;Save");
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_effl_form_submit';
 	//$form['actions']['submit']['#suffix'] = '</div>';
