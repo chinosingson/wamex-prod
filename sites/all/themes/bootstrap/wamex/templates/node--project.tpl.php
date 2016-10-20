@@ -1,5 +1,5 @@
 ﻿	<?php
-	//$node = menu_get_object(); 
+	//$node = menu_get_object();
 
 	global $debug;
 	$user_debug = $debug;
@@ -19,7 +19,7 @@
 	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
 	//$nid = field_get_items('node',$node,'nid');
 	//$nid = $node->nid;
-  
+
   // NODE VALUES
 	$field_body = field_get_items('node',$node,'body');
 	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($field_body,1)."</pre>";
@@ -45,7 +45,7 @@
   $field_pipe_length = field_get_items('node',$node,'field_pipe_length');
   $field_terrain_type = field_get_items('node',$node,'field_terrain_type');
   $field_technology_data = field_get_items('node',$node,'field_technology_data');
-  
+
   // PERMISSIONS
 	$addLoadingPerm = user_access('add loading custom');
 	$editProjectPerm = user_access('edit project custom');
@@ -54,7 +54,7 @@
 
 	$term_currency = taxonomy_term_load($field_currency[0]['tid']);
 	$currency_code = $term_currency->field_currency_code[LANGUAGE_NONE][0]['value'];
-	
+
 	if (isset($nid)){
 
     //drupal_add_css(libraries_get_path('leaflet') . '/leaflet.css', array('type'=>'file','group'=>CSS_DEFAULT));
@@ -93,11 +93,11 @@
 		drupal_add_js(array('node' => array('values' => array('field_population_density'=>$field_population_density[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_sewerage_type'=>$field_sewerage_type[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_pipe_length'=>$field_pipe_length[0]['value']))),'setting');
-    
+
     $techData = json_decode($field_technology_data[0]['value'],TRUE);
-    
+
 		drupal_add_js(array('node' => array('values' => array('technologies'=>$techData['table']))),'setting');
-    
+
     //print "<pre style='display: block; '>".print_r($techData['args'],1)."</pre>";
 	}
 //}
@@ -143,7 +143,7 @@ $view_scenario->set_display('block');
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_population) ? number_format($field_population[0]['value']): "-"); ?>
 						<span class="hidden" id="td-field-population"><?php print (isset($field_population) ? $field_population[0]['value']: "-"); ?></span>
 						</td>
-						
+
 					</tr>
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Description</label></td>
@@ -230,7 +230,7 @@ $view_scenario->set_display('block');
 		</div>
 		<div id="collapse-standards" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-standards">
 			<div class="panel-body">
-				<?php 
+				<?php
 					$effl_output = "";
 					$effl_form = drupal_get_form('wamex_project_effl_form',$nid);
 					$effl_form['field_effluent_standard']['#title'] = t('Standard');
@@ -280,7 +280,7 @@ $view_scenario->set_display('block');
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="popeq-container" class="container-fluid panel panel-default">
 		<div id="heading-popeq" class="panel-heading" role="tab">
 			<div id="popeq-title-container">
@@ -290,7 +290,7 @@ $view_scenario->set_display('block');
 		</div>
 		<div id="collapse-popeq" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-popeq">
 			<div class="panel-body">
-				<?php 
+				<?php
 					$popeq_output = "";
 					$popeq_form = drupal_get_form('wamex_project_popeq_form',$nid);
 					$popeq_rows[0] = array(
@@ -303,7 +303,7 @@ $view_scenario->set_display('block');
 						array('data' => $popeq_form['popeq_parameter']['Vol/C'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-volc','popeq-volc','col-volc')),
 					);
 					$popeq_rows[1]['data'] = array(
-						array('data' => t('<label>Person Load Equivalent</label> (POL, <span class="label-unit">gm/capita/day</span>)'),'class'=>array('popeq-row-header', 'popeq-row-pol')),
+						array('data' => t('<label id="popeq-label-pol">Person Load Equivalent</label> (POL, <span class="label-unit">gm/capita/day</span>)'),'class'=>array('popeq-row-header', 'popeq-row-pol')),
 						array('data' => $popeq_form['popeq_pol']['pol-cod'], 'class'=>array('popeq-pol','popeq-pol-cod','popeq-cod','col-cod')),
 						array('data' => $popeq_form['popeq_pol']['pol-bod5'], 'class'=>array('popeq-pol','popeq-pol-bod5','popeq-bod5','col-bod5')),
 						array('data' => $popeq_form['popeq_pol']['pol-totn'], 'class'=>array('popeq-pol','popeq-pol-totn','popeq-totn','col-totn')),
@@ -374,7 +374,7 @@ $view_scenario->set_display('block');
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="loading-tech-container" class="container-fluid panel panel-default">
 		<div id="heading-tech" class="panel-heading" role="tab">
 			<div id="tech-title-container">
@@ -388,7 +388,7 @@ $view_scenario->set_display('block');
 		</div>
 		<div id="collapse-tech" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-tech">
       <div id="loading-ajax-tech-list"></div>
-			<div id="loading-tech-list"><?php print wamex_display_tech(json_decode($node->field_technology_data[LANGUAGE_NONE][0]['value'],TRUE),TRUE); ?></div>
+			<div id="loading-tech-list"><?php print wamex_display_tech(json_decode($field_technology_data[0]['value'],TRUE),TRUE); ?></div>
 		</div>
 	</div>
 
@@ -403,16 +403,17 @@ $view_scenario->set_display('block');
 		</div>
 		<div id="collapse-retic" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-retic">
 			<div id="loading-retic-list">
-				<?php 
+				<?php
           //echo $field_sewerage_type[0]['value'];
           //echo "<br/>";
           //echo $field_pipe_length[0]['value'];
-        
+
 					$retic_output = "";
 					$retic_form = drupal_get_form('wamex_project_retic_form',$nid);
 					//$retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
           $retic_form['field_land_area']['#title'] = null;
           $retic_form['field_land_area']['#value'] = $field_land_area[0]['value'];
+          $retic_form['field_land_area']['#attributes']['title'] = "Land Area";
           //$retic_form['field_population_density']['#title'] = null;
           //$retic_form['field_population_density']['#value'] = $field_population_density[0]['value'];
           $retic_form['field_sewerage_type']['#title'] = null;
@@ -421,54 +422,57 @@ $view_scenario->set_display('block');
           $retic_form['field_sewerage_type']['#attributes']['disabled'] = 'disabled';
           $retic_form['field_pipe_length']['#title'] = null;
           $retic_form['field_pipe_length']['#value'] = $field_pipe_length[0]['value'];
+          $retic_form['field_pipe_length']['#attributes']['title'] = "Pipe Length";
           $retic_form['field_terrain_type']['#title'] = null;
           $retic_form['field_terrain_type']['#value'] = $field_terrain_type[0]['value'];
+          $retic_form['field_terrain_type']['#attributes']['title'] = "Type of Terrain";
           $retic_form['actions']['submit']['#attributes']['class'][] = 'btn-sm';
           $retic_header = array();
 					$retic_rows = array();
-          
+
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Type of Sewerage</label>'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label id="retic-label-sewerage-type">Type of Sewerage</label>'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_sewerage_type'], 'colspan'=>2),
           );
-          
+
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Cost of Sewerage</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('retic-cost')),
           );
-          
+
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Cost of Sewerage Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('retic-cost-per-capita'), 'colspan'=>'2' ),
           );
-          
+
 					$retic_rows[]['data'] = array(
-						array('data'=>t('<label>Land Area</label> (<span class="label-unit">m<sup>2</sup></span>)'), 'class'=>array('retic-row-header','col-sm-5')),
+						array('data'=>t('<label id="retic-label-land-area">Land Area</label> (<span class="label-unit">m<sup>2</sup></span>)'), 'class'=>array('retic-row-header','col-sm-5')),
 						array('data'=>$retic_form['field_land_area'],'colspan'=>2),
           );
-          
+
           /*$retic_rows[]['data'] = array(
 						array('data'=>t('<label>Population Density</label> (<span class="label-unit">persons per m<sup>2</sup></span>)'), 'class'=>array('retic-row-header')),
 						array('data'=>$retic_form['field_population_density'],'colspan'=>2),
 					);*/
-          
+
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Pipe Length</label> (<span class="label-unit">km</span>)'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label id="retic-label-pipe-length">Pipe Length</label> (<span class="label-unit">m</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_pipe_length'], 'colspan'=>2),
+            //array('#attributes'=>array('title'=>'Pipe Length')),
           );
-          
+
           $retic_rows[]['data'] = array(
-						array('data'=>t('<label>Type of Terrain</label>'), 'class'=>array('retic-row-header')),
+						array('data'=>t('<label id="retic-label-terrain-type">Type of Terrain</label>'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_terrain_type']),
             array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
           );
-          
+
           /* $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Number of Pumps</label>'), 'class'=>array('retic-row-header')),
             array('data'=>'<div class="retic-pump-count-header col-sm-4">6L/s/day</div><div id="retic-pump-count-6" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-6L'),
             array('data'=>'<div class="retic-pump-count-header col-sm-4">12L/s/day</div><div id="retic-pump-count-12" class="well well-sm col-sm-7"></div>', 'id'=>'num-pumps-12L'),
           ); */
-          
+
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label>Cost of Pumps</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('pump-cost'), 'colspan'=>'2' ),
@@ -478,7 +482,7 @@ $view_scenario->set_display('block');
 						array('data'=>t('<label>Cost of Pumps Per Capita</label> (<span class="label-unit">'.$currency_code.'</span>)'), 'class'=>array('retic-row-header')),
             array('data'=>'', 'id'=>array('pump-cost-per-capita'), 'colspan'=>'2' ),
           );
-          
+
 					$retic_output .= theme('table', array('header' => null, 'rows' =>$retic_rows, 'attributes'=>array('id'=>'table-retic-values', 'class'=>'table')));
 					$retic_output .= drupal_render($retic_form['form_build_id']);
 					$retic_output .= drupal_render($retic_form['form_id']);
@@ -487,7 +491,7 @@ $view_scenario->set_display('block');
 					$variables['element']['#children'] = $retic_output;
 					print theme_form($variables);
 				?>
-      
+
       </div>
 		</div>
 	</div>

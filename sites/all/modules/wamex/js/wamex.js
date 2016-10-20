@@ -1,10 +1,10 @@
 ﻿(function ($) {
-	
+
 	Drupal.behaviors.wamex = {
 		attach: function (context, settings) {
 			if($('body.page-dashboard, body.page-project-edit').length > 0){
 				//var projectValidatorOptions = ;
-				
+
 				$('#wamex-project-form').ready(function(){
 					$('#edit-title').trigger('focus');
 					$('#wamex-project-form')
@@ -33,7 +33,7 @@
 					.formValidation('validate');
 				});
 			}
-		
+
 			if($('body.node-type-project').length > 0){
 				$('#wamex-loading-form').ready(function(){
 					//$('#edit-title').focus();
@@ -128,7 +128,7 @@
 						}
 					});*/
 				});
-				
+
 				$('#wamex-scenario-form').ready(function(){
 					$('#edit-title').trigger('focus');
 					$('#wamex-scenario-form')
@@ -159,10 +159,10 @@
 							console.log('error');
 						});
 				});
-			
+
 			}
 
 		}
-		
+
 	};
 }(jQuery));

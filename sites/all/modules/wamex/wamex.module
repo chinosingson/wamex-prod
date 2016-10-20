@@ -6,7 +6,7 @@
  */
 
  require_once DRUPAL_ROOT .'/'. drupal_get_path('module','wamex').'/wamex_math.php';
- 
+
 /**
 * Implementation of hook_permission().
 */
@@ -16,22 +16,22 @@ function wamex_permission() {
 		'title' => t('<em>Project</em>: Add new project.'),
 		'description' => t('Allow users to add new WaMEx projects'),
 	);
-	
+
 	$items['edit project custom'] = array(
 		'title' => t('<em>Project</em>: Edit existing project.'),
 		'description' => t('Allow users to edit WaMEx projects'),
 	);
-	
+
 	$items['delete project custom'] = array(
 		'title' => t('<em>Project</em>: Delete existing project.'),
 		'description' => t('Allow users to delete WaMEx projects'),
 	);
-	
+
   $items['add loading custom'] = array(
 		'title' => t('<em>Loading</em>: Add new loading.'),
 		'description' => t('Allow users to add new WaMEx loadings'),
 	);
-	
+
 	$items['edit loading custom'] = array(
 		'title' => t('<em>Loading</em>: Edit existing loading.'),
 		'description' => t('Allow users to edit WaMEx loadings'),
@@ -41,12 +41,12 @@ function wamex_permission() {
 		'title' => t('<em>Loading</em>: Delete existing loading.'),
 		'description' => t('Allow users to delete WaMEx loadings'),
 	);
-	
+
   $items['add scenario custom'] = array(
 		'title' => t('<em>Scenario</em>: Add new scenario.'),
 		'description' => t('Allow users to add new WaMEx scenarios'),
 	);
-	
+
 	$items['edit scenario custom'] = array(
 		'title' => t('<em>Scenario</em>: Edit existing scenario.'),
 		'description' => t('Allow users to edit WaMEx scenarios'),
@@ -61,7 +61,7 @@ function wamex_permission() {
 		'title' => t('<em>Settings</em>: Modify WaMEx module settings.'),
 		'description' => t('Allow users to change WaMEx module settings'),
 	);*/
-	
+
 	return $items;
 }
 
@@ -71,7 +71,7 @@ function wamex_permission() {
 
 /*function wamex_admin (){
 	$form = array();
-	
+
 	$form['wamex_tech_debug'] = array(
 		'#type' => 'checkbox',
 		'#title' => t('Technology Selection Debug Mode'),
@@ -79,24 +79,24 @@ function wamex_permission() {
 		'#default_value' => variable_get('wamex_tech_debug', 3),
 		'#description' => t("Enable display of wastewater technology parameter values while testing for suitability."),
 	);
-	
+
 	return system_settings_form($form);
-	
+
 }*/
 
 function wamex_init() {
   drupal_add_js('misc/jquery.form.js');
   drupal_add_library('system','drupal.ajax');
 }
- 
+
  /**
  * Implements hook_menu().
  */
- 
+
 function wamex_menu() {
 
   $items = array();
-	
+
 	// render any drupal page via ajax
 	$items['get/ajax'] = array(
     'page callback' => 'wamex_ajax_get_ajax', // Render HTML
@@ -104,8 +104,8 @@ function wamex_menu() {
     'type' => MENU_CALLBACK,
     'access arguments' => array('access content'),
     'delivery callback' => 'wamex_ajax_callback',  // Magic goes here
-  );  
-	
+  );
+
 	// project functions
 	$items['project/add'] = array(
     'title' => 'Add Project',
@@ -114,7 +114,7 @@ function wamex_menu() {
     'access arguments' => array('add project custom'),
     'type' => MENU_LOCAL_TASK,
 	);
-	
+
 	$items['project/edit/%'] = array(
     'title' => 'Edit Project',
 		'page callback' => 'drupal_get_form',
@@ -122,7 +122,7 @@ function wamex_menu() {
     'access arguments' => array('edit project custom'),
     'type' => MENU_CALLBACK,
 	);
-	
+
 	$items['project/delete/%'] = array(
     'title' => 'Delete Project',
 		'page callback' => 'drupal_get_form',
@@ -130,8 +130,8 @@ function wamex_menu() {
     'access arguments' => array('delete project custom'),
     'type' => MENU_CALLBACK,
 	);
-	
-	
+
+
 	// loading functions
 	$items['loading/add/%'] = array(
 		'title' => 'Add Loading',
@@ -160,7 +160,7 @@ function wamex_menu() {
 		'access arguments' => array('delete loading custom'),
 		'type' => MENU_CALLBACK,
 	);
-	
+
 	$items['loading/technologies'] = array(
 		'title' => 'Loading Technologies',
 		//'page callback' => 'wamex_get_tech_data',
@@ -176,7 +176,7 @@ function wamex_menu() {
 		'access arguments' => array('access content'),
 		'type' => MENU_CALLBACK,
 	);
-	
+
 	// scenario functions
 	$items['scenario/add/%'] = array(
 		'title' => 'Add scenario',
@@ -205,8 +205,8 @@ function wamex_menu() {
 		'access arguments' => array('delete scenario custom'),
 		'type' => MENU_CALLBACK,
 	);
-	
-	
+
+
 	/*$items['admin/settings/wamex'] = array(
 		'title' => 'WaMEx Settings',
 		'description' => 'Administrative settings for the WaMEx Module.',
@@ -216,28 +216,28 @@ function wamex_menu() {
 		'type' => MENU_NORMAL_ITEM,
 	);*/
 
-	
+
 	/*$items['loading/techs/all'] = array(
 		'title' => 'All Technologies',
 		'page callback' => 'wamex_get_all_tech',
 		'access arguments' => array('Edit own content'),
 		//'type' => MENU_DEFAULT_LOCAL_TASK,
 	);*/
-	
+
 	/*$items['project/effluents/%'] = array(
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_project_effl_form',2),
 		'access arguments' => array('Edit own content'),
 		'type' => MENU_CALLBACK,
 	);*/
-	
+
 	/*$items['test/table'] = array(
 		'title' => 'Test table',
 		'page callback' => 'wamex_display_table',
 		'access arguments' => array('administer WaMEx technology'),
 		'type' => MENU_CALLBACK,
 	);*/
-	
+
   return $items;
 }
 
@@ -267,13 +267,13 @@ function make_range($value,$digits){
   } elseif ($value > 10 && $value < 100) {
     $digits+=1;
   }
-  
+
   $l = $value;
   $h = $value*1.2;
-  
+
   $low = number_format(round($l,$digits),0);
   $high = number_format(round($h*1.2,$digits),0);
-  
+
   if ($low == $high) {
     $range .= $low;
   } else {
@@ -309,23 +309,23 @@ function wamex_get_tech_data($techArgs){
 		'COD'  => $ary_loadings_init[1],
 		'BOD5' => $ary_loadings_init[2],
 		'N'    => $ary_loadings_init[3],
-		'P'    => $ary_loadings_init[4], 
+		'P'    => $ary_loadings_init[4],
 		'TSS'  => $ary_loadings_init[5]
 	);
-	
+
 	$arrayStandards = array(
-		//'name' => "Malaysia",
-		'COD'  => $ary_standards_init[0],
-		'BOD5' => $ary_standards_init[1],
-		'N'    => $ary_standards_init[2],
-		'P'    => $ary_standards_init[3],
-		'TSS'  => $ary_standards_init[4],
+		'name' => $ary_standards_init[0],
+		'COD'  => $ary_standards_init[1],
+		'BOD5' => $ary_standards_init[2],
+		'N'    => $ary_standards_init[3],
+		'P'    => $ary_standards_init[4],
+		'TSS'  => $ary_standards_init[5],
 	);
-  
+
   $techs = wamex_select_tech($arrayAverageLoad,$arrayStandards,$str_popeq,$str_scenario);
   $output .= count ($techs)." technologies selected<br/>";
   // $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
-  // $output .= "select tech process time: {$time}<br/>";  
+  // $output .= "select tech process time: {$time}<br/>";
 
 	//$scenario_sorted_techs = array();
 	if ($str_scenario!=""){
@@ -345,7 +345,7 @@ function wamex_get_tech_data($techArgs){
 		foreach($techs as $key=>$tech){
 			$techs[$key]['score'] = wamex_scenario_score($tech,$str_scenario);;
 		}
-    
+
     // sort technologies by score : $techs[$key]['score']
     usort ($techs, function($a, $b){
       return $b['score'] > $a['score'] ? 1 : -1;
@@ -353,7 +353,7 @@ function wamex_get_tech_data($techArgs){
 		if ($debug) {
 			$debug_output .= "</pre>";
 		}
-    
+
     //$output .= "scoring<br/><pre>".print_r($techs,1)."</pre><br/>";
     //$output .= "scoring<br/><pre>".print_r($score,1)."</pre><br/>";
 
@@ -380,7 +380,7 @@ function wamex_get_tech_data($techArgs){
 			$debug_output .= "<pre>";
 			$debug_output .= "<b>Tech| Name</b><br/>";
       //$tech_ids[] = $tech['tid'];
-      if ($debug){ 
+      if ($debug){
         foreach ($techs as $tech){
           $debug_output .= str_replace("_","&nbsp;",str_pad($tech['tid'],4,"_",STR_PAD_BOTH))."|".$tech['name']."<br/>";
         }
@@ -388,8 +388,8 @@ function wamex_get_tech_data($techArgs){
 		}
 		if ($debug) $debug_output .= "</pre>";
 	}
-  
-  
+
+
   if ($debug) echo $debug_output."<br/>";
   //$output .= "after sorting:<br/><pre class='col-sm-6'>".print_r($techs,1)."</pre><br/>";
   //$output .= "<pre>".print_r($scenario_sorted_techs,1)."</pre><br/>";
@@ -409,7 +409,7 @@ function wamex_get_tech_data($techArgs){
   $results = $query->execute(); */
   //$rows = array();
   $destination = drupal_get_destination();
-  
+
   $popeq_threshold = wamex_popeq_threshold($str_popeq);
   $popeq_shortcut = $popeq_threshold['shortcut'];
 
@@ -442,20 +442,20 @@ function wamex_get_tech_data($techArgs){
     $tot_inv_range = ($tot_inv > 0 ? make_range($tot_inv,-2) : "-");
     $tot_inv_per_capita = $tot_inv/$pop;
     $tot_inv_range_per_capita = ($tot_inv > 0 ? make_range($tot_inv_per_capita,-2) : "-");
-    
+
     // total investment
 
     $cod_value = (!is_null($val['cod']) ? (1-$val['cod'])*$arrayAverageLoad['COD'] : null);
     $bod5_value = (!is_null($val['max_bod']) ? (1-$val['max_bod'])*$arrayAverageLoad['BOD5'] : null);
-    
+
     $n_a_value = $val['max_n_a'];	// absolute efficiency value
     $n_p_value = $val['max_n_p'];	// percentage
     $n_value = (!is_null($n_a_value) ? $n_a_value : (!is_null($n_p_value) ? (1-$n_p_value)*$arrayAverageLoad['N'] : null ));
-    
+
     $p_a_value = $val['max_p_a'];	// absolute efficiency value
     $p_p_value = $val['max_p_p'];	// percentage
     $p_value = (!is_null($p_a_value) ? $p_a_value : (!is_null($p_p_value) ? (1-$p_p_value)*$arrayAverageLoad['N'] : null ));
-    
+
     $tss_a_value = $val['max_tss_a'];	// absolute efficiency value
     $tss_p_value = $val['max_tss_p'];	// percentage
     $tss_value = (!is_null($tss_a_value) ? $tss_a_value : (!is_null($tss_p_value) ? (1-$tss_p_value)*$arrayAverageLoad['N'] : null ));
@@ -485,12 +485,12 @@ function wamex_get_tech_data($techArgs){
       "p"=>$p_value,
       "tss"=>$tss_value,
     );
-			
+
     //$rows[] = $ary_values;
   }
   $tech_values['args'] = $aryTechArgs;
   $tech_values['table'] = $tech_json;
-  
+
   //$output .= "<pre>".print_r($rows,1)."</pre><br/>";
   $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
   $output .= "process data process time: {$time}<br/>";
@@ -506,9 +506,9 @@ function wamex_get_tech_data($techArgs){
     //$output .= "merong node: ".$node_id."<br/>";
   } /*else {
     $output .= "walang node!<br/>";
-    
+
   }*/
-  
+
   //$ret_ary['techArgs'] = $techArgs;
   $ret_ary = $tech_values;
   //return $output;
@@ -534,15 +534,15 @@ function wamex_display_tech($techs, $static = null){
 	//$output .= "<pre>PE: ".$str_popeq."</pre>";
 	//$output .= "<pre>Scenario: ".$str_scenario."</pre>";
 	//$output .= "<pre>Land Cost: ".$str_land_cost."</pre>";
-	
+
   $str_popeq = $techInfo['args'][2];
   $str_scenario = $techInfo['args'][3];
   $str_curr_code = $techInfo['args'][6];
   $count_techs = count($techInfo['table']);
-	
+
 	//$output .= "<pre>".print_r($techInfo['table'][0],1)."</pre>";
 	//$output .= "<pre>".print_r($scenario_sorted_techs,1)."</pre>";
-	
+
 	$output .= '<div class="table-responsive">';
 	if ($count_techs>0){
 		$output .= "<div class=\"row\">";
@@ -561,19 +561,19 @@ function wamex_display_tech($techs, $static = null){
 		}
 		$output .= "</div>";
 		$output .= "</div>";
-		
+
 		$header = array();
-		
+
 		// COLUMN HEADINGS - Financial Info
     $str_cost_units = "<span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span>";
     $str_cost_units_pc = "<span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
-    $score_header = "Score<br/>&nbsp;"; 
+    $score_header = "Score<br/>&nbsp;";
     $capex_header = "CapEx<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
     $opex_header = "OpEx<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code."/year)</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita/year)</span>";
     $land_req_header = "Land&nbsp;Req't<br/><span class=\"label-unit\">(sq m)</span>";
     $land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
     $tot_inv_header = "Total&nbsp;Investment<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
-    
+
 		$header[] = array('data' => t('Name<br/>&nbsp;'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name'),'sort'=>'asc');
     $header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','tech-score'));
     $header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-capex'));
@@ -581,7 +581,7 @@ function wamex_display_tech($techs, $static = null){
     $header[] = array('data'=>t($land_req_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landreq'));
     $header[] = array('data'=>t($land_cost_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-landcost'));
     $header[] = array('data'=>t($tot_inv_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-totinv'));
-		
+
     // COLUMN HEADINGS - Efficiency
 		$header[] = array('data' => t('COD<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-cod','tech-cod','col-cod'));
 		$header[] = array('data' => t('BOD5<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-bod5','tech-bod5','col-bod5'));
@@ -606,7 +606,7 @@ function wamex_display_tech($techs, $static = null){
       $land_cost_range_per_capita = $val['landCostPC'];
       $tot_inv_range = $val['totInv'];
       $tot_inv_range_per_capita = $val['totInvPC'];
-      
+
       $ary_values['name'] = array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$tech_id.'">'.$tech_name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap'));
       $ary_values['score'] = array('data'=>number_format($score_value,2), 'class'=>array('tech-attributes','tech-score'));
       $ary_values['capex'] = array('data'=>$capex_range,'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
@@ -618,7 +618,7 @@ function wamex_display_tech($techs, $static = null){
       $ary_values['landcost_pc'] = array('data'=>$land_cost_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-landcost-pc','tech-landcost'));
       $ary_values['tot_inv'] = array('data'=>$tot_inv_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr', 'tech-totinv-pe','tech-totinv'));
       $ary_values['tot_inv_pc'] = array('data'=>$tot_inv_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-totinv-pc','tech-totinv'));
-      
+
       $cod_value = $val['cod'];
       $bod5_value = $val['bod5'];
       $n_value = $val['n'];
@@ -630,7 +630,7 @@ function wamex_display_tech($techs, $static = null){
       $n_display = (!is_null($n_value) ? number_format($n_value,1) : "-");
       $p_display = (!is_null($p_value) ? number_format($p_value,1) : "-");
       $tss_display = (!is_null($tss_value) ? number_format($tss_value,1) : "-");
-      
+
       $ary_values['COD'] = array('data'=>$cod_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-cod','col-cod'));
       $ary_values['BOD5'] = array('data'=>$bod5_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-bod5','col-bod5'));
       $ary_values['N'] = array('data'=>$n_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-totn','col-totn'));
@@ -638,28 +638,28 @@ function wamex_display_tech($techs, $static = null){
       $ary_values['TSS'] = array('data'=>$tss_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-tss','col-tss'));
 			$rows[] = $ary_values;
 		}
-    
-		
+
+
 		//if (empty($rows)) {
 		//	$empty_message = $keys ? t('No URL aliases found.') : t('No URL aliases available.') ;
 		//	$rows[] = array(array('data' => $empty_message, 'colspan' => 48));
 		//}
-		
+
 		$tblAttributes = array();
 		$tblAttributes['id'] = 'table-loading-tech';
 		$tblAttributes['class'][] = 'panel-body';
-		
+
 		$output .= theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>$tblAttributes));
 	} else {
 		$output .= 'No technologies suitable for selected standard and sources.';
-		
+
 	}
 	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
   //$output .= theme('pager', NULL, 50, 0);
 	$output .= '</div>';
 	$output .= '</div>';
     //$commands[] = ajax_command_settings($tech_values, TRUE);
-    
+
     //ajax_deliver(array(
     //  '#type'=> 'ajax',
     //  '#commands' => array("node"=>array("values"=>array("technologies"=>array($commands))))
@@ -698,7 +698,7 @@ function wamex_ajax_test($type = 'ajax', $args) {
   if ($type == 'ajax') {
     if ($args == "") $output = "WALA";
     else $output = $args;
-      
+
     $commands = array();
     $commands[] = ajax_command_replace('#loading-ajax-tech-list','<div id="HUY">'.$output.'</div>');
     $commands[] = ajax_command_settings(array('node'=>array('values'=>array('ajax_test'=>'AJAX_TEST_VALUE'))), TRUE);
@@ -749,7 +749,7 @@ function wamex_preprocess_page(&$variables){
 		// load all terms
 		$currency_terms = taxonomy_term_load_multiple($currency_tids);
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate_to_usd'=>0))),'setting');
-		
+
 		// add terms to Drupal.settings
 		// access in JS via Drupal.settings.taxonomy.currency
 		drupal_add_js(array('taxonomy' => array('currency' => $currency_terms)), 'setting');
@@ -757,7 +757,7 @@ function wamex_preprocess_page(&$variables){
 		drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>0))),'setting');
 	}
-	
+
 	if (@is_object($variables['node']) && $variables['node']->type == 'project'){
 		//drupal_set_message('message','status');
 		$variables['title'] = FALSE;
@@ -815,9 +815,9 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 		$toxic  = 1;
 		$sludge = 1;
 	}
-	
+
 	$form = array();
-	
+
 	$form['field_project'] = array(
 		'#type' => 'hidden',
 		'#title' => t('Project'),
@@ -848,7 +848,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_req_land']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_land']['#attributes']['min'] = 1;
 	$form['field_scenario_req_land']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_req_chem'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -861,7 +861,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_req_chem']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_chem']['#attributes']['min'] = 1;
 	$form['field_scenario_req_chem']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_req_energy'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -874,7 +874,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_req_energy']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_req_energy']['#attributes']['min'] = 1;
 	$form['field_scenario_req_energy']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_om'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -887,7 +887,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_om']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_om']['#attributes']['min'] = 1;
 	$form['field_scenario_om']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_shock'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -900,7 +900,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_shock']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_shock']['#attributes']['min'] = 1;
 	$form['field_scenario_shock']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_flow'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -913,7 +913,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_flow']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_flow']['#attributes']['min'] = 1;
 	$form['field_scenario_flow']['#attributes']['max'] = 5;
-	
+
 	$form['field_scenario_toxic'] = array(
 		'#type' => 'textfield',
 		'#required' => FALSE,
@@ -939,7 +939,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_scenario_sludge']['#attributes']['class'][] = 'form-scenario-param';
 	$form['field_scenario_sludge']['#attributes']['min'] = 1;
 	$form['field_scenario_sludge']['#attributes']['max'] = 5;
-	
+
 	$form['actions']['#prefix'] = "<div class='col-sm-2'>";
 	$form['actions']['#suffix'] = "</div>";
 	$form['actions']['submit']['#type'] = 'submit';
@@ -973,7 +973,7 @@ function wamex_scenario_form_render($form, $nid, $pid) {
 	$output = "";
 	//$output .= "<h2>NID: ".$nid."</h2>";
 	//$output .= "<h2>PID: ".$pid."</h2>";
-	
+
 	if ($nid){
 		$project_nid = $node->field_project[LANGUAGE_NONE][0]['target_id'];
 	} else {
@@ -984,14 +984,14 @@ function wamex_scenario_form_render($form, $nid, $pid) {
 
 	$header = array();
 	$rows = array();
-	
+
 	/*$header = array(
 		array('data'=>$loading_form['title']['#title'],'class'=>array('col-sm-2')),
 		array('data'=>$loading_form['field_loading_type']['#title'],'class'=>array('col-sm-2','col-type')),
 		//array('data'=>'&nbsp','class'=>array()),
 		//array('data'=>'&nbsp','class'=>array()),
 	);*/
-	
+
 	$scenario_form['title']['#title'] = null;
 	$scenario_form['field_scenario_req_land']['#title'] = null;
 	$scenario_form['field_scenario_req_chem']['#title'] = null;
@@ -1016,12 +1016,12 @@ function wamex_scenario_form_render($form, $nid, $pid) {
 		array('data'=>$scenario_form['actions']['submit']),
 		array('data'=>$scenario_form['actions']['cancel']),
 	);
-	
+
 	$output .= theme(
 		'table',
 		array('header'=>$header, 'rows'=>$rows,'attributes'=>array('id'=>'table-scenario-form'))
 	);
-	
+
 	$output .= drupal_render($scenario_form['field_project']);
 	$output .= drupal_render($scenario_form['nid']);
 	$output .= drupal_render($scenario_form['form_build_id']);
@@ -1029,7 +1029,7 @@ function wamex_scenario_form_render($form, $nid, $pid) {
 	$output .= drupal_render($scenario_form['form_token']);
 	$variables['element'] = $scenario_form;
 	$variables['element']['#children'] = $output;
-	
+
 	return theme_form($variables);
 }
 
@@ -1041,7 +1041,7 @@ function wamex_scenario_form_submit($form, &$form_state){
 	$commands = array();
 	drupal_get_messages();
 
-	if(!empty($errors)) { 
+	if(!empty($errors)) {
 		$selector = '#project-messages';
 		$error_variables = array(
 			'items'=> $errors,
@@ -1055,7 +1055,7 @@ function wamex_scenario_form_submit($form, &$form_state){
 		return array('#type' => 'ajax', '#commands' => $commands);
 	}
 	else {
-	
+
 		if (empty($form_state['values']['nid'])){
 			// add new node
 			global $user;
@@ -1077,13 +1077,13 @@ function wamex_scenario_form_submit($form, &$form_state){
 				node_save($newnode);
 				$success = TRUE;
 				drupal_set_message(t('Scenario <b>'.$newnode->title.'</b> created.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
 				drupal_set_message(t('New Scenario not saved.<br/>'.$e->getMessage()),'error');
 			}
-		} 
+		}
 		else {
 			// update existing node
 			$node = node_load($form_state['values']['nid']);
@@ -1103,7 +1103,7 @@ function wamex_scenario_form_submit($form, &$form_state){
 				node_save($node);
 				$success = TRUE;
 				drupal_set_message(t('Scenario <b>'.$node->title.'</b> updated.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -1117,8 +1117,8 @@ function wamex_scenario_form_submit($form, &$form_state){
 			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
-		} 
-		
+		}
+
 	}
 	//$node->field_scenario_attributes[LANGUAGE_NONE][0]['field_scenario_'][LANGUAGE_NONE] = $form_state['input']['field_scenario_'];
 }
@@ -1126,16 +1126,16 @@ function wamex_scenario_form_submit($form, &$form_state){
 
 function wamex_scenario_submit_handler($form, &$form_state) {
   if ($form_state['node']->nid) {
-  
-    
+
+
     //popup_element(t(''), t("Your project has been submitted"));
-	
+
 	//drupal_set_message(t('1'.$form_state['redirect']));
 
 	$form_state['redirect'] = array('node/'.$form_state['input']['field_project'], array('fragment'=>'scenario-list'));
 	//$form_state['redirect'] = 'node/'.$form_state['node']->field_project[LANGUAGE_NONE][0]['target_id'];
 	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
-	
+
 					$path =  array(
 						t('thank-you'),
 						array(
@@ -1144,7 +1144,7 @@ function wamex_scenario_submit_handler($form, &$form_state) {
 							),
 						),
 					);
-	
+
 	//$form_state['redirect'] = $path;
   }
 }
@@ -1177,7 +1177,7 @@ function wamex_scenario_delete_confirm_submit($form, &$form_state){
 			$success = FALSE;
 			drupal_set_message(t('Could not delete the scenario.'),'error');
 		}
-	
+
     $form_state['redirect'] = array($form['actions']['cancel']['#href'],array('fragment'=>'scenario-list'));
     return;
   }
@@ -1202,7 +1202,7 @@ function wamex_loading_form_render($form, $nid, $pid){
 
 	$header = array();
 	$rows = array();
-	
+
 	$header = array(
 		array('data'=>$loading_form['title']['#title'],'class'=>array('col-sm-2')),
 		array('data'=>$loading_form['field_loading_type']['#title'],'class'=>array('col-sm-2','col-type')),
@@ -1216,7 +1216,7 @@ function wamex_loading_form_render($form, $nid, $pid){
 		array('data'=>'&nbsp','class'=>array()),
 		array('data'=>'&nbsp','class'=>array()),
 	);
-	
+
 	$loading_form['title']['#title'] = null;
 	$loading_form['field_loading_type']['#title'] = null;
 	$loading_form['field_loading_adwf']['#title'] = null;
@@ -1243,18 +1243,18 @@ function wamex_loading_form_render($form, $nid, $pid){
 		array('data'=>$loading_form['actions']['submit']),
 		array('data'=>$loading_form['actions']['cancel']),
 	);
-	
+
 	$output .= theme(
 		'table',
 		array('header'=>$header, 'rows'=>$rows)
 	);
-	
+
 	$output .= drupal_render($loading_form['form_build_id']);
 	$output .= drupal_render($loading_form['form_id']);
 	$output .= drupal_render($loading_form['form_token']);
 	$variables['element'] = $loading_form;
 	$variables['element']['#children'] = $output;
-	
+
 	return theme_form($variables);
 }
 
@@ -1289,14 +1289,14 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		$weight = 0;
 		$cancel_btn_id = 'add-loading-cancel';
 	}
-	
+
 	$form = array();
 	//$form['#theme'] = 'table';
 	//$form['#attributes']['class'][] = 'row';
 	//$form['#attributes']['class'][] = 'form-container';
 	//$form['#attributes']['class'][] = 'container-fluid';
-	
-	
+
+
 	$form['title'] = array(
 		'#type' => 'textfield',
 		'#required' => TRUE,
@@ -1310,7 +1310,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#prefix' => '<div>',
 	);
 	$form['title']['#attributes']['class'][] = 'loading-required';
-	
+
 	$form['field_project_und'] = array(
 		'#type' => 'hidden',
 		'#title' => t('Project'),
@@ -1318,12 +1318,12 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		'#id' => 'field_project_nid',
 
 	);
-	
+
 	$loading_type_vocab = taxonomy_vocabulary_machine_name_load('loading_type');
 	$loading_type_terms  = wamex_get_selectbox_contents($loading_type_vocab->vid);
 	$loading_type_opts = $loading_type_terms;
 	//array(''=>t('*Required'))+
-	
+
 	$form['field_loading_type'] = array(
 		'#type' => 'select',
 		'#title' => t('Type'),
@@ -1336,7 +1336,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_type']['#attributes']['class'][] = 'loading-required';
-	
+
 	$form['field_loading_adwf'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">ADWF</span><br/><span class="label-unit">(&#x2113;/p/d)</span>'),
@@ -1345,7 +1345,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_adwf']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_cod'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
@@ -1354,7 +1354,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_cod']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_bod5'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">BOD5</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
@@ -1363,7 +1363,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_bod5']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_totn'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">TotN</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
@@ -1372,7 +1372,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_totn']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_totp'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">TotP</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
@@ -1381,7 +1381,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_totp']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_tss'] = array(
 		'#type' => 'textfield',
 		'#title' => t('<span class="label-name">TSS</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
@@ -1390,7 +1390,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//'#suffix' => '</div>',
 	);
 	$form['field_loading_tss']['#attributes']['class'][] = 'form-loading-attribute';
-	
+
 	$form['field_loading_weight'] = array(
 		'#type' => 'textfield',
 		'#title' => t('%'),
@@ -1402,7 +1402,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	$form['field_loading_weight']['#attributes']['class'][] = 'form-loading-attribute';
 	$form['field_loading_weight']['#attributes']['min'][] = 0;
 	$form['field_loading_weight']['#attributes']['max'][] = 100;
-	
+
 	//$form['actions']['submit']['#prefix'] = '<div class="col-sm-2" id="loading-actions-container">'; //'<div id="loading-save-container">';
 	//$form['actions']['submit']['#suffix'] = '</div>';
 	$form['actions']['submit']['#type'] = 'submit';
@@ -1431,7 +1431,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 		//$form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
 		//$form['actions']['submit']['#attributes']['id'] = 'edit-submit';
 	}
-	
+
 	return $form;
 
 }
@@ -1443,7 +1443,7 @@ function wamex_loading_form_submit($form, &$form_state){
 	$commands = array();
 	drupal_get_messages();
 
-	if(!empty($errors)) { 
+	if(!empty($errors)) {
 		$selector = '#project-messages';
 		$error_variables = array(
 			'items'=> $errors,
@@ -1457,7 +1457,7 @@ function wamex_loading_form_submit($form, &$form_state){
 		return array('#type' => 'ajax', '#commands' => $commands);
 	}
 	else {
-	
+
 		if (empty($form_state['values']['nid'])){
 			// add new node
 			global $user;
@@ -1479,13 +1479,13 @@ function wamex_loading_form_submit($form, &$form_state){
 				node_save($newnode);
 				$success = TRUE;
 				drupal_set_message(t('Loading <b>'.$newnode->title.'</b> created.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
 				drupal_set_message(t('New Loading not saved.<br/>'.$e->getMessage()),'error');
 			}
-		} 
+		}
 		else {
 			// update existing node
 			$node = node_load($form_state['values']['nid']);
@@ -1505,7 +1505,7 @@ function wamex_loading_form_submit($form, &$form_state){
 				node_save($node);
 				$success = TRUE;
 				drupal_set_message(t('Loading <b>'.$node->title.'</b> updated.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -1519,24 +1519,24 @@ function wamex_loading_form_submit($form, &$form_state){
 			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
-		} 
-		
+		}
+
 	}
 	//$node->field_loading_attributes[LANGUAGE_NONE][0]['field_loading_'][LANGUAGE_NONE] = $form_state['input']['field_loading_'];
 }
 
 function wamex_loading_submit_handler($form, &$form_state) {
   if ($form_state['node']->nid) {
-  
-    
+
+
     //popup_element(t(''), t("Your project has been submitted"));
-	
+
 	//drupal_set_message(t('1'.$form_state['redirect']));
 
 	$form_state['redirect'] = array('node/'.$form_state['input']['field_project_und'], array('fragment'=>'loading-list'));
 	//$form_state['redirect'] = 'node/'.$form_state['node']->field_project[LANGUAGE_NONE][0]['target_id'];
 	//drupal_set_message(t('2.'.print_r($form_state['redirect'])));
-	
+
 					$path =  array(
 						t('thank-you'),
 						array(
@@ -1545,7 +1545,7 @@ function wamex_loading_submit_handler($form, &$form_state) {
 							),
 						),
 					);
-	
+
 	//$form_state['redirect'] = $path;
   }
 }
@@ -1577,7 +1577,7 @@ function wamex_loading_delete_confirm_submit($form, &$form_state){
 			$success = FALSE;
 			drupal_set_message(t('Could not delete the loading.'),'error');
 		}
-	
+
     $form_state['redirect'] = array($form['actions']['cancel']['#href'],array('fragment'=>'loading-list'));
     return;
   }
@@ -1662,7 +1662,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	$form['#attributes']['name'] = 'wamex-project-form';
 	//$form['#prefix'] = '<div id="project-forms-container" class="container-fluid">';
 	//$form['#suffix'] = '</div>';
-	
+
 	//$form['#attributes']['data-toggle'] = 'validator';
 	//$form['#attributes']['role'] = 'form';
 	$form['title'] = array(
@@ -1714,7 +1714,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	}
 	// load all terms
 	$currency_terms2 = taxonomy_term_load_multiple($currency_tids);
-	
+
 	// add terms to Drupal.settings
 	// access in JS via Drupal.settings.taxonomy.currency
 	drupal_add_js(array('taxonomy' => array('currency' => $currency_terms2)), 'setting');
@@ -1771,10 +1771,26 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#suffix' => '</div></div>',
 	);
 
+  $form['field_land_area'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Land Area <span class="label-unit">(m<sup>2</sup>)</span>'),
+		'#default_value' => $field_land_area,
+		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
+		'#suffix' => '</div></div>',
+  );
+
+  $form['field_population_density'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Population Density <span class="label-unit">(persons/m<sup>2</sup>)</span>'),
+		'#default_value' => $field_land_cost,
+		'#prefix' => '<div class="row hidden"><div class="col-sm-12 col-md-7 col-lg-7">',
+		'#suffix' => '</div></div>',
+  );
+
 	// field_discount_rate_reticulation
 	// field_om_pct_reticulation
 	// field_design_horizon_reticulatn
-	
+
 	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
 	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
 	$effluent_opts = $effluent_terms;
@@ -1786,12 +1802,12 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	}
 	// load all terms
 	$effluent_terms2 = taxonomy_term_load_multiple($effluent_tids);
-	
+
 	// add terms to Drupal.settings
 	// access in JS via Drupal.settings.taxonomy.effluent
 	drupal_add_js(array('taxonomy' => array('effluentStandards' => $effluent_taxonomy_tree)), 'setting');
 
-	
+
 	$form['field_effluent_standard'] = array(
 		'#title' => t('Effluent Standard'),
 		'#type' => 'select',
@@ -1800,7 +1816,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<hr/><div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
 	);
-	
+
 	$form['field_cod'] = array(
 		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/l)</span>'),
 		'#type' => 'textfield',
@@ -1840,7 +1856,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="effluent-standard-attribute col-sm-10 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-2 col-lg-offset-0">',
 		'#suffix' => '</div></div>',
 	);
-  
+
   // land area
   /*$form['field_land_area'] = array(
     '#title' => t('<span class="label-name">Land Area</span> <span class="label-unit">(m<sup>2</sup>)</span>'),
@@ -1849,7 +1865,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		//'#suffix' => '</div></div>',
   );
-  
+
   // population density
   $form['field_population_density'] = array(
     '#title' => t('<span class="label-name">Population Density</span><br/><span class="label-unit">(persons per m<sup>2</sup>)</span>'),
@@ -1858,10 +1874,10 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		//'#suffix' => '</div></div>',
   );
-  
+
   hide($form['field_land_area']);
   hide($form['field_population_density']);*/
- 
+
 
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
@@ -1874,8 +1890,8 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	//$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
-	
-  
+
+
 	if ($nid){
 		// edit existing
 		$form['nid']['#type'] = 'hidden';
@@ -1885,9 +1901,9 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		// add new
 		$form['actions']['submit']['#value'] = t('Save Project');
 	}
-	
+
 	return $form;
-	
+
 }
 
 function wamex_project_retic_form($form, &$form_state, $nid = null){
@@ -1916,7 +1932,7 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
 		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		//'#suffix' => '</div></div>',
   );
-  
+
   // population density
   /*$form['field_population_density'] = array(
     '#title' => t('<span class="label-name">Population Density</span><br/><span class="label-unit">(persons per m<sup>2</sup>)</span>'),
@@ -1925,7 +1941,7 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
 		//'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		//'#suffix' => '</div></div>',
   );*/
-  
+
   $field_sewerage_type_info = field_info_field('field_sewerage_type');
   $field_sewerage_type_options = list_allowed_values($field_sewerage_type_info);
   $form['field_sewerage_type'] = array(
@@ -1934,13 +1950,13 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
     '#options' => $field_sewerage_type_options,
     '#default_value' => $field_sewerage_type,
   );
-  
+
   $form['field_pipe_length'] = array(
     '#title' => t('<span class="label-name">Pipe Length</span><br/><span class="label-unit">(m)</span>'),
     '#type' => 'textfield',
     '#default_value' => $field_pipe_length,
-  ); 
-  
+  );
+
   $field_terrain_type_info = field_info_field('field_terrain_type');
   $field_terrain_type_options = list_allowed_values($field_terrain_type_info);
   $form['field_terrain_type'] = array(
@@ -1949,7 +1965,7 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
     '#options' => $field_terrain_type_options,
     '#default_value' => $field_terrain_type,
   );
-  
+
 	$form['actions']['submit']['#type'] = 'button';
 	$form['actions']['submit']['#id'] = 'edit-retic-submit';
   $form['actions']['submit']['#value'] = t('<span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Save');
@@ -1957,8 +1973,8 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_retic_form_submit';
 	$form['nid']['#type'] = 'hidden';
 	$form['nid']['#value'] = $nid;
-  
-  return $form;  
+
+  return $form;
 }
 
 function wamex_project_retic_form_submit($form, &$form_state){
@@ -1967,7 +1983,7 @@ function wamex_project_retic_form_submit($form, &$form_state){
 	$errors = form_get_errors();
 	$commands = array();
 	drupal_get_messages();
-	
+
 	if(!empty($errors)){
 		$selector = '#retic-messages';
 		$error_variables = array(
@@ -1980,9 +1996,10 @@ function wamex_project_retic_form_submit($form, &$form_state){
 		return array('#type' => 'ajax', '#commands' => $commands);
 	}
 	else {
-		
+
 		if (!empty($form_state['values']['nid'])){
 			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
+			//drupal_set_message('form_state x field_pipe_length:'.print_r($form_state['input']['field_pipe_length'],1),'status');
 			$node = node_load($form_state['values']['nid']);
 			$node->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
 			$node->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
@@ -1994,7 +2011,7 @@ function wamex_project_retic_form_submit($form, &$form_state){
 				node_save($node);
 				$success = TRUE;
 				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -2005,12 +2022,12 @@ function wamex_project_retic_form_submit($form, &$form_state){
 			drupal_set_message('Error saving Project!','error');
 			$success = FALSE;
 		}
-		
+
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'reticulation'));
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
-		} 
+		}
 	}
 }
 
@@ -2025,7 +2042,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 		$field_totn = (is_null($node->field_loading_totn) ? NULL : $node->field_loading_totn['und'][0]['value']);
 		$field_totp = (is_null($node->field_loading_totp) ? NULL : $node->field_loading_totp['und'][0]['value']);
 		$field_tss = (is_null($node->field_loading_tss) ? NULL : $node->field_loading_tss['und'][0]['value']);
-	} 
+	}
 	else {
 		$node = NULL;
 		$field_effluent_standard = '';
@@ -2035,11 +2052,11 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 		$field_totp = 0;
 		$field_tss = 0;
 	}
-	
+
 	$effluent_vocab = taxonomy_vocabulary_machine_name_load('effluent_standard');
 	$effluent_terms  = wamex_get_selectbox_contents($effluent_vocab->vid);
 	$effluent_opts = $effluent_terms;
-	
+
 	$form['field_effluent_standard'] = array(
 		'#title' => t('Effluent Standard'),
 		'#type' => 'select',
@@ -2047,7 +2064,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	);
 		$form['field_effluent_standard']['#attributes']['class'][] = "input-sm";
 
-	
+
 	$form['field_cod'] = array(
 		'#title' => t('<span class="label-name">COD</span><br/><span class="label-unit">(mg/&#x2113;)</span>'),
 		'#type' => 'textfield',
@@ -2083,7 +2100,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	);
 	$form['field_tss']['#attributes']['class'][] = "input-sm";
 
-	
+
 	//$form['field_effluent_standard']['#prefix'] = '<div class="col-sm-6">';
 	//$form['field_effluent_standard']['#suffix'] = '</div>';
 	$form['field_effluent_standard']['#attributes']['id'] = 'project-effluent-standard';
@@ -2119,7 +2136,7 @@ function wamex_project_effl_form($form, &$form_state, $nid = null){
 	//$form['actions']['submit']['#suffix'] = '</div>';
 	$form['nid']['#type'] = 'hidden';
 	$form['nid']['#value'] = $nid;
-	
+
 	return $form;
 }
 
@@ -2129,7 +2146,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 	$errors = form_get_errors();
 	$commands = array();
 	drupal_get_messages();
-	
+
 	if(!empty($errors)){
 		$selector = '#effluent-standards-messages';
 		$error_variables = array(
@@ -2144,7 +2161,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 		return array('#type' => 'ajax', '#commands' => $commands);
 	}
 	else {
-		
+
 		if (!empty($form_state['values']['nid'])){
 			//drupal_set_message('form_state:'.print_r($form_state['input'],1),'status');
 			$node = node_load($form_state['values']['nid']);
@@ -2159,7 +2176,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 				node_save($node);
 				$success = TRUE;
 				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -2170,7 +2187,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 			drupal_set_message('Error saving Project!','error');
 			$success = FALSE;
 		}
-		
+
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'standards'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'standards'));
@@ -2178,7 +2195,7 @@ function wamex_project_effl_form_submit($form, &$form_state){
 			$commands[] = ctools_ajax_command_reload();
 			//$commands[] = ctools_ajax_command_redirect('node/'.$form_state['values']['nid'],0,array('fragment'=>'standards'));
 			return array('#type' => 'ajax', '#commands' => $commands);
-		} 
+		}
 	}
 }
 
@@ -2190,7 +2207,7 @@ function wamex_project_form_submit($form, &$form_state){
 	drupal_get_messages();
 
 	// check for form errors
-	if(!empty($errors)) { 
+	if(!empty($errors)) {
 		// if there are errors, display them in the container with id=$selector
 		$selector = '#dashboard-messages';
 		$error_variables = array(
@@ -2203,7 +2220,7 @@ function wamex_project_form_submit($form, &$form_state){
 		//$form_state['redirect'] = 'dashboard';
     $commands[] = ajax_command_html($selector, '<div class = "error-msgs">' .theme('status_messages'). '</div>');
 		return array('#type' => 'ajax', '#commands' => $commands);
-	} 
+	}
 	else {
 		// if there are no errors, attempt to save the node
 		//drupal_set_message('form has no errors','status');
@@ -2235,7 +2252,7 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$newnode->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
       $newnode->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
-      $newnode->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
+      //$newnode->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
 			// field_discount_rate_reticulation
 			// field_om_pct_treatment
 			// field_om_pct_reticulation
@@ -2247,7 +2264,7 @@ function wamex_project_form_submit($form, &$form_state){
 				node_save($newnode);
 				$success = TRUE;
 				drupal_set_message(t('Project <b>'.$newnode->title.'</b> created.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -2288,7 +2305,7 @@ function wamex_project_form_submit($form, &$form_state){
 				node_save($node);
 				$success = TRUE;
 				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
-			} 
+			}
 			catch (Exception $e) {
 				// Do your error handling here.
 				$success = FALSE;
@@ -2303,7 +2320,7 @@ function wamex_project_form_submit($form, &$form_state){
 				$redir = 'dashboard';
 				$form_state['redirect'] = array($redir);
 				$commands[] = ctools_ajax_command_reload();
-			} 
+			}
 			else {
 				$redir = 'node/'.$form_state['build_info']['args'][0];
 				$form_state['redirect'] = array($redir);
@@ -2311,7 +2328,7 @@ function wamex_project_form_submit($form, &$form_state){
 			}
 			//drupal_set_message($redir);
 			return array('#type' => 'ajax', '#commands' => $commands);
-		} 
+		}
 	}
 	//return;
 }
@@ -2344,7 +2361,7 @@ function wamex_project_delete_confirm_submit($form, &$form_state){
 			$success = FALSE;
 			drupal_set_message(t('Could not delete the project.'),'error');
 		}
-	
+
     $form_state['redirect'] = 'dashboard';
     return;
   }
@@ -2373,9 +2390,9 @@ function wamex_project_popeq_form($form, &$form_state){
 			'#attributes' => array('class'=>array('popeq-parameter-radio','popeq-parameter-radio-'.$popeq_parameter)),
 		);
 	}
-	
+
 	//$form['popeq_parameter'][LANGUAGE_NONE][0]['value']['#default_value'] = array('cod');
-	
+
 	$form['popeq_pol']['pol-cod'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2384,7 +2401,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-cod']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-cod']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-cod']['#attributes']['min'] = 0;
-	
+
 	$form['popeq_pol']['pol-bod5'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2393,7 +2410,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-bod5']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-bod5']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-bod5']['#attributes']['min'] = 0;
-	
+
 	$form['popeq_pol']['pol-totn'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2402,7 +2419,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-totn']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-totn']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-totn']['#attributes']['min'] = 0;
-	
+
 	$form['popeq_pol']['pol-totp'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2411,7 +2428,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-totp']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-totp']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-totp']['#attributes']['min'] = 0;
-	
+
 	$form['popeq_pol']['pol-tss'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2420,7 +2437,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-tss']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-tss']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-tss']['#attributes']['min'] = 0;
-	
+
 	$form['popeq_pol']['pol-volc'] = array(
 		'#type' => 'textfield',
 		'#title'=> '',
@@ -2429,7 +2446,7 @@ function wamex_project_popeq_form($form, &$form_state){
 	$form['popeq_pol']['pol-volc']['#attributes']['class'][] = 'popeq-parameter';
 	$form['popeq_pol']['pol-volc']['#attributes']['class'][] = 'input-sm';
 	$form['popeq_pol']['pol-volc']['#attributes']['min'] = 0;
-	
+
 	return $form;
 }
 
@@ -2461,7 +2478,7 @@ function wamex_user_login(&$edit, $account)
 		//drupal_set_message('ito','error');
 		//drupal_set_message(print_r($_GET,1),'error');
 		//drupal_set_message(print_r($_POST,1),'error');
-		
+
 	}*/
 }
 
@@ -2476,7 +2493,7 @@ function wamex_user_login(&$edit, $account)
 		}
 		$crumbs .= '</ul>';
 	}
-		
+
 	$crumbs .= '<pre>'.print_r($variables,1).'</pre>';
 	return $crumbs;
 }*/
