@@ -2,11 +2,81 @@
  * This file should get overwritten if Method 1 is used. If Method 2 is chosen,
  * remove this comment and start adding your styles to this file.
  */
- 
-#wamex-project-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
-#project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
-#project-node-form-ajax div.tabbable.tabs-left.vertical-tabs.clearfix, 
-#loading-node-form div.tabbable.tabs-left.vertical-tabs.clearfix, 
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+/*#navbar {
+  border: none !important;
+  border-radius: 0px !important;
+}*/
+
+body, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Open Sans', sans-serif;
+}
+
+body.front {
+  padding-top: 51px !important;
+}
+
+#navbar > div > div.navbar-header > a.logo.navbar-btn.pull-left > img {
+  width: 32px;
+  height: 32px;
+}
+
+body.front > div.main-container.container > div > section {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+body.front > div.main-container.container {
+  margin-left: 0px;
+  margin-right: 0px;
+  width: 100%;
+}
+
+#wamex-jumbotron {
+  color: #ffffff;
+  background-color: #1995dc;
+  background-color: #0b4160;
+  border: none !important;
+  border-radius: 0px !important;
+  font-size: 15px;
+  padding: 40px 40px 40px 40px;
+ /* background-size: 100%;
+  background-image: url('/wamex/sites/default/files/wamex/ww_bg_2.jpg');
+  background-repeat: no-repeat;*/
+}
+
+#wamex-jumbotron li {
+  margin-bottom: -10px;
+}
+
+#wamex-jumbotron h5 {
+  color: #ffffff;
+}
+
+#wamex-jumbotron #wamex-logotype img {
+  width: 395px;
+}
+
+#wamex-jumbotron .field-item {
+  display: inline-block;
+}
+
+#wamex-try,
+#wamex-login
+{
+  width: 220px !important;
+  float: left;
+}
+
+#about-actions {
+  margin-top: 20px;
+}
+
+#wamex-project-form div.tabbable.tabs-left.vertical-tabs.clearfix,
+#project-node-form div.tabbable.tabs-left.vertical-tabs.clearfix,
+#project-node-form-ajax div.tabbable.tabs-left.vertical-tabs.clearfix,
+#loading-node-form div.tabbable.tabs-left.vertical-tabs.clearfix,
 #edit-body-und-0-format {
 	display: none;
 }
@@ -58,7 +128,7 @@
 	body.page-project-edit #project-effluent-standard-values label,  {
 	 min-width: 170px;
 	 display: inline-block !important;
- }	
+ }
 }
 
 #wamex-project-form .form-item-body > .form-textarea-wrapper {
@@ -76,7 +146,7 @@
 
 #wamex-project-form .project-effluent-attribute {
 	padding-right: 0px;
-	
+
 }
 #wamex-project-form #effluent-standard-name select#project-effluent-standard,
 #wamex-project-form .project-effluent-attribute input.form-control {
@@ -239,8 +309,8 @@ body.node-type-project input.form-loading-attribute {
 	padding: 2px 2px 2px 2px !important;
 }
 
-body.node-type-project #wamex-loading-form-fields, 
-body.node-type-project #wamex-loading-form-actions 
+body.node-type-project #wamex-loading-form-fields,
+body.node-type-project #wamex-loading-form-actions
 {
 	margin-top: 15px;
 }
@@ -268,7 +338,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 
 /*#view-project-loadings tbody #form-wrapper-div
 #view-project-loadings div.form-item-title label,
-#view-project-loadings div.form-item-field-loading-type label 
+#view-project-loadings div.form-item-field-loading-type label
  */
 #view-project-loadings thead th.views-field-nid,
 #view-project-loadings tbody td.views-field-nid
@@ -333,7 +403,7 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 #wamex-loading-form .form-item-field-loading-weight label,
 #wamex-loading-form .form-item-title label {
 	color: #c00;
-	
+
 }
 
 #project-info-title-container {
@@ -542,7 +612,7 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 .tech-display-controls label {
 	font-size: 12px;
 	margin: 4px 0px 0px 4px;
-} 
+}
 #table-scenario-form > tbody > tr > td.form-scenario-label,
 #table-popeq > tbody > tr > td.popeq-row-header,
 #table-retic-values > tbody > tr > td.retic-row-header
@@ -654,11 +724,11 @@ td.tech-attributes.tech-landcost,*/
 	media queries for 991px and below
 */
 @media(max-width:991px) {
-	
+
 	td {
 		font-size: 11px;
 	}
-	
+
 
 }
 
@@ -672,7 +742,7 @@ td.tech-attributes.tech-landcost,*/
 .scenario-param-value-display {
 	/*border: 1px dotted red;*/
 	/*float: right;*/
-	
+
 }
 
 .scenario-required,
@@ -749,7 +819,7 @@ td.tech-attributes.tech-landcost,*/
 
 
 @media print
-{    
+{
     .no-print, .no-print *
     {
         display: none !important;

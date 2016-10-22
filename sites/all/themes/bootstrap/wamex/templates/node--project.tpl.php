@@ -101,13 +101,14 @@
     //print "<pre style='display: block; '>".print_r($techData['args'],1)."</pre>";
 	}
 //}
+  //print "<pre style='display: block; '>".print_r($vars,1)."</pre>";
 
 
-$view_loading = views_get_view('loading');
-$view_loading->set_display('block');
+  $view_loading = views_get_view('loading');
+  $view_loading->set_display('block');
 
-$view_scenario = views_get_view('scenario');
-$view_scenario->set_display('block');
+  $view_scenario = views_get_view('scenario');
+  $view_scenario->set_display('block');
 
 ?>
 <div id="project-page-<?php print $nid; ?>" class="panel-group" role="tablist" aria-multiselectable="false">
@@ -464,7 +465,7 @@ $view_scenario->set_display('block');
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label id="retic-label-terrain-type">Type of Terrain</label>'), 'class'=>array('retic-row-header')),
             array('data'=>$retic_form['field_terrain_type']),
-            array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : t('asdfasd'))),
+            array('data' => ($editProjectPerm ? $retic_form['actions']['submit'] : NULL)),
           );
 
           /* $retic_rows[]['data'] = array(

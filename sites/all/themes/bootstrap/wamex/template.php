@@ -5,9 +5,9 @@
  * template.php
  */
 
- 
+
 function wamex_theme($variables) {
-	
+
 	return array(
 		'project_node_form' => array(
 			'arguments' => array('form' => NULL),
@@ -33,9 +33,33 @@ function wamex_preprocess_html(&$variables){
     //drupal_add_css(libraries_get_path('leaflet') . '/leaflet.css', array('type'=>'file','group'=>CSS_DEFAULT));
     //drupal_add_js(libraries_get_path('leaflet') . '/leaflet.js');
 	} /*else {
-		
+
 		drupal_set_message(print_r($variables),'error');
 	}*/
+}
+
+
+function wamex_menu_link__main_menu(array $variables) {
+  $element = $variables['element'];
+  $sub_menu = '';
+
+	$element['#localized_options']['html'] = FALSE;
+
+	global $user;
+	if ($element['#title'] == 'My Projects'){
+		if ($user->uid == 0 || arg(0) == "dashboard") {
+			$element['#attributes']['class'][] = 'element-invisible';
+			//$element['#title'] = t('Log out');
+			//$element['#href'] = 'user/logout';
+      //hide($element);
+    }
+	}
+
+  if ($element['#below']) {
+    $sub_menu = drupal_render($element['#below']);
+  }
+  $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
 }
 
 function wamex_preprocess_views_view(&$variables) {
@@ -67,22 +91,22 @@ function wamex_form_alter(&$form, &$form_state, $form_id) {
 			$form['title']['#title'] = t('Project Name');
 			$form['body'][LANGUAGE_NONE][0]['#format'] = 'plain_text';
 			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
-			
+
 			hide($form['body'][LANGUAGE_NONE][0]['summary']);
 			//echo '<pre>'.print_r($form,1).'</pre>';
 			break;
 		case 'loading_node_form':
 		case 'wamex_loading_form':
 			//$form['actions']['submit']['#submit'][] = 'wamex_loading_submit_handler';
-			if (isset($form['field_loading_project'][LANGUAGE_NONE])) { 
+			if (isset($form['field_loading_project'][LANGUAGE_NONE])) {
 				drupal_set_title('Create Loading - '.$form['field_loading_project']['und']['#options'][1]);
 			}
 			$form['body'][LANGUAGE_NONE][0]['#rows'] = 5;
 			hide($form['body'][LANGUAGE_NONE][0]['summary']);
 			break;
-	
+
 	}
-	
+
 	return $form;
 }
 

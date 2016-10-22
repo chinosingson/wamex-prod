@@ -92,11 +92,11 @@
 			}
 
       function showTooltip(element, message){
-        element.attr('title',message).tooltip({'container':'body'}).tooltip('fixTitle').tooltip('show');
+        element.tooltip({title: message, 'container':'body'}).tooltip('fixTitle').tooltip('show');
       }
 
       function addTooltip(element, message){
-        element.attr('title',message).tooltip({'container':'body'}).tooltip('fixTitle');
+        element.tooltip({title: message,'container':'body', delay: {show: 1500, hide: 100}}).tooltip('fixTitle');
       }
 
 			// alter project input field types
