@@ -89,14 +89,19 @@
 						$('#edit-field-tss').val((!nodeTSS) ?  'N/A' : nodeTSS);
 					}
 				}
+        //return;
 			}
 
       function showTooltip(element, message){
-        element.tooltip({title: message, 'container':'body'}).tooltip('fixTitle').tooltip('show');
+        //console.log(element);
+        //console.log(message);
+        element.tooltip('destroy');
+        element.tooltip({'title': message, 'container':'body'}).tooltip('show');
       }
 
       function addTooltip(element, message){
-        element.tooltip({title: message,'container':'body', delay: {show: 1500, hide: 100}}).tooltip('fixTitle');
+        element.tooltip('destroy');
+        element.tooltip({'title': message,'container':'body', delay: {show: 1500, hide: 100}});
       }
 
 			// alter project input field types
@@ -173,9 +178,10 @@
 
         addTooltip($('#project-effluent-standard'), 'Effluent Standard. The base standard to which efficiencies are compared.');
 				$('#project-effluent-standard, #edit-field-effluent-standard').unbind('change').on('change',function(event){
+          console.log($(this));
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
           // display save tooltip on change
-          showTooltip($('#edit-effl-submit'), 'You\'ve selected a new Effluent Standard. Click here to save your changes.');
+          showTooltip($('#edit-effl-submit'), "You've selected a new Effluent Standard. Click here to save your changes.");
 				});
 
 				$('#table-loading-tech').removeClass('table');
@@ -728,6 +734,7 @@
 					var scenarioNodeId = idTokens[2];
 					var rowId = '#scenario-row-'+scenarioNodeId;
           Drupal.settings.node.values.scenario = { 'selected': scenarioNodeId };
+          showTooltip($('#show-tech-'+Drupal.settings.node.values.nid),'You\'ve selected a new Total Population Equivalent. Click here to refresh this list.');
 				})
 
 
@@ -1211,6 +1218,11 @@
         var landArea = $('#edit-field-land-area').val();
         var populationDensity = $('#edit-field-population-density').val();
         var sewerageType = $('#edit-field-sewerage-type').val();
+        if (!sewerageType) {
+          sewerageType = "Conventional";
+        }
+
+        console.log(sewerageType);
         var terrainType = $('#edit-field-terrain-type').val();
 
         addTooltip($('#retic-label-sewerage-type'),'The type of sewerage to be implemented for this project.');

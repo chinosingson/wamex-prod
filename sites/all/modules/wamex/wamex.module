@@ -284,6 +284,7 @@ function make_range($value,$digits){
 
 function wamex_get_tech_data($techArgs){
   global $debug;
+  global $user;
   //$debug = TRUE;
   $aryTechArgs = explode('&',$techArgs);
   $tech_json = array();
@@ -498,10 +499,12 @@ function wamex_get_tech_data($techArgs){
   $output .= "<pre class='col-sm-6'>TECH_VALUES (JSON)<br/>".json_encode($tech_values, JSON_PRETTY_PRINT)."</pre>";
   //$node = node_load(107);
   $node = node_load($node_id);
+
+  // add user login condition!
   if ($node){
     $output .= "node (".$node_id.") loaded<br/>";
     $node->field_technology_data[LANGUAGE_NONE][0]['value'] = json_encode($tech_values);
-    node_save($node);
+    if ($user->uid!=0) { node_save($node); }
     $output .= "hello: ".print_r($node->field_technology_data[LANGUAGE_NONE][0]['value'],1)."<br/>";
     //$output .= "merong node: ".$node_id."<br/>";
   } /*else {
@@ -543,7 +546,7 @@ function wamex_display_tech($techs, $static = null){
 	//$output .= "<pre>".print_r($techInfo['table'][0],1)."</pre>";
 	//$output .= "<pre>".print_r($scenario_sorted_techs,1)."</pre>";
 
-	$output .= '<div class="table-responsive">';
+	//$output .= '<div class="table-responsive">';
 	if ($count_techs>0){
 		$output .= "<div class=\"row\">";
 		$output .= "<div class=\"col-sm-12 col-md-3 col-lg-3\" id=\"tech-count\">Displaying ".$count_techs." Technology options.<br/>Population Equivalent: ".number_format($str_popeq,2)."</div>";
@@ -607,17 +610,29 @@ function wamex_display_tech($techs, $static = null){
       $tot_inv_range = $val['totInv'];
       $tot_inv_range_per_capita = $val['totInvPC'];
 
-      $ary_values['name'] = array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$tech_id.'">'.$tech_name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap'));
+      // $ary_values['name'] = array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$tech_id.'">'.$tech_name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'), 'nowrap'=>array('nowrap'));
+      // $ary_values['score'] = array('data'=>number_format($score_value,2), 'class'=>array('tech-attributes','tech-score'));
+      // $ary_values['capex'] = array('data'=>$capex_range,'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
+      // $ary_values['opex'] = array('data'=>$opex_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
+      // $ary_values['capex_pc'] = array('data'=>$capex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
+      // $ary_values['opex_pc'] = array('data'=>$opex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
+      // $ary_values['landreq'] = array('data'=>$landreq_display, 'class'=>array('tech-attributes','tech-financial-attr','tech-landreq'));
+      // $ary_values['landcost'] = array('data'=>$land_cost_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost-pe','tech-landcost'));
+      // $ary_values['landcost_pc'] = array('data'=>$land_cost_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-landcost-pc','tech-landcost'));
+      // $ary_values['tot_inv'] = array('data'=>$tot_inv_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr', 'tech-totinv-pe','tech-totinv'));
+      // $ary_values['tot_inv_pc'] = array('data'=>$tot_inv_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-totinv-pc','tech-totinv'));
+
+      $ary_values['name'] = array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$tech_id.'">'.$tech_name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'));
       $ary_values['score'] = array('data'=>number_format($score_value,2), 'class'=>array('tech-attributes','tech-score'));
-      $ary_values['capex'] = array('data'=>$capex_range,'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
-      $ary_values['opex'] = array('data'=>$opex_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
-      $ary_values['capex_pc'] = array('data'=>$capex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
-      $ary_values['opex_pc'] = array('data'=>$opex_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
+      $ary_values['capex'] = array('data'=>$capex_range,'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
+      $ary_values['opex'] = array('data'=>$opex_range, 'class'=>array('tech-attributes','tech-financial-attr','tech-opex-pe','tech-opex'));
+      $ary_values['capex_pc'] = array('data'=>$capex_range_per_capita, 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-capex-pc','tech-capex'));
+      $ary_values['opex_pc'] = array('data'=>$opex_range_per_capita, 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-opex-pc','tech-opex'));
       $ary_values['landreq'] = array('data'=>$landreq_display, 'class'=>array('tech-attributes','tech-financial-attr','tech-landreq'));
-      $ary_values['landcost'] = array('data'=>$land_cost_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost-pe','tech-landcost'));
-      $ary_values['landcost_pc'] = array('data'=>$land_cost_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-landcost-pc','tech-landcost'));
-      $ary_values['tot_inv'] = array('data'=>$tot_inv_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr', 'tech-totinv-pe','tech-totinv'));
-      $ary_values['tot_inv_pc'] = array('data'=>$tot_inv_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-totinv-pc','tech-totinv'));
+      $ary_values['landcost'] = array('data'=>$land_cost_range, 'class'=>array('tech-attributes','tech-financial-attr','tech-landcost-pe','tech-landcost'));
+      $ary_values['landcost_pc'] = array('data'=>$land_cost_range_per_capita, 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-landcost-pc','tech-landcost'));
+      $ary_values['tot_inv'] = array('data'=>$tot_inv_range, 'class'=>array('tech-attributes','tech-financial-attr', 'tech-totinv-pe','tech-totinv'));
+      $ary_values['tot_inv_pc'] = array('data'=>$tot_inv_range_per_capita, 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-totinv-pc','tech-totinv'));
 
       $cod_value = $val['cod'];
       $bod5_value = $val['bod5'];
@@ -647,6 +662,8 @@ function wamex_display_tech($techs, $static = null){
 
 		$tblAttributes = array();
 		$tblAttributes['id'] = 'table-loading-tech';
+		$tblAttributes['class'][] = 'table';
+		$tblAttributes['class'][] = 'table-condensed';
 		$tblAttributes['class'][] = 'panel-body';
 
 		$output .= theme('table', array('header' => $header, 'rows' =>$rows, 'attributes'=>$tblAttributes));
@@ -656,7 +673,7 @@ function wamex_display_tech($techs, $static = null){
 	}
 	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
   //$output .= theme('pager', NULL, 50, 0);
-	$output .= '</div>';
+	//$output .= '</div>';
 	$output .= '</div>';
     //$commands[] = ajax_command_settings($tech_values, TRUE);
 
@@ -1946,7 +1963,7 @@ function wamex_project_retic_form($form, &$form_state, $nid = null){
   $field_sewerage_type_options = list_allowed_values($field_sewerage_type_info);
   $form['field_sewerage_type'] = array(
     '#title' => t('<span class="label-name">Type of Sewerage</span>'),
-    '#type' => 'select',
+    '#type' => 'hidden',
     '#options' => $field_sewerage_type_options,
     '#default_value' => $field_sewerage_type,
   );
@@ -2025,7 +2042,7 @@ function wamex_project_retic_form_submit($form, &$form_state){
 
 		if ($success){
 			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'reticulation'));
-			drupal_set_message('form_state:<pre>'.print_r($form_state,1).'</pre>','status');
+			//drupal_set_message('form_state:<pre>'.print_r($form_state,1).'</pre>','status');
 			$commands[] = ctools_ajax_command_reload();
 			return array('#type' => 'ajax', '#commands' => $commands);
 		}

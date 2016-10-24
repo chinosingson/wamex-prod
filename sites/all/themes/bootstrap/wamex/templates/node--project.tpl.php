@@ -253,6 +253,9 @@
 					);
 					$effl_rows = array();
 					$effl_form['field_effluent_standard']['#title'] = null;
+          if (!$user->uid){
+            $effl_form['field_effluent_standard']['#attributes']['disabled'][] = "disabled";
+          }
 					$effl_form['field_cod']['#title'] = null;
 					$effl_form['field_bod5']['#title'] = null;
 					$effl_form['field_totn']['#title'] = null;
@@ -269,6 +272,8 @@
 						//array('data' => t('&nbsp;')),
 						//array('data' => t('&nbsp;')),
 					);
+
+
 					$effl_rows[0]['id'] = 'effluent-standard-values';
 					$effl_output .= theme('table', array('header' => $effl_header, 'rows' =>$effl_rows, 'attributes'=>array('id'=>'table-effl-standards')));
 					$effl_output .= drupal_render($effl_form['form_build_id']);
@@ -294,6 +299,20 @@
 				<?php
 					$popeq_output = "";
 					$popeq_form = drupal_get_form('wamex_project_popeq_form',$nid);
+          if (!$user->uid){
+            $popeq_form['popeq_parameter']['COD']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_parameter']['BOD5']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_parameter']['TotN']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_parameter']['TotP']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_parameter']['TSS']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_parameter']['Vol/C']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-cod']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-bod5']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-totn']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-totp']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-tss']['#attributes']['disabled'][] = "disabled";
+            $popeq_form['popeq_pol']['pol-volc']['#attributes']['disabled'][] = "disabled";
+          }
 					$popeq_rows[0] = array(
 						array('data' => t(''),'class'=>array('col-md-3','popeq-row-header', 'popeq-row-param')),
 						array('data' => $popeq_form['popeq_parameter']['COD'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-cod','popeq-cod','col-cod')),
@@ -381,9 +400,8 @@
 			<div id="tech-title-container">
 				<h3 id="loading-tech-title" class="project-section-title panel-title" ><a href="#collapse-tech" name="technologies" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-tech"><span id="toggle-tech" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Suitable Technologies</a></h3>
 				<button class="btn btn-xs btn-default section-help" id="tech-help">?</button>
-				<!--a href="<?php print base_path() ?>wamex-ajax-tech/nojs" class="btn btn-primary btn-sm btn-ajax-tech pull-right use-ajax" id="make-ajax-<?php print $nid; ?>"><span class="glyphicon glyphicon-asterisk"></span>&nbsp;AJAX!</a-->
 				<!--button class="btn btn-primary btn-sm btn-make-json pull-right" id="make-json-<?php print $nid; ?>"><span class="glyphicon glyphicon-floppy-save"></span>&nbsp;Make JSON</button-->
-				<button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button>
+				<?php if ($editProjectPerm && $user->uid!=0): ?><button class="btn btn-primary btn-sm btn-show-tech pull-right" id="show-tech-<?php print $nid; ?>"><span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Update</button><?php endif; ?>
 				<div id="loading-popeq-selected-param"></div>
 			</div>
 		</div>
@@ -419,8 +437,10 @@
           //$retic_form['field_population_density']['#value'] = $field_population_density[0]['value'];
           $retic_form['field_sewerage_type']['#title'] = null;
           //$retic_form['field_sewerage_type']['#value'] = $field_sewerage_type[0]['value'];
+          // force Sewerage Type to Conventional
+          $retic_form['field_sewerage_type']['#attributes']['id'][] = 'edit-field-sewerage-type';
           $retic_form['field_sewerage_type']['#value'] = t('Conventional');
-          $retic_form['field_sewerage_type']['#attributes']['disabled'] = 'disabled';
+          //$retic_form['field_sewerage_type']['#attributes']['disabled'] = 'disabled';
           $retic_form['field_pipe_length']['#title'] = null;
           $retic_form['field_pipe_length']['#value'] = $field_pipe_length[0]['value'];
           $retic_form['field_pipe_length']['#attributes']['title'] = "Pipe Length";
@@ -431,9 +451,16 @@
           $retic_header = array();
 					$retic_rows = array();
 
+          if (!$user->uid){
+            $retic_form['field_land_area']['#attributes']['disabled'][] = "disabled";
+            $retic_form['field_pipe_length']['#attributes']['disabled'][] = "disabled";
+            $retic_form['field_terrain_type']['#attributes']['disabled'][] = "disabled";
+          }
+
           $retic_rows[]['data'] = array(
 						array('data'=>t('<label id="retic-label-sewerage-type">Type of Sewerage</label>'), 'class'=>array('retic-row-header')),
-            array('data'=>$retic_form['field_sewerage_type'], 'colspan'=>2),
+            //array('data'=>$retic_form['field_sewerage_type']."Conventional", 'colspan'=>2),
+            array('data'=>t('Conventional'), 'colspan'=>2),
           );
 
           $retic_rows[]['data'] = array(

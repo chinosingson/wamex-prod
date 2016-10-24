@@ -17,6 +17,13 @@
  *   field id, then row number. This matches the index in $rows.
  * @ingroup views_templates
  */
+
+ global $user;
+ if (!$user->uid) {
+   $disable_form = "disabled=\"true\"";
+ } else {
+   $disable_form = "";
+ };
  $editProjectPerm = user_access('edit project custom');
  $scenario_value_display = array(
 	"","N/A", "V. Low", "Low", "High", "V. High"
@@ -43,7 +50,7 @@
     </thead>
   <?php endif; ?>
   <tbody>
-    <?php foreach ($rows as $row_count => $row): 
+    <?php foreach ($rows as $row_count => $row):
 				$row_classes[$row_count][] = 'view-field-display';
 	?><tr <?php if ($row_classes[$row_count]) { print 'class="' . implode(' ', $row_classes[$row_count]) .'"';  } ?> id="<?php print 'scenario-row-'.$row['nid']; ?>">
 					<!--td><?php //echo print_r($row_classes,1); ?></td-->
@@ -53,15 +60,15 @@
 					<?php if ($field == 'title'): ?>
 					<label class="scenario-title-label" id="scenario-title-label-<?php print $row['nid']?>" for="scenario-radio-<?php print $row['nid']; ?>"><?php print $content; ?></label>
 					<?php elseif ($field != "nid"):?>
-            <?php 
+            <?php
 							if (is_numeric($content))
 							print $scenario_value_display[$content]."<span class='scenario-field-value-hidden' id='".$field."_hidden_".$row['nid']."'>".$content."</span>";
 							else
-							print $content; 
+							print $content;
 						?>
           </td>
 					<?php else: ?>
-					<input class="scenario-radio" name="scenario_nid" id="scenario-radio-<?php print $content; ?>" type="radio" value="<?php print $content; ?>"  <?php print ($row_count==0 ? 'checked="checked"': "" ) ?>/>
+					<input class="scenario-radio" name="scenario_nid" id="scenario-radio-<?php print $content; ?>" type="radio" value="<?php print $content; ?>"  <?php print ($row_count==0 ? 'checked="checked"': "" ) ?> <?php print $disable_form; ?>/>
 					<?php endif; ?>
 					</td>
         <?php endforeach; ?>

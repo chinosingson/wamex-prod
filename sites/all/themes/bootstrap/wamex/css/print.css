@@ -21,7 +21,7 @@ a:visited {color: #000;}
 a:hover {color: #00f;}
 a:link img, a:visited img {border: 0;}
 .print-footnote {font-size: xx-small;}
-img.print-logo {border: 0;}
+img.print-logo {  border: 0; width: 32px; height: 32px; }
 .print-site_name {}
 .print-breadcrumb {font-size: x-small;}
 .print-title {}
