@@ -167,10 +167,10 @@
         <div id="print-project-info" class="print-container">
           <h4 class="print-title">Project Information</h4>
           <table class="table">
-            <tr><th>Author</th><td class="col-xs-9"><?php print $field_author[0]['value']; ?></td></tr>
             <tr><th>Location</th><td class="col-xs-9"><?php print $field_location[0]['value']; ?></td></tr>
             <tr><th>Population</th><td class="col-xs-9"><?php print number_format($field_population[0]['value']); ?></td></tr>
             <tr><th>Description</th><td class="col-xs-9"><?php print $field_body[0]['value']; ?></td></tr>
+            <tr><th>Author</th><td class="col-xs-9"><?php print $field_author[0]['value']; ?></td></tr>
           </table>
         </div>
         <hr class="print-hr" />
@@ -179,7 +179,7 @@
           <table class="table">
             <tr><th>Currency</th><td class="col-xs-9"><?php print (isset($field_currency[0]['taxonomy_term']->name) ? $field_currency[0]['taxonomy_term']->name : "-");; ?></td></tr>
             <tr><th>Exchange Rate <span class="label-unit">(<?php print $currency_code?>)</span></th><td class="col-xs-9"><?php print $field_exchange_rate_to_usd[0]['value']; ?></td></tr>
-            <tr><th>Discount Rate</th><td class="col-xs-9"><?php print $field_discount_rate[0]['value']; ?></td></tr>
+            <!--tr><th>Discount Rate</th><td class="col-xs-9"><?php //print $field_discount_rate[0]['value']; ?></td></tr-->
             <tr><th>Land Cost <span class="label-unit">(<?php print $currency_code." "?>per sq m)</span></th><td class="col-xs-9"><?php print $field_land_cost[0]['value']; ?></td></tr>
           </table>
         </div>

@@ -728,7 +728,7 @@
 				// SCENARIO
 				// scenario radio button action
 				$('.scenario-radio').unbind('click').on('click',function(){
-          console.log($('.scenario-radio:checked').attr('id'));
+          //console.log($('.scenario-radio:checked').attr('id'));
 					var radioId = $(this).attr('id');
 					var idTokens = radioId.split("-");
 					var scenarioNodeId = idTokens[2];
@@ -929,14 +929,17 @@
 					//$('#collapse-tech').collapse('show');
 				// TECHNOLOGIES
 					$('#loading-tech-list',context).once('display',function(){
-						//var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-						//var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
             //console.log('#loading-tech-list loaded. calculating suitable technologies');
             var ajaxTechHref = $('.btn-ajax-tech').attr('href');
             var _techArgs = getTechArgs();
             $('.btn-ajax-tech').attr('href', ajaxTechHref+'/'+_techArgs);
             //console.log($('.btn-ajax-tech').attr('href'));
-						//showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+						//
+            if (Drupal.settings.node.values.changed){
+              var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+              var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+              showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+            }
 					});
 				});
 
@@ -952,7 +955,7 @@
 				$('.btn-show-tech').unbind('click').on('click',function(event){
           //var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
           //var techTdSelector2 = 'td.popeq-totpe-'+popeqParamName2;
-          console.log(Drupal.settings.node.values);
+          //console.log(Drupal.settings.node.values);
           showTechnologies(getPopeqValue());
 				});
 
@@ -1178,24 +1181,28 @@
           //var numPumps12 = 0;
           var costPumps = costOfPumps(terrain,pipe,area);
           //console.log(area+'|'+density+'|'+sewerage+'|'+pop+'|'+pipe);
-          console.log(costSewerage+'|'+costSeweragePC+'|'+costPumps);
+          //console.log(costSewerage+'|'+costSeweragePC+'|'+costPumps);
           //'|'+numPumps6+'|'+numPumps12);
           return [costSewerage, costSeweragePC, costPumps];
         }
 
+        // build cost range -- for conveyance financial properties (CapEx, OpEx etc)
         function makeRange(number) {
           //console.log('makeRange: '+number);
           var lowEnd = "";
+          var lowEndFactor = 1;
+
           var topEnd = "";
+          var topEndFactor = 1.2;
           if (number < 10) {
-            lowEnd = number;
-            topEnd = number*1.2;
+            lowEnd = number*lowEndFactor;
+            topEnd = number*topEndFactor;
           } else if (number < 100){
-            lowEnd = Math.round(number/10)*10;
-            topEnd = Math.round((number*1.2)/10)*10;
+            lowEnd = Math.round(number*lowEndFactor/10)*10;
+            topEnd = Math.round((number*topEndFactor)/10)*10;
           } else {
-            lowEnd = Math.round(number/100)*100;
-            topEnd = Math.round((number*1.2)/100)*100;
+            lowEnd = Math.round(number*lowEndFactor/100)*100;
+            topEnd = Math.round((number*topEndFactor)/100)*100;
           }
           //console.log('lowEnd:'+lowEnd);
           //console.log('topEnd:'+topEnd);
@@ -1222,7 +1229,7 @@
           sewerageType = "Conventional";
         }
 
-        console.log(sewerageType);
+        //console.log(sewerageType);
         var terrainType = $('#edit-field-terrain-type').val();
 
         addTooltip($('#retic-label-sewerage-type'),'The type of sewerage to be implemented for this project.');
@@ -1411,6 +1418,8 @@
           //$
         //});
 
+
+        // modals for project sections
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
 				+'<div class="modal-content">'
@@ -1418,7 +1427,7 @@
 				+'<h4 class="modal-title"></h4>'
 				+'</div>'
 				+'<div class="modal-body"></div>'
-				+'<div class="modal-footer"><button class="btn" data-dismiss="modal">Close</button></div>'
+				+'<div class="modal-footer"><button class="btn btn-sm btn-primary" data-dismiss="modal">Close</button></div>'
 				+'</div>'
 				+'</div>'
 				+'</div>';
@@ -1428,14 +1437,28 @@
 					event.preventDefault();
 					//console.log($(this).attr('id').split("-")[0]);
 					var sectionTitle = $('#'+$(this).attr('id').split("-")[0]+'-title-container h3 a')[0].innerText;
+          //console.log(sectionTitle);
 
 					$('.main-container').append(customHelpModal);
 					$('#section-help-modal .modal-title').empty().append('Help: '+sectionTitle);
-					$('#section-help-modal .modal-body').empty().append('Description of '+ sectionTitle + ' goes here.');
+					$('#section-help-modal .modal-body').empty().append(customHelpText[$(this).attr('id').split("-")[0]]);
 					$('#section-help-modal').show();
 					$('#section-help-modal').modal();
 				});
 
+        var customHelpText = {
+          "project"  : "The Project Information section contains basic information about your project, such as its location and a short description of the project.",
+          "financial": "<p>The Financial Information section contains the information used for computing the cost of wastewater treatment and the cost of collection and conveyance. </p>",
+          "loading"  : "The Wastewater Characterization section contains information about wastewater loading characteristics, or the influent water that flows into a treatment plant.",
+          "standards": "The Effluent Standards section sets the acceptable levels of chemicals in wastewater after treatment.",
+          "popeq"    : "<p>The Population Equivalent section contains information about the unit per capita loading. This is the ratio of the sum of the pollution load produced in 24 hours to the individual pollution load produced by one person in the same period.</p><p>Based on the effluent standards that you selected, you will need to specify the person load equivalent (POL) of wastewater, expressed in grams per person per day. This POL is used to compute the population equivalent (PE).</p><p>For example, you may want to compare the PE of targeting the TotN or the nitrogen content of water versus targeting the PE for TotP or the phosphorous content of water.</p><p>If you find that the PE is higher if you focus wastewater treatment on nitrogen content rather than on phosphorous, you may say that based on the PE, a treatment that targets nitrogen content has wider impact.</p>",
+          "scenario" : "The Scenarios section contains the information used to prioritize your project considerations and requirements, such as land area, shock resistance, and sludge handling. ",
+          "tech"     : "The Suitable Technologies section contains the various suitable technologies for your project and their corresponding costs.",
+          "retic"    : "<p>The Collection and Conveyance section contains information about the project land area, the piped-water network required for the project, and the cost of collection and conveyance of wastewater. Note that entering collection and conveyance information is optional. Some projects require only a treatment plant, without a piped-water network.</p>",
+        }
+
+
+        // modals for technology names
 				var techModal = '<div id="tech-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
 				+'<div class="modal-content">'
@@ -1443,7 +1466,7 @@
 				+'<h4 class="modal-title"></h4>'
 				+'</div>'
 				+'<div class="modal-body"></div>'
-				+'<div class="modal-footer"><button class="btn" data-dismiss="modal">Close</button></div>'
+				+'<div class="modal-footer"><button class="btn btn-sm btn-primary" data-dismiss="modal">Close</button></div>'
 				+'</div>'
 				+'</div>'
 				+'</div>';
@@ -1457,11 +1480,12 @@
 					// wastewaterinfo.asia/tech-sheets/tds-003
 					$('.main-container').append(customTechModal);
 					$('#tech-help-modal .modal-title').empty().append('Technology: '+$(this).text());
-					//$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
-					$('#tech-help-modal .modal-body').empty().load("http://wastewaterinfo.asia/tech-sheets/tds-003");
+					$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
+					//$('#tech-help-modal .modal-body').empty().load("http://wastewaterinfo.asia/tech-sheets/tds-003");
 					$('#tech-help-modal').show();
 					$('#tech-help-modal').modal();
 				});
+
 
 			}
 

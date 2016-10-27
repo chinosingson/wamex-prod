@@ -12,10 +12,20 @@
 		$user_scenarios = FALSE;
 	}
 
+
+
 	if ($node):
 	$nid = $node->nid;
-	//print "<pre style='display: block; '>".$user_scenarios."</pre>";
-	//print "<pre style='display: block; '>".$user_debug."</pre>";
+  if (isset($_GET['s'])) {
+    $changed = TRUE;
+  } else {
+    $changed = FALSE;
+  }
+	//print "<pre style='display: block; '>".current_path()."</pre>";
+	//print "<pre style='display: block; '>".url(current_path(), array('absolute' => TRUE,'query' => drupal_get_query_parameters()))."</pre>";
+	//print "<pre style='display: block; '>".print_r(drupal_parse_url(url(current_path(), array('absolute' => TRUE,'query' => drupal_get_query_parameters()))),1)."</pre>";
+	//print "<pre style='display: block; '>".print_r($_GET['s'],1)."</pre>";
+	//print "<pre style='display: block; '>".print_r($form_state,1)."</pre>";
 	//print "<pre style='display: block; height: 500px; overflow-y: scroll'>".print_r($node,1)."</pre>";
 	//$nid = field_get_items('node',$node,'nid');
 	//$nid = $node->nid;
@@ -27,7 +37,7 @@
 	$field_location = field_get_items('node',$node,'field_location');
 	$field_population = field_get_items('node',$node,'field_population');
 	$field_ci_cost = field_get_items('node',$node,'field_ci_cost');
-	$field_discount_rate = field_get_items('node',$node,'field_discount_rate');
+	//$field_discount_rate = field_get_items('node',$node,'field_discount_rate');
 	//$field_om_pct_treatment = field_get_items('node',$node,'field_om_pct_treatment');
 	//$field_design_horizon_treatment = field_get_items('node',$node,'field_design_horizon_treatment');
 	$field_currency = field_get_items('node',$node,'field_currency');
@@ -76,7 +86,7 @@
 		drupal_add_js(array('node' => array('values' => array('field_currency_name'=>$field_currency[0]['taxonomy_term']->name))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_currency_code'=>$currency_code))), 'setting');
 		drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd[0]['value']))),'setting');
-		drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate[0]['value']))),'setting');
+		//drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate[0]['value']))),'setting');
 		//drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment[0]['value']))),'setting');
 		//drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_land_cost'=>$field_land_cost[0]['value']))),'setting');
@@ -93,6 +103,8 @@
 		drupal_add_js(array('node' => array('values' => array('field_population_density'=>$field_population_density[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_sewerage_type'=>$field_sewerage_type[0]['value']))),'setting');
 		drupal_add_js(array('node' => array('values' => array('field_pipe_length'=>$field_pipe_length[0]['value']))),'setting');
+
+    drupal_add_js(array('node' => array('values' => array('changed'=>($changed ? TRUE : FALSE)))),'setting');
 
     $techData = json_decode($field_technology_data[0]['value'],TRUE);
 
@@ -111,12 +123,19 @@
   $view_scenario->set_display('block');
 
 ?>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-10 col-md-10"><h2>Project: <?php print $title; ?></h2></div>
+    <div class="col-sm-2 col-md-2"><a href="<?php print base_path(); ?>printpdf/<?php print $node->nid; ?>" id="print-link" target="_blank"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</a></div>
+  </div>
+</div>
 <div id="project-page-<?php print $nid; ?>" class="panel-group" role="tablist" aria-multiselectable="false">
 	<div id="project-info-container" class="container-fluid panel panel-default">
 		<div id="project-information" class="col-sm-12 col-md-12 col-lg-12 panel-heading" role="tab" id="heading-project-info">
-			<div class="row" id="project-info-title-container">
+			<div class="row" id="project-title-container">
 				<div class="col-sm-12">
 					<h3 class="project-section-title panel-title" id="project-info-title"><a href="#collapse-project-info" name="project-info" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-project-info"><span id="toggle-project-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Project Information</a></h3>
+          <button class="btn btn-xs btn-default section-help" id="project-help">?</button>
 				<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary btn-sm pull-right" id="edit-project-<?php print $nid; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
 				</div>
 			</div>
@@ -124,14 +143,10 @@
 		<div class="panel-collapse collapse in" id="collapse-project-info" role="tabpanel" aria-labelledby="heading-project-info">
 			<table class="table">
 				<tbody>
-					<tr>
+					<!--tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Project Name</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print $title; ?></td>
-					</tr>
-					<tr>
-						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Author</label></td>
-						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_author) ? $field_author[0]['value'] : "-"); ?></td>
-					</tr>
+					</tr-->
 					<tr>
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Location</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7" id="project-location"><?php print (isset($field_location) ? $field_location[0]['value']: "-"); ?></td>
@@ -150,6 +165,10 @@
 						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Description</label></td>
 						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_body) ? $field_body[0]['value'] : "-");  ?></td>
 					</tr>
+					<tr>
+						<td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Author</label></td>
+						<td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_author) ? $field_author[0]['value'] : "-"); ?></td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -157,9 +176,10 @@
 
 	<div id="financial-info-container" class="container-fluid panel panel-default">
 		<div id="financial-information" class="col-sm-12 col-md-12 col-lg-12 panel-heading" role="tab" id="heading-financial-info">
-			<div class="row" id="financial-info-title-container">
+			<div class="row" id="financial-title-container">
 				<div class="col-sm-12">
-					<h3 class="project-section-title panel-title" id="financial-info-title"><a href="#collapse-financial-info" name="financial-info" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-financial-info"><span id="toggle-financial-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Financial Information</a></h3>
+					<h3 class="project-section-title panel-title" id="financial-title"><a href="#collapse-financial-info" name="financial-info" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-financial-info"><span id="toggle-financial-info" class="heading-arrow glyphicon glyphicon-chevron-up"></span>Financial Information</a></h3>
+          <button class="btn btn-xs btn-default section-help" id="financial-help">?</button>
 				<?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>project/edit/<?php print $node->nid; ?>" class="btn btn-primary btn-sm pull-right" id="edit-project-<?php print $nid; ?>"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit</a><?php endif; ?>
 				</div>
 			</div>
@@ -175,10 +195,10 @@
           <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Exchange Rate</label></td>
           <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_exchange_rate_to_usd) ? $field_exchange_rate_to_usd[0]['value']: "-"); ?></td>
         </tr>
-        <tr>
+        <!--tr>
           <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>Discount Rate</label></td>
-          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></td>
-        </tr>
+          <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_discount_rate) ? $field_discount_rate[0]['value']: "-"); ?></td>
+        </tr-->
         <!--tr>
           <td class="project-info-label col-sm-5 col-md-5 col-lg-5"><label>O&amp;M  % of CI Cost</label></td>
           <td class="project-info-value col-sm-7 col-md-7 col-lg-7"><?php //print (isset($field_om_pct_treatment) ? $field_om_pct_treatment[0]['value']: "-"); ?></td>
@@ -407,7 +427,7 @@
 		</div>
 		<div id="collapse-tech" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-tech">
       <div id="loading-ajax-tech-list"></div>
-			<div id="loading-tech-list"><?php print wamex_display_tech(json_decode($field_technology_data[0]['value'],TRUE),TRUE); ?></div>
+			<div id="loading-tech-list"><?php print($changed ? "" : wamex_display_tech(json_decode($field_technology_data[0]['value'],TRUE),TRUE)); ?></div>
 		</div>
 	</div>
 

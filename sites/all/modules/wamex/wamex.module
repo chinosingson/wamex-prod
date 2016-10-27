@@ -258,28 +258,47 @@ function wamex_menu() {
 	return $output;
 }*/
 
+
+// build cost range -- for technology financial properties (CapEx, OpEx etc)
 function make_range($value,$digits){
   $range = "";
   $low = "";
   $high = "";
-  if ($value < 10) {
+  $lowEndFactor = 0.7;
+  $highEndFactor = 1;
+
+  // get low and high ends of range
+  $l = $value*$lowEndFactor;
+  $h = $value*$highEndFactor;
+
+  // determine number of digits for round() function
+  if ($value <= 10) {
     $digits+=2;
   } elseif ($value > 10 && $value < 100) {
     $digits+=1;
+  } else {
+    $digits+=0;
   }
 
-  $l = $value;
-  $h = $value*1.2;
-
-  $low = number_format(round($l,$digits),0);
-  $high = number_format(round($h*1.2,$digits),0);
+  // format and/or round low and high values
+  if ($value <= 1 && $value > 0){
+    $low = number_format($l,2);
+    $high = number_format($h,2);
+  } else {
+    $low = number_format(round($l,$digits),0);
+    $high = number_format(round($h,$digits),0);
+  }
 
   if ($low == $high) {
-    $range .= $low;
+    if($low == 0 && $high == 0) {
+      return "-";
+    } else {
+      return $high;
+    }
   } else {
-    $range .= $low." to ".$high;
+    return $low." to ".$high;
   }
-  return $range;
+  //return $range;
 }
 
 function wamex_get_tech_data($techArgs){
@@ -436,7 +455,7 @@ function wamex_get_tech_data($techArgs){
     $landreq = wamex_land_req($str_popeq,$ary_land_values);
     $landreq_display = ($landreq > 0 ? number_format($landreq) : "-");
     $land_cost = $landreq*$str_land_cost*$str_exch_rate;
-    $land_cost_range = ($land_cost > 0 ? make_range($land_cost,-2) : "-");
+    $land_cost_range = ($land_cost > 0 ? make_range($land_cost,0) : "-");
     $land_cost_per_capita = $land_cost/$pop;
     $land_costs_range_per_capita = ($land_cost_per_capita > 0 ? make_range($land_cost_per_capita,-2) : "-");
     $tot_inv = $capex_tot+$land_cost;
@@ -1129,7 +1148,8 @@ function wamex_scenario_form_submit($form, &$form_state){
 		}
 
 		if ($success){
-			$form_state['redirect'] = array('node/'.$form_state['input']['field_project'], array('fragment'=>'scenario-list'));
+      //drupal_add_js(array('node' => array('values' => array('changed'=>TRUE))),'setting');
+			$form_state['redirect'] = array('node/'.$form_state['input']['field_project'], array('query'=>array('s'=>1),'fragment'=>'scenario-list'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'scenario-list'));
 			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
@@ -1531,7 +1551,7 @@ function wamex_loading_form_submit($form, &$form_state){
 		}
 
 		if ($success){
-			$form_state['redirect'] = array('node/'.$form_state['input']['field_project_und'], array('fragment'=>'loading-list'));
+			$form_state['redirect'] = array('node/'.$form_state['input']['field_project_und'], array('query'=>array('s'=>1),'fragment'=>'loading-list'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'loading-list'));
 			//drupal_set_message($redir_url);
 			$commands[] = ctools_ajax_command_reload();
@@ -1611,7 +1631,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_location = $node->field_location['und'][0]['value'];
 		$field_population = $node->field_population['und'][0]['value'];
 		$field_author = $node->field_author['und'][0]['value'];
-		$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
+		//$field_discount_rate = $node->field_discount_rate['und'][0]['value'];
 		//$field_om_pct_treatment = (isset($node->field_om_pct_treatment['und']) ? $node->field_om_pct_treatment['und'][0]['value'] : 0);
 		//$field_design_horizon_treatment = (isset($node->field_design_horizon_treatment['und']) ? $node->field_design_horizon_treatment['und'][0]['value'] : 0);
 		//$field_ci_cost = $node->field_ci_cost['und'][0]['value'];
@@ -1624,7 +1644,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		$field_totn = $node->field_loading_totn['und'][0]['value'];
 		$field_totp = $node->field_loading_totp['und'][0]['value'];
 		$field_tss = $node->field_loading_tss['und'][0]['value'];
-		$field_land_cost = $node->field_land_cost['und'][0]['value'];
+		$field_land_cost = (isset($node->field_land_cost['und']) ? $node->field_land_cost['und'][0]['value'] : 0);
 		$field_land_area = (isset($node->field_land_area['und']) ? $node->field_land_area['und'][0]['value'] : 0);
 		$field_population_density = (isset($node->field_population_density['und']) ? $node->field_population_density['und'][0]['value'] : 0);
 		if(arg(0) == 'project'){
@@ -1636,7 +1656,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 			drupal_add_js(array('node' => array('values' => array('field_currency'=>$field_currency))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_exchange_rate'=>$field_exchange_rate_to_usd))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_effluent_standard'=>$field_effluent_standard))),'setting');
-			drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate))),'setting');
+			//drupal_add_js(array('node' => array('values' => array('field_discount_rate'=>$field_discount_rate))),'setting');
 			//drupal_add_js(array('node' => array('values' => array('field_om_pct_treatment'=>$field_om_pct_treatment))),'setting');
 			//drupal_add_js(array('node' => array('values' => array('field_design_horizon_treatment'=>$field_design_horizon_treatment))),'setting');
 			drupal_add_js(array('node' => array('values' => array('field_cod'=>$field_cod))),'setting');
@@ -1678,6 +1698,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	$form['#attributes']['class'][] = 'container-fluid';
 	$form['#attributes']['name'] = 'wamex-project-form';
 	//$form['#prefix'] = '<div id="project-forms-container" class="container-fluid">';
+	//$form['#suffix'] = '<pre>'.print_r($form_state,1).'</pre>';
 	//$form['#suffix'] = '</div>';
 
 	//$form['#attributes']['data-toggle'] = 'validator';
@@ -1751,13 +1772,13 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#prefix' => '<div class="col-sm-12 col-md-6 col-lg-6 hidden" id="field-exchange-rate-to-usd-add-more-wrapper">',
 		'#suffix' => '</div></div>',
 	);
-	$form['field_discount_rate_und_0_value'] = array(
+	/* $form['field_discount_rate_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Discount Rate'),
 		'#default_value' => $field_discount_rate,
 		'#prefix' => '<div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div></div>',
-	);
+	); */
 	/*$form['field_om_pct_treatment_und_0_value'] = array(
 		'#type' => 'textfield',
 		'#title' => t('O&M % of CI Cost'),
@@ -1896,6 +1917,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
   hide($form['field_population_density']);*/
 
 
+  //$form['#action'] = url('node/'. $nid);
 	$form['actions']['submit']['#type'] = 'submit';
 	$form['actions']['submit']['#ajax']['type'] = 'throbber';
 	$form['actions']['submit']['#ajax']['callback'] = 'wamex_project_form_submit';
@@ -2041,9 +2063,10 @@ function wamex_project_retic_form_submit($form, &$form_state){
 		}
 
 		if ($success){
-			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'reticulation'));
+			//$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'reticulation'));
 			//drupal_set_message('form_state:<pre>'.print_r($form_state,1).'</pre>','status');
-			$commands[] = ctools_ajax_command_reload();
+			//$commands[] = ctools_ajax_command_reload();
+      $commands[] = ctools_ajax_command_redirect('node/'.$form_state['values']['nid'],0,array('query'=>array('s'=>1),'fragment'=>'reticulation'));
 			return array('#type' => 'ajax', '#commands' => $commands);
 		}
 	}
@@ -2256,7 +2279,7 @@ function wamex_project_form_submit($form, &$form_state){
 			$newnode->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
 			$newnode->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 			$newnode->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
-			$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
+			//$newnode->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
 			//$newnode->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
 			//$newnode->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
 			//$newnode->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
@@ -2298,9 +2321,9 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_location[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_location'];
 			$node->field_population[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_und_0_value'];
 			$node->field_author[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_author'];
-			$node->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
-			$node->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
-			$node->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
+			//$node->field_discount_rate[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_discount_rate_und_0_value'];
+			//$node->field_om_pct_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_om_pct_treatment_und_0_value'];
+			//$node->field_design_horizon_treatment[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_design_horizon_treatment_und_0_value'];
 			//$node->field_ci_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_ci_cost_und_0_value'];
 			$node->field_currency[LANGUAGE_NONE][0]['tid'] = $form_state['input']['field_currency_und'];
 			$node->field_exchange_rate_to_usd[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_exchange_rate_to_usd_und_0_value'];
@@ -2312,7 +2335,7 @@ function wamex_project_form_submit($form, &$form_state){
 			$node->field_loading_tss[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_tss'];
 			$node->field_land_cost[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_cost_und_0_value'];
       $node->field_land_area[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_land_area'];
-      $node->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
+      //$node->field_population_density[LANGUAGE_NONE][0]['value'] = $form_state['input']['field_population_density'];
 			// field_discount_rate_reticulation
 			// field_om_pct_treatment
 			// field_om_pct_reticulation
@@ -2322,7 +2345,7 @@ function wamex_project_form_submit($form, &$form_state){
 			try {
 				node_save($node);
 				$success = TRUE;
-				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'));
+				drupal_set_message(t('Project <b>'.$node->title.'</b> updated.'),'status');
 			}
 			catch (Exception $e) {
 				// Do your error handling here.
@@ -2334,17 +2357,22 @@ function wamex_project_form_submit($form, &$form_state){
 		if ($success){
 			$path = current_path();
 			$path_tokens = explode('/',$path);
+      //drupal_set_message(t(print_r($path_tokens,1)),'status');
 			if (in_array('project',$path_tokens)){
+        //drupal_set_message(t('from dashboard'));
 				$redir = 'dashboard';
 				$form_state['redirect'] = array($redir);
 				$commands[] = ctools_ajax_command_reload();
 			}
 			else {
+        //drupal_set_message(t('from project node'));
 				$redir = 'node/'.$form_state['build_info']['args'][0];
-				$form_state['redirect'] = array($redir);
-				$commands[] = ctools_ajax_command_redirect($redir);
+				//$form_state['redirect'] = array($redir,);
+        //array('node/'.$form_state['values']['nid']);
+				$commands[] = ctools_ajax_command_redirect($redir,0,array('query'=>array('s'=>1)));
 			}
-			//drupal_set_message($redir);
+			//drupal_set_message($redir,'status');
+			//drupal_set_message(t(print_r($form_state,1)),'status');
 			return array('#type' => 'ajax', '#commands' => $commands);
 		}
 	}

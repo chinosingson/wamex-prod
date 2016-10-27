@@ -13,6 +13,10 @@ body, h1, h2, h3, h4, h5, h6 {
   font-family: 'Open Sans', sans-serif;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
 body.front {
   padding-top: 51px !important;
 }
@@ -43,8 +47,8 @@ body.front > div.main-container.container {
   padding: 40px 40px 40px 40px;
   margin-top: -42px;
  /* background-size: 100%;
-  background-image: url('/wamex/sites/default/files/wamex/ww_bg_2.jpg');
   background-repeat: no-repeat;*/
+  background-image: url('/wamex/sites/default/files/wamex/ww_bg_2.jpg');
 }
 
 #wamex-jumbotron li {
@@ -821,6 +825,12 @@ td.tech-attributes.tech-landcost,*/
 .tech-landreq { background-color: #94c5e4 !important; }
 .tech-landcost { background-color: #add6ec !important; }
 .tech-totinv { background-color: #c7e7f4 !important; }
+
+#print-link {
+  float: right;
+  margin-top: 32px;
+  margin-right: 5px;
+}
 
 
 @media print
