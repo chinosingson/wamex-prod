@@ -126,7 +126,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-10 col-md-10"><h2>Project: <?php print $title; ?></h2></div>
-    <div class="col-sm-2 col-md-2"><a href="<?php print base_path(); ?>printpdf/<?php print $node->nid; ?>" id="print-link" target="_blank"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</a></div>
+    <div class="col-sm-2 col-md-2"><?php if ($editProjectPerm): ?><a href="<?php print base_path(); ?>printpdf/<?php print $node->nid; ?>" id="print-link" target="_blank"><span class="glyphicon glyphicon-print"></span>&nbsp;Print</a><?php endif; ?></div>
   </div>
 </div>
 <div id="project-page-<?php print $nid; ?>" class="panel-group" role="tablist" aria-multiselectable="false">
@@ -249,7 +249,7 @@
 				<div id="effluent-standards-messages"></div>
 			</div>
 		</div>
-		<div id="collapse-standards" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-standards">
+		<div id="collapse-standards" class="table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-standards">
 			<div class="panel-body">
 				<?php
 					$effl_output = "";
@@ -316,9 +316,61 @@
 		</div>
 		<div id="collapse-popeq" class="row table-responsive panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-popeq">
 			<div class="panel-body">
-				<?php
-					$popeq_output = "";
+        <div class="table-responsive">
+        <table id="table-popeq" class="table table-hover table-striped">
+        <tbody>
+         <tr><td class="col-md-3 popeq-row-header popeq-row-param"></td><td class="col-md-1 popeq-parameter popeq-parameter-cod popeq-cod col-cod"><div class="form-item form-type-radio form-item-popeq-parameter"><label class="control-label" for="edit-popeq-parameter--2"><input class="popeq-parameter-radio popeq-parameter-radio-cod form-radio" type="radio" id="edit-popeq-parameter--2" name="popeq_parameter" value="cod" checked="cheked">COD<br><span class="label-unit">(mg/ℓ)</span></label></div></td>
+        <td class="col-md-1 popeq-parameter popeq-parameter-bod5 popeq-bod5 col-bod5"><div class="form-item form-type-radio form-item-popeq-parameter">
+         <label class="control-label" for="edit-popeq-parameter--3"><input class="popeq-parameter-radio popeq-parameter-radio-bod5 form-radio" type="radio" id="edit-popeq-parameter--3" name="popeq_parameter" value="bod5">BOD5<br><span class="label-unit">(mg/ℓ)</span></label>
+
+        </div>
+        </td><td class="col-md-1 popeq-parameter popeq-parameter-totn popeq-totn col-totn"><div class="form-item form-type-radio form-item-popeq-parameter">
+         <label class="control-label" for="edit-popeq-parameter--4"><input class="popeq-parameter-radio popeq-parameter-radio-totn form-radio" type="radio" id="edit-popeq-parameter--4" name="popeq_parameter" value="totn">TotN<br><span class="label-unit">(mg/ℓ)</span></label>
+
+        </div>
+        </td><td class="col-md-1 popeq-parameter popeq-parameter-totp popeq-totp col-totp"><div class="form-item form-type-radio form-item-popeq-parameter">
+        <label class="control-label" for="edit-popeq-parameter--5"><input class="popeq-parameter-radio popeq-parameter-radio-totp form-radio" type="radio" id="edit-popeq-parameter--5" name="popeq_parameter" value="totp">TotP<br><span class="label-unit">(mg/ℓ)</span></label>
+
+        </div>
+        </td><td class="col-md-1 popeq-parameter popeq-parameter-tss popeq-tss col-tss"><div class="form-item form-type-radio form-item-popeq-parameter">
+         <label class="control-label" for="edit-popeq-parameter--6"><input class="popeq-parameter-radio popeq-parameter-radio-tss form-radio" type="radio" id="edit-popeq-parameter--6" name="popeq_parameter" value="tss">TSS<br><span class="label-unit">(mg/ℓ)</span></label>
+
+        </div>
+        </td><td class="col-md-1 popeq-parameter popeq-parameter-volc popeq-volc col-volc"><div class="form-item form-type-radio form-item-popeq-parameter">
+         <label class="control-label" for="edit-popeq-parameter--7"><input class="popeq-parameter-radio popeq-parameter-radio-volc form-radio" type="radio" id="edit-popeq-parameter--7" name="popeq_parameter" value="volc">Vol/C<br><span class="label-unit">(mg/ℓ)</span></label>
+
+        </div>
+        </td> </tr>
+         <tr><td class="popeq-row-header popeq-row-pol"><label id="popeq-label-pol" data-original-title="" title="">Person Load Equivalent</label> (POL, <span class="label-unit">gm/capita/day</span>)</td><td class="popeq-pol popeq-pol-cod popeq-cod col-cod"><div class="form-item form-type-textfield form-item-pol-cod">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-cod" name="pol-cod" value="100" size="60" maxlength="128">
+        </div>
+        </td><td class="popeq-pol popeq-pol-bod5 popeq-bod5 col-bod5"><div class="form-item form-type-textfield form-item-pol-bod5">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-bod5" name="pol-bod5" value="54" size="60" maxlength="128">
+        </div>
+        </td><td class="popeq-pol popeq-pol-totn popeq-totn col-totn"><div class="form-item form-type-textfield form-item-pol-totn">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-totn" name="pol-totn" value="5" size="60" maxlength="128">
+        </div>
+        </td><td class="popeq-pol popeq-pol-totp popeq-totp col-totp"><div class="form-item form-type-textfield form-item-pol-totp">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-totp" name="pol-totp" value="1" size="60" maxlength="128">
+        </div>
+        </td><td class="popeq-pol popeq-pol-tss popeq-tss col-tss"><div class="form-item form-type-textfield form-item-pol-tss">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-tss" name="pol-tss" value="68" size="60" maxlength="128">
+        </div>
+        </td><td class="popeq-pol popeq-pol-volc popeq-volc col-volc"><div class="form-item form-type-textfield form-item-pol-volc">
+          <input class="popeq-parameter input-sm form-control form-text" min="0" type="number" id="edit-pol-volc" name="pol-volc" value="200" size="60" maxlength="128">
+        </div>
+        </td> </tr>
+         <tr><td class="popeq-row-header popeq-row-pe"><label>Population Equivalent</label> (PE, <span class="label-unit">persons/day)</span></td><td class="popeq-pe popeq-pe-cod popeq-cod col-cod">0.5250</td><td class="popeq-pe popeq-pe-bod5 popeq-bod5 col-bod5">0.3889</td><td class="popeq-pe popeq-pe-totn popeq-totn col-totn">0.3000</td><td class="popeq-pe popeq-pe-totp popeq-totp col-totp">0.3000</td><td class="popeq-pe popeq-pe-tss popeq-tss col-tss">0.8824</td><td class="popeq-pe popeq-pe-volc popeq-volc col-volc">0.7500</td> </tr>
+         <tr><td class="popeq-row-header popeq-row-totpe"><label>Total Population Equivalent</label></td><td class="popeq-totpe popeq-totpe-cod popeq-cod col-cod">525.00</td><td class="popeq-totpe popeq-totpe-bod5 popeq-bod5 col-bod5">388.89</td><td class="popeq-totpe popeq-totpe-totn popeq-totn col-totn">300.00</td><td class="popeq-totpe popeq-totpe-totp popeq-totp col-totp">300.00</td><td class="popeq-totpe popeq-totpe-tss popeq-tss col-tss">882.35</td><td class="popeq-totpe popeq-totpe-volc popeq-volc col-volc">750.00</td> </tr>
+         <tr><td class="popeq-row-header popeq-row-totflow"><label>Total Effluent Flow</label> (<span class="label-unit">m³/day</span>)</td><td class="popeq-totflow">150.00</td> </tr>
+        </tbody>
+        </table>
+</div>				<?php
+					/*$popeq_output = "";
 					$popeq_form = drupal_get_form('wamex_project_popeq_form',$nid);
+
+          //echo "<pre>".print_r($popeq_form['popeq_parameter'],1)."</pre>";
+
           if (!$user->uid){
             $popeq_form['popeq_parameter']['COD']['#attributes']['disabled'][] = "disabled";
             $popeq_form['popeq_parameter']['BOD5']['#attributes']['disabled'][] = "disabled";
@@ -333,7 +385,7 @@
             $popeq_form['popeq_pol']['pol-tss']['#attributes']['disabled'][] = "disabled";
             $popeq_form['popeq_pol']['pol-volc']['#attributes']['disabled'][] = "disabled";
           }
-					$popeq_rows[0] = array(
+					$popeq_rows[] = array(
 						array('data' => t(''),'class'=>array('col-md-3','popeq-row-header', 'popeq-row-param')),
 						array('data' => $popeq_form['popeq_parameter']['COD'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-cod','popeq-cod','col-cod')),
 						array('data' => $popeq_form['popeq_parameter']['BOD5'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-bod5','popeq-bod5','col-bod5')),
@@ -342,7 +394,7 @@
 						array('data' => $popeq_form['popeq_parameter']['TSS'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-tss','popeq-tss','col-tss')),
 						array('data' => $popeq_form['popeq_parameter']['Vol/C'], 'class'=>array('col-md-1','popeq-parameter','popeq-parameter-volc','popeq-volc','col-volc')),
 					);
-					$popeq_rows[1]['data'] = array(
+					$popeq_rows[]['data'] = array(
 						array('data' => t('<label id="popeq-label-pol">Person Load Equivalent</label> (POL, <span class="label-unit">gm/capita/day</span>)'),'class'=>array('popeq-row-header', 'popeq-row-pol')),
 						array('data' => $popeq_form['popeq_pol']['pol-cod'], 'class'=>array('popeq-pol','popeq-pol-cod','popeq-cod','col-cod')),
 						array('data' => $popeq_form['popeq_pol']['pol-bod5'], 'class'=>array('popeq-pol','popeq-pol-bod5','popeq-bod5','col-bod5')),
@@ -351,7 +403,7 @@
 						array('data' => $popeq_form['popeq_pol']['pol-tss'], 'class'=>array('popeq-pol','popeq-pol-tss','popeq-tss','col-tss')),
 						array('data' => $popeq_form['popeq_pol']['pol-volc'], 'class'=>array('popeq-pol','popeq-pol-volc','popeq-volc','col-volc')),
 					);
-					$popeq_rows[2]['data'] = array(
+					$popeq_rows[]['data'] = array(
 						array('data' => t('<label>Population Equivalent</label> (PE, <span class="label-unit">persons/day)'),'class'=>array('popeq-row-header','popeq-row-pe')),
 						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-cod', 'popeq-cod', 'col-cod')),
 						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-bod5', 'popeq-bod5', 'col-bod5')),
@@ -360,7 +412,7 @@
 						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-tss', 'popeq-tss', 'col-tss')),
 						array('data' => '', 'class'=>array('popeq-pe','popeq-pe-volc', 'popeq-volc', 'col-volc')),
 					);
-					$popeq_rows[3]['data'] = array(
+					$popeq_rows[]['data'] = array(
 						array('data' => t('<label>Total Population Equivalent</label>'),'class'=>array('popeq-row-header','popeq-row-totpe')),
 						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-cod', 'popeq-cod', 'col-cod')),
 						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-bod5', 'popeq-bod5', 'col-bod5')),
@@ -369,7 +421,7 @@
 						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-tss', 'popeq-tss', 'col-tss')),
 						array('data' => '', 'class'=>array('popeq-totpe','popeq-totpe-volc', 'popeq-volc', 'col-volc')),
 					);
-					$popeq_rows[4]['data'] = array(
+					$popeq_rows[]['data'] = array(
 						array('data' => t('<label>Total Effluent Flow</label> (<span class="label-unit">m&sup3;/day</span>)'),'class'=>array('popeq-row-header','popeq-row-totflow')),
 						array('data' => '', 'class'=>array('popeq-totflow')),
 					);
@@ -380,7 +432,7 @@
 					$popeq_output .= drupal_render($popeq_form['form_token']);
 					$variables['element'] = $popeq_form;
 					$variables['element']['#children'] = $popeq_output;
-					print theme_form($variables);
+					//print theme_form($variables);*/
 				?>
 			</div>
 		</div>
@@ -426,7 +478,6 @@
 			</div>
 		</div>
 		<div id="collapse-tech" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-tech">
-      <div id="loading-ajax-tech-list"></div>
 			<div id="loading-tech-list"><?php print($changed ? "" : wamex_display_tech(json_decode($field_technology_data[0]['value'],TRUE),TRUE)); ?></div>
 		</div>
 	</div>

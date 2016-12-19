@@ -89,21 +89,37 @@
 						$('#edit-field-tss').val((!nodeTSS) ?  'N/A' : nodeTSS);
 					}
 				}
-        //return;
+        return;
 			}
 
       function showTooltip(element, message){
-        //console.log(element);
+        //console.log(element.attr('title'));
+        //element.attr('title',message);
         //console.log(message);
-        element.tooltip('destroy');
-        element.tooltip({'title': message, 'container':'body'}).tooltip('show');
+        //console.log(element.tooltip.getTitle());
+        //if (element.tooltip.title!="") { element.tooltip('destroy');}
+        //element.tooltip({'title': ''}).tooltip('hide');
+        //element.tooltip({'title': message}).tooltip('show');
+        element.attr('data-original-title',message).tooltip('show');
+        return;
       }
 
       function addTooltip(element, message){
-        element.tooltip('destroy');
-        element.tooltip({'title': message,'container':'body', delay: {show: 1500, hide: 100}});
+        //element.tooltip('destroy');
+        element.tooltip({'title': message, delay: {show: 1500, hide: 100}});
+        return;
       }
 
+      function getTooltipHelpText(helpUrl){
+        var helpTextObject = $.ajax({
+         type: 'GET',
+         url: helpUrl,
+         async: false,
+         success: function(text){
+           response: text;
+        }});
+        return helpTextObject.responseText;
+      }
 			// alter project input field types
 			if($('body.page-node-add-project, body.page-node-edit.node-type-project, body.page-dashboard, body.page-project-edit').length > 0) {
 				$('#edit-field-population-und-0-value').attr('type','number');
@@ -133,12 +149,18 @@
 					loadExchangeRate($('#edit-field-currency').val(),0);
 				});*/
 
+        console.log(window.location.href);
+        //console.log(window.href);
 				$('#cancel-project').unbind('click').on('click',function(event){
 					//console.log('cancel-project');
 					//console.log($('#wamex-project-form').find('input[name="nid"]')[0].value);
-					//console.log(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+					var nodePage = Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value;
+          console.log(nodePage);
 					// redirect back to the node page
-					window.location.replace(Drupal.settings.basePath+'node/'+$('#wamex-project-form').find('input[name="nid"]')[0].value);
+					//window.location.replace(nodePage);
+          location.href = nodePage;
+					//window.location.href.replace(nodePage);
+          return false;
 				});
 
 				if($('#wamex-project-form').length > 0){
@@ -173,16 +195,27 @@
 
 			}
 
+
 			if($('body.page-node, body.node-type-project, body.page-project-edit').length > 0){
 				//console.log('here');
 
-        addTooltip($('#project-effluent-standard'), 'Effluent Standard. The base standard to which efficiencies are compared.');
-				$('#project-effluent-standard, #edit-field-effluent-standard').unbind('change').on('change',function(event){
-          console.log($(this));
+        //addTooltip($('#project-effluent-standard'), 'Effluent Standard. The base standard to which efficiencies are compared.');
+        //console.log(Drupal.settings.basePath+'get/ajax/w-h/tooltip-standards-help');
+        //console.log(tooltipHelpText.responseText);
+        addTooltip($('#project-effluent-standard'), getTooltipHelpText(Drupal.settings.basePath+'get/ajax/w-h/tooltip-standards-help'));
+				$('#project-effluent-standard').on('change',function(){
+          //console.log($(this).val());
 					loadEffluentStandardAttributes($(this)[0].selectedIndex,1);
           // display save tooltip on change
           showTooltip($('#edit-effl-submit'), "You've selected a new Effluent Standard. Click here to save your changes.");
+          return false;
 				});
+
+        $('#edit-field-cod, #edit-field-bod5, #edit-field-totn, #edit-field-totp, #edit-field-tss').on('input',function(){
+          //console.log($(this).attr('id'));
+          showTooltip($('#edit-effl-submit'), "You've modified an Effluent Standard parameter value. Click here to save your changes.");
+        });
+
 
 				$('#table-loading-tech').removeClass('table');
 
@@ -304,56 +337,37 @@
 				//console.log()
 
 				function showTechnologies(popeqValue) {
-					//console.log('showTechnologies');
-					/*if (popeqValue) console.log(popeqValue);
-					// else console.log('popeqValue = wala');*/
 					var techListViewport = $('#loading-tech-list');
 					var ajaxTechList = Drupal.settings.basePath+'get/ajax/loading/technologies';
-					//$('#collapse-tech').collapse('show');
 					techListViewport.empty().html('Calculating&nbsp;<img src="' + throbberPath + '"/>');
 					var avgLoading = getAverageLoadings();
-					//console.log(avgLoading);
 					var stdValues = getEffluentStandardAttributes();
-					//console.log($('.scenario-radio:checked').attr('id'));
 					var scenarioValues = encodeURI(getScenarioValues($('.scenario-radio:checked').attr('id')));
-					//$('#collapse-scenario').collapse('toggle');
 					var landCost = Drupal.settings.node.values.field_land_cost;
 					var exchRate = Drupal.settings.node.values.field_exchange_rate;
 					var currCode = Drupal.settings.node.values.field_currency_code;
           var nodeID = Drupal.settings.node.values.nid;
           var popeqAll = JSON.stringify(Drupal.settings.node.values.popeq);
+          //console.log(popeqAll);
           var reticAll = JSON.stringify(Drupal.settings.node.values.retic);
-          //reticAll = reticAll.split(" ").join("_").replace(/,/g,"#")
           reticAll = encodeURI(reticAll);
-          //console.log("1. reticAll:"+reticAll);
-					//var designHorizon = $('#tech-design-horizon').val();
-					//var inflationRate = $('#tech-inflation-rate').val();
-          //console.log(reticAll.split(" ").join("_").replace(/,/g,"#"));
 					var techArgs = [avgLoading,stdValues,popeqValue,scenarioValues,landCost,exchRate,currCode,nodeID,popeqAll,reticAll].join('&');
-					//var techArgs = avgLoading + '&' + stdValues+ '&' +popeqValue + '&' + scenarioValues + '&' + landCost + '&' + exchRate;// x|y|z&a|b|c
-					//if (scenarioValues !="") techArgs + '&' +scenarioValues;
-					//console.log(techArgs);
+          //console.log(techArgs);
           var loadingListViewport = $('#loading-view-container > #loading-list-container > div');
-          //console.log(loadingListViewport.innerHTML);
-          //if(!loadingListViewport.innerHTML){
-          //  loadingListViewport.empty().html('<div id="loading-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button to create one or more profiles.</div>');
-          //}
-          //console.log('AVGLOADING: '+avgLoading.length);
 					if (avgLoading.length > 0){
-						//$('#collapse-tech').collapse('show');
-            //techListViewport.empty().html('<div>123<br/></div>');
 						techListViewport.load(ajaxTechList+'/'+techArgs,'ajax=1',function(){
 							Drupal.attachBehaviors('#loading-tech-list');
 						});
 					} else {
 						techListViewport.empty().html('<div id="tech-no-loading" class="alert alert-info">There are no Wastewater Characterisations. Click on the <i>Add</i> button in the Wastewater Characterisations panel to create one or more profiles.</div>');
 					}
-          //console.log(Drupal.settings.node.values);
 				}
 
         function getTechArgs() {
-          var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+          //var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+          var popeqParamName = $('input[name="popeq_parameter"]:checked').val();
           var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+          //console.log('getTechArgs: techTdSelector:'+techTdSelector);
           var popeqValue = $(techTdSelector)[0].innerHTML.replace(/,/g,"");
 					var avgLoading = getAverageLoadings();
 					//console.log(avgLoading);
@@ -421,7 +435,7 @@
 						loadLoadingAttributes(termIndex);
 					}
 
-          $('#edit-title, #edit-field-loading-type, .form-loading-attribute').unbind('change').on('change keyup select', function(e){
+          $('#edit-title, #edit-field-loading-type, .form-loading-attribute').unbind('change').on('change keyup', function(e){
             showTooltip($('#edit-loading-submit'),'You\'ve modified one or more Loading Attributes. Click here to save your Wastewater Characterisation.');
           });
 
@@ -442,6 +456,7 @@
 					viewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
 					});
+          return false;
 				});
 
 
@@ -449,7 +464,10 @@
 				// edit loading button action
 				var rowStaticHtml = '';
 				$('.project-edit-loading-btn').unbind('click').on('click',function(event){
-					if($('#edit-loading-cancel').hasClass('hidden')) $('#edit-loading-cancel').removeClass('hidden');
+          //console.log(event);
+					if($('#edit-loading-cancel').hasClass('hidden')) {
+            $('#edit-loading-cancel').removeClass('hidden');
+          }
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
@@ -464,9 +482,11 @@
 					rowViewport.load(ajaxFormPath,'ajax=1',function(){
 						Drupal.attachBehaviors('#loading-form-container');
 						$('.edit-loading-cancel').unbind('click').on('click',function(event){
-							rowViewport.html(rowStaticHtml);
+              console.log(event);
+							rowViewport.html(event);
 							Drupal.attachBehaviors($('#loading-'+nodeId));
 							rowStaticHtml = '';
+              return false;
 						});
 					});
 				});
@@ -481,6 +501,7 @@
 					$('.project-delete-loading-btn').removeClass('disabled');
 					$('.btn-add-loading').removeClass('disabled');
 					$('#edit-loading-cancel').addClass('hidden');
+          return false;
 				});
 
 				$('#edit-cancel').addClass('btn');
@@ -602,7 +623,19 @@
 				}
 
 				// SCENARIO
+        addTooltip ($('#sc-lbl-name'),'Scenario Name');
+        addTooltip ($('#sc-lbl-land'),'Land Requirement. Higher values signify land scarcity');
+        addTooltip ($('#sc-lbl-chemical'),'Chemical requirement');
+        addTooltip ($('#sc-lbl-energy'),'Energy requirement');
+        addTooltip ($('#sc-lbl-om'),'O&M requirement');
+        addTooltip ($('#sc-lbl-shock'),'Shock resistance');
+        addTooltip ($('#sc-lbl-flow'),'Flow Shock resistance');
+        addTooltip ($('#sc-lbl-toxic'),'Toxic Shock resistance');
+        addTooltip ($('#sc-lbl-sludge'),'Sludge resistance');
+
 				// add a scenario
+
+
 				$('.btn-add-scenario').unbind('click').on('click',function(){
 					//console.log('ADD SCENARIO');
 					var viewport = $('#scenario-form-container');
@@ -667,6 +700,7 @@
         $('[name=scenario_nid]').unbind('change').on('change',function(){
           //console.log($(this).val());
           showTooltip($('.btn-show-tech'),'You\'ve selected a new Scenario. Click here to refresh this list.');
+          //showTooltip($('.btn-show-tech'),'You\'ve edited one or more values. Click here to refresh this list.');
         });
 
 
@@ -735,16 +769,20 @@
 					var rowId = '#scenario-row-'+scenarioNodeId;
           Drupal.settings.node.values.scenario = { 'selected': scenarioNodeId };
           showTooltip($('#show-tech-'+Drupal.settings.node.values.nid),'You\'ve selected a new Total Population Equivalent. Click here to refresh this list.');
+          //showTooltip($('#show-tech-'+Drupal.settings.node.values.nid),'You\'ve edited one or more values. Click here to refresh this list.');
 				})
 
 
-				$('#edit-scenario-cancel').unbind("click").on('click',function(event){
+				//$('#edit-scenario-cancel').unbind("click").on('click',function(){
+				$('#edit-scenario-cancel').click(function(){
+          //console.log('#edit-scenario-cancel');
 					var viewport = $('#scenario-form-container');
 					viewport.empty();
 					$('.project-edit-scenario-btn').removeClass('disabled');
 					$('.project-delete-scenario-btn').removeClass('disabled');
 					$('.btn-add-scenario').removeClass('disabled');
 					$('#edit-loading-cancel').addClass('hidden');
+          return false;
 				});
 
 				// calculate Population Equivalent
@@ -849,6 +887,7 @@
 
 				// on change of any of the PopEq Parameters
 				$('#table-popeq input.popeq-parameter').unbind('change').unbind('keyup').unbind('blur').on('change keyup blur', function(e){
+				//$('#table-popeq input.popeq-parameter').unbind('change').on('change', function(e){
 					var selectedParam = this.id.split("-")[2];
 					console.log(selectedParam);
 					var popEq = calcPE(selectedParam,weight_values);
@@ -891,34 +930,53 @@
 
 				$('#table-popeq input.popeq-parameter').unbind('blur').on('blur',function(){
           // activate unhighlight when blurring away from a person load equivalent input
-					var selectedParam = this.id.split("-")[2];
+					var selectedParam = $(this).attr('id').split("-")[2];
 					highlightColumn(selectedParam,'unhighlight');
 				});
 
 				$('#table-popeq input.popeq-parameter').unbind('change').on('change',function(){
           showTooltip($('#show-tech-'+Drupal.settings.node.values.nid), 'You\'ve modified the Person Load Equivalent (POL). Click here to refresh this list.');
+          //showTooltip($('#show-tech-'+Drupal.settings.node.values.nid), 'You\'ve edited one or more values. Click here to refresh this list.');
 				});
 
 				$('#table-popeq input.popeq-parameter').unbind('focus').unbind('click').on('focus click',function(e) {
           // activate unhighlight when focusing or clicking on a person load equivalent input
-					var selectedParam = this.id.split("-")[2];
+					var selectedParam = $(this).attr('id').split("-")[2];
 					highlightColumn(selectedParam,'highlight');
 				});
 
 
 				$('[name="popeq_parameter"]').unbind('blur').on('blur',function(){
           // activate unhighlight when blurring away from a popeq radio button
-					var selectedParam = this.value; //.split("-")[2];
+					var selectedParam = $(this).val(); //.split("-")[2];
 					highlightColumn(selectedParam,'unhighlight');
           //$('#retic-cost').
 				});
 
-				$('[name="popeq_parameter"]').unbind('focus').unbind('click').on('focus click',function(e){
+				$('[name="popeq_parameter"]').unbind('focus').unbind('click').on('focus click',function(){
+				//$('[name="popeq_parameter"]').unbind('click').on('click',function(){
+          popeqinputID = '#'+$(this).attr('id');
+          //console.log('popeqinputID:'+popeqinputID);
           // activate unhighlight when focusing or clicking on a popeq radio button
-					var selectedParam = this.value;
+          $(popeqinputID).attr('checked','checked');
+          //console.log($(popeqinputID).attr('checked'));
+					var selectedParam = $(this).val();
+          //console.log('selectedParam:'+selectedParam);
 					highlightColumn(selectedParam,'highlight');
           showTooltip($('#show-tech-'+Drupal.settings.node.values.nid),'You\'ve selected a new Total Population Equivalent. Click here to refresh this list.');
+          //showTooltip($('#show-tech-'+Drupal.settings.node.values.nid),'You\'ve edited one or more values. Click here to refresh this list.');
 				});
+
+        function getPopeqValue() {
+          //var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+          var popeqParamName = $('input[name="popeq_parameter"]:checked').val();
+          if (popeqParamName){
+            var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+            //console.log(popeqParamName);
+            return ($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+          }
+        }
+
 
 				$('body.node-type-project, body.page-project-edit').ready(function(event){
 					if($('#project-effluent-standard').length > 0){
@@ -936,21 +994,19 @@
             //console.log($('.btn-ajax-tech').attr('href'));
 						//
             if (Drupal.settings.node.values.changed){
-              var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-              var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
-              showTechnologies($(techTdSelector)[0].innerHTML.replace(/,/g,""));
-            }
+              //console.log($('input[name="popeq_parameter"]:checked').val());
+              //var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
+              //var popeqParamName = $('input[name="popeq_parameter"]:checked').val();
+              //console.log(popeqParamName);
+              //var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
+              //console.log($(techTdSelector)[0].innerHTML.replace(/,/g,""));
+              showTechnologies(getPopeqValue());
+            } //else {
+              //console.log(Drupal.settings.node.values.changed);
+            //}
 					});
 				});
 
-        function getPopeqValue() {
-          var popeqParamName = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
-          if (popeqParamName){
-            var techTdSelector = 'td.popeq-totpe-'+popeqParamName;
-            //console.log(popeqParamName);
-            return ($(techTdSelector)[0].innerHTML.replace(/,/g,""));
-          }
-        }
 				// TECHNOLOGIES
 				$('.btn-show-tech').unbind('click').on('click',function(event){
           //var popeqParamName2 = $('input[name="popeq_parameter"]:checked','#wamex-project-popeq-form').val();
@@ -1257,7 +1313,12 @@
         $('#retic-cost').text(makeRange(costOfSewerage(getPopeqValue())));
         $('#retic-cost-per-capita').text(makeRange(reticCostPC));
         //console.log(makeRange(reticCostPC));
-        //$('#edit-field-pipe-length').val(minPipeLength(landArea));
+        //console.log(Drupal.settings.node.values.field_pipe_length);
+        if (Drupal.settings.node.values.field_pipe_length == 0 || !Drupal.settings.node.values.field_pipe_length){
+          $('#edit-field-pipe-length').val(minPipeLength(landArea));
+        } else {
+          //console.log(Drupal.settings.node.values.field_pipe_length);
+        }
         var pipeLength = $('#edit-field-pipe-length').val();
         var reticCostPumps = costOfPumps(terrainType,landArea,pipeLength);
         var reticCostPumpsPC = reticCostPumps/population;
@@ -1309,7 +1370,7 @@
         }
 
         function minPipeLength(area) {
-          return Math.round(Math.sqrt(area/Math.PI)*4);
+          return Math.round(Math.sqrt(area/Math.PI)*8);
         }
 
         function costOfPumps(terrain, landArea, pipeLengthMin) {   // ADWF!
@@ -1413,12 +1474,6 @@
           showTooltip($('#edit-retic-submit'),'You\'ve modified '+$(this).attr('title')+'. Click here to save your changes.');
         });
 
-        //$('#edit-field-terrain-type').unbind('change').on('change', function(){
-          // update cost of pumps value
-          //$
-        //});
-
-
         // modals for project sections
 				var helpModal = '<div id="section-help-modal" class="custom-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
 				+'<div class="modal-dialog">'
@@ -1437,25 +1492,27 @@
 					event.preventDefault();
 					//console.log($(this).attr('id').split("-")[0]);
 					var sectionTitle = $('#'+$(this).attr('id').split("-")[0]+'-title-container h3 a')[0].innerText;
-          //console.log(sectionTitle);
 
 					$('.main-container').append(customHelpModal);
 					$('#section-help-modal .modal-title').empty().append('Help: '+sectionTitle);
-					$('#section-help-modal .modal-body').empty().append(customHelpText[$(this).attr('id').split("-")[0]]);
+					//$('#section-help-modal .modal-body').empty().append(customHelpText[$(this).attr('id').split("-")[0]]);
+          // help button id = drupal help text node path
+          var helpPath = Drupal.settings.basePath+'/get/ajax/w-h/'+$(this).attr('id');
+					$('#section-help-modal .modal-body').empty().load(helpPath);
 					$('#section-help-modal').show();
 					$('#section-help-modal').modal();
 				});
 
-        var customHelpText = {
-          "project"  : "The Project Information section contains basic information about your project, such as its location and a short description of the project.",
-          "financial": "<p>The Financial Information section contains the information used for computing the cost of wastewater treatment and the cost of collection and conveyance. </p>",
-          "loading"  : "The Wastewater Characterization section contains information about wastewater loading characteristics, or the influent water that flows into a treatment plant.",
-          "standards": "The Effluent Standards section sets the acceptable levels of chemicals in wastewater after treatment.",
-          "popeq"    : "<p>The Population Equivalent section contains information about the unit per capita loading. This is the ratio of the sum of the pollution load produced in 24 hours to the individual pollution load produced by one person in the same period.</p><p>Based on the effluent standards that you selected, you will need to specify the person load equivalent (POL) of wastewater, expressed in grams per person per day. This POL is used to compute the population equivalent (PE).</p><p>For example, you may want to compare the PE of targeting the TotN or the nitrogen content of water versus targeting the PE for TotP or the phosphorous content of water.</p><p>If you find that the PE is higher if you focus wastewater treatment on nitrogen content rather than on phosphorous, you may say that based on the PE, a treatment that targets nitrogen content has wider impact.</p>",
-          "scenario" : "The Scenarios section contains the information used to prioritize your project considerations and requirements, such as land area, shock resistance, and sludge handling. ",
-          "tech"     : "The Suitable Technologies section contains the various suitable technologies for your project and their corresponding costs.",
-          "retic"    : "<p>The Collection and Conveyance section contains information about the project land area, the piped-water network required for the project, and the cost of collection and conveyance of wastewater. Note that entering collection and conveyance information is optional. Some projects require only a treatment plant, without a piped-water network.</p>",
-        }
+        //var customHelpText = {
+          //"project"  : "The Project Information section contains basic information about your project, such as its location and a short description of the project.",
+          //"financial": "<p>The Financial Information section contains the information used for computing the cost of wastewater treatment and the cost of collection and conveyance. </p>",
+          //"loading"  : "The Wastewater Characterization section contains information about wastewater loading characteristics, or the influent water that flows into a treatment plant.",
+          //"standards": "The Effluent Standards section sets the acceptable levels of chemicals in wastewater after treatment.",
+          //"popeq"    : "<p>The Population Equivalent section contains information about the unit per capita loading. This is the ratio of the sum of the pollution load produced in 24 hours to the individual pollution load produced by one person in the same period.</p><p>Based on the effluent standards that you selected, you will need to specify the person load equivalent (POL) of wastewater, expressed in grams per person per day. This POL is used to compute the population equivalent (PE).</p><p>For example, you may want to compare the PE of targeting the TotN or the nitrogen content of water versus targeting the PE for TotP or the phosphorous content of water.</p><p>If you find that the PE is higher if you focus wastewater treatment on nitrogen content rather than on phosphorous, you may say that based on the PE, a treatment that targets nitrogen content has wider impact.</p>",
+          //"scenario" : "The Scenarios section contains the information used to prioritize your project considerations and requirements, such as land area, shock resistance, and sludge handling. ",
+          //"tech"     : "The Suitable Technologies section contains the various suitable technologies for your project and their corresponding costs.",
+          //"retic"    : "<p>The Collection and Conveyance section contains information about the project land area, the piped-water network required for the project, and the cost of collection and conveyance of wastewater. Note that entering collection and conveyance information is optional. Some projects require only a treatment plant, without a piped-water network.</p>",
+        //}
 
 
         // modals for technology names
@@ -1477,7 +1534,6 @@
 					//console.log($(this).attr('id'));
 					// get/ajax/  technology/<tid>
 					//.load('get/ajax/technology/'+tid);
-					// wastewaterinfo.asia/tech-sheets/tds-003
 					$('.main-container').append(customTechModal);
 					$('#tech-help-modal .modal-title').empty().append('Technology: '+$(this).text());
 					$('#tech-help-modal .modal-body').empty().append('Description of '+$(this).text() + ' goes here.');
@@ -1489,9 +1545,13 @@
 
 			}
 
-			if($('body.page-dashboard').length > 0){
+      //console.log($('body.page-dashboard').length);
+      // BUTTON BEHAVIORS
+      // DASHBOARD and FEATURED PROJECTS button behavior
+			if($('body.page-dashboard, body.page-featured-projects').length > 0){
 				var throbberPath = Drupal.settings.basePath+'misc/throbber-active.gif"';
-				var viewport = $('#dashboard-projects-viewport');
+				var viewport = $('#project-form-container');
+        // load project form in viewport
 				$('#add-project').unbind("click").on('click',function(event){
 					//console.log('add new project');
 					if($('#cancel-project').hasClass('hidden')) $('#cancel-project').removeClass('hidden');
@@ -1499,12 +1559,15 @@
 					var ajaxFormPath = Drupal.settings.basePath+'get/ajax/project/add';
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
-						Drupal.attachBehaviors('#dashboard-projects-viewport');
+						Drupal.attachBehaviors('#project-form-container');
 					});
+          return false;
 				});
 
 				$('.dashboard-edit-project-btn').unbind("click").on('click',function(event){
-					if($('#cancel-project').hasClass('hidden')) $('#cancel-project').removeClass('hidden');
+					if($('#cancel-project').hasClass('hidden')) {
+            $('#cancel-project').removeClass('hidden');
+          }
 					// load the /project/edit/% custom form, and attach ajax behaviors to the container
 					var btnId = $(this).attr('id');
 					var idTokens = btnId.split("-");
@@ -1514,8 +1577,9 @@
 					$('#delete-project-'+nodeId).addClass('disabled');
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
-						Drupal.attachBehaviors('#dashboard-projects-viewport');
+						Drupal.attachBehaviors('#project-form-container');
 					});
+          return false;
 				});
 
 				$('.dashboard-delete-project-btn').unbind('click').on('click',function(event){
@@ -1531,16 +1595,19 @@
 					$('#delete-project-'+nodeId).addClass('disabled');
 					viewport.empty().html('<img src="' + throbberPath + '" style="margin-left:50%;"/>');
 					viewport.load(ajaxFormPath,'ajax=1',function(){
-						Drupal.attachBehaviors('#dashboard-projects-viewport');
+						Drupal.attachBehaviors('#project-form-container');
 					});
+          return false;
 				});
 
 				$('#cancel-project').unbind("click").on('click',function(event){
+          console.log('dashboard-cancel-project');
 					viewport.empty();
 					$('.dashboard-edit-project-btn').removeClass('disabled');
 					$('.dashboard-delete-project-btn').removeClass('disabled');
 					$('#add-project').removeClass('disabled');
 					$('#cancel-project').addClass('hidden');
+          return false;
 				});
 
 				$('#edit-cancel').addClass('btn');

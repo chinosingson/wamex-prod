@@ -11,3 +11,6 @@ sites/all/libraries/L.GeoSearch-develop.zip
 sites/all/libraries/MPDF_6_0.zip
 sites/all/modules/wamex/wamex_module_20160513.zip
 sites/all/themes/bootstrap/wamex/wamex_theme_20160513.zip
+
+# ignore extra text files in theme folders
+sites/all/themes/bootstrap/wamex/templates/*.txt

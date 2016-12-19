@@ -38,7 +38,7 @@
         <?php foreach ($header as $field => $label): $header_classes[$field].=" views-scenario-field-header" ?>
 					<?php if ($field != "nid"):?>
           <th <?php if ($header_classes[$field]) { print 'class="'. $header_classes[$field] . '" '; } ?> scope="col">
-            <?php print $label; ?>
+            <label class="scenario-param-label" id="sc-lbl-<?php print (strstr($label,'&')?strtolower(str_replace("&amp;","",$label)):strtolower($label)) ?>"><?php print $label; ?></label>
           </th>
 					<?php else: ?>
 					<th>&nbsp;</th>

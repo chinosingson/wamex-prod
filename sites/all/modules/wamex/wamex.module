@@ -182,8 +182,6 @@ function wamex_menu() {
 		'title' => 'Add scenario',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_scenario_form',NULL,2),
-		//'page callback' => 'drupal_get_form',
-		//'page arguments' => array('wamex_scenario_form',NULL,2),
 		'access arguments' => array('add scenario custom'),
 		'type' => MENU_LOCAL_TASK,
 	);
@@ -191,8 +189,6 @@ function wamex_menu() {
 		'title' => 'Edit scenario',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('wamex_scenario_form',2,NULL),
-		//'page callback' => 'drupal_get_form',
-		//'page arguments' => array('wamex_scenario_form',2, NULL),
 		'access arguments' => array('edit scenario custom'),
 		'type' => MENU_CALLBACK,
 	);
@@ -206,6 +202,15 @@ function wamex_menu() {
 		'type' => MENU_CALLBACK,
 	);
 
+  $items['w-h/%'] = array(
+    'title' => 'WaMEX Help System',
+    'page callback' => 'wamex_get_help_text',
+		//'page arguments' => array(1),
+		'page arguments' => array('wamex_get_help_text',1,1),
+		'access callback' => 'user_access',
+		'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
 
 	/*$items['admin/settings/wamex'] = array(
 		'title' => 'WaMEx Settings',
@@ -241,6 +246,23 @@ function wamex_menu() {
   return $items;
 }
 
+
+function wamex_get_help_text ($type = 'ajax', $help_path) {
+  $output = wamex_display_help($help_path);
+  if ($type == 'ajax'){
+    ajax_deliver($output);
+  } else {
+    return $output;
+  }
+}
+
+function wamex_display_help ($help_path_alias) {
+  $path = drupal_lookup_path("source", $help_path_alias);
+  $node = menu_get_object('node',1,$path);
+  if ($node) {
+    return $node->field_help_text[LANGUAGE_NONE][0]['value'];
+  }
+}
 
 /*function wamex_display_table() {
 	$name = 'chino';
@@ -309,10 +331,11 @@ function wamex_get_tech_data($techArgs){
   $tech_json = array();
   $output = "";
   $debug_output = "";
-  $output .= $techArgs;
+  $output .= print_r($techArgs,1)."<br/>";
 	$str_loadings  = $aryTechArgs[0];
 	$str_standards = $aryTechArgs[1];
 	$str_popeq = $aryTechArgs[2];
+
 	$str_scenario = $aryTechArgs[3];
 	$str_land_cost = $aryTechArgs[4];
 	$str_exch_rate = $aryTechArgs[5];
@@ -530,7 +553,7 @@ function wamex_get_tech_data($techArgs){
     $output .= "walang node!<br/>";
 
   }*/
-
+  //drupal_set_message(print_r($tech_values['args'][2],1),'error');
   //$ret_ary['techArgs'] = $techArgs;
   $ret_ary = $tech_values;
   //return $output;
@@ -549,7 +572,7 @@ function wamex_display_tech($techs, $static = null){
     $techInfo = wamex_get_tech_data($techs);
     //$output .= "2<br/>";
   }
-	$output .= "<div class=\"table-responsive\">";
+	//$output .= "<div class=\"\">";
 	//$output .= "<pre>".print_r($techInfo,1)."<br/></pre>"; //$techArgs;
 	//$output .= "<pre>Loadings: ".$str_loadings."</pre>";
 	//$output .= "<pre>Standards: ".$str_standards."</pre>";
@@ -562,14 +585,16 @@ function wamex_display_tech($techs, $static = null){
   $str_curr_code = $techInfo['args'][6];
   $count_techs = count($techInfo['table']);
 
+	//$output .= "<pre>".print_r($techInfo['args'],1)."</pre>";
 	//$output .= "<pre>".print_r($techInfo['table'][0],1)."</pre>";
 	//$output .= "<pre>".print_r($scenario_sorted_techs,1)."</pre>";
 
 	//$output .= '<div class="table-responsive">';
 	if ($count_techs>0){
 		$output .= "<div class=\"row\">";
-		$output .= "<div class=\"col-sm-12 col-md-3 col-lg-3\" id=\"tech-count\">Displaying ".$count_techs." Technology options.<br/>Population Equivalent: ".number_format($str_popeq,2)."</div>";
-		$output .= "<div class=\"col-sm-12 col-md-8 col-lg-8 row\">";
+    //Displaying ".$count_techs." Technology options.<br/>
+		$output .= "<div class=\"col-sm-12 col-md-4 col-lg-4\" id=\"tech-count\">Population Equivalent: ".number_format($str_popeq,2)."</div>";
+		$output .= "<div class=\"pull-right col-sm-12 col-md-5 col-lg-5\">";
 		if ($str_scenario!=""){
 			$output .= "<div class=\"tech-display-controls\"><input type=\"radio\" name=\"tech-toggle-display\" id=\"tech-toggle-fn-attr\" checked=\"checked\" value=\"fn\"><label for=\"tech-toggle-fn-attr\">Financial Info</label></div>";
 			$output .= "<div class=\"tech-display-controls\"><input type=\"checkbox\" id=\"tech-toggle-fn-per-capita\" name=\"tech-toggle-fn-per-capita\"><label id=\"label-toggle-per-capita\" for=\"tech-toggle-fn-per-capita\">Per Capita</label></div>";
@@ -596,7 +621,7 @@ function wamex_display_tech($techs, $static = null){
     $land_cost_header = "Land Cost<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
     $tot_inv_header = "Total&nbsp;Investment<br/><span class=\"tech-financial-attr-label-unit label-unit\">(".$str_curr_code.")</span><span class=\"tech-financial-attr-pc-label-unit label-unit\">(".$str_curr_code."/capita)</span>";
 
-		$header[] = array('data' => t('Name<br/>&nbsp;'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name'),'sort'=>'asc');
+		$header[] = array('data' => t('Name<br/>&nbsp;'), 'class'=>array('col-md-3','tech-attributes','tech-name','col-name'), 'colspan'=>array(2),'sort'=>'asc');
     $header[] = array('data'=>t($score_header), 'class'=>array('col-md-1','tech-attributes','tech-score'));
     $header[] = array('data'=>t($capex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-capex'));
     $header[] = array('data'=>t($opex_header), 'class'=>array('col-md-1','tech-attributes','tech-financial-attr','tech-opex'));
@@ -612,6 +637,8 @@ function wamex_display_tech($techs, $static = null){
 		$header[] = array('data' => t('TSS<br/><span class="label-unit">(mg/&#x2113;)</span>'), 'class'=>array('col-md-1','tech-attributes','tech-ww-attr','tech-attributes-totp','tech-tss','col-tss'));
 
     $results = $techInfo['table'];
+
+    $rownum = 1;
 
 		foreach ($results as $val) {
       $financials_factor = 1/1000000;
@@ -641,6 +668,7 @@ function wamex_display_tech($techs, $static = null){
       // $ary_values['tot_inv'] = array('data'=>$tot_inv_range, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr', 'tech-totinv-pe','tech-totinv'));
       // $ary_values['tot_inv_pc'] = array('data'=>$tot_inv_range_per_capita, 'nowrap'=>'nowrap', 'class'=>array('tech-attributes','tech-financial-attr-pc','tech-totinv-pc','tech-totinv'));
 
+      $ary_values['rownum'] = array('data'=>t($rownum));
       $ary_values['name'] = array('data'=>t('<a href="#" class="technology-name" id="technology-name-'.$tech_id.'">'.$tech_name.'</a>'),'class'=>array('tech-attributes','tech-name','col-name'));
       $ary_values['score'] = array('data'=>number_format($score_value,2), 'class'=>array('tech-attributes','tech-score'));
       $ary_values['capex'] = array('data'=>$capex_range,'class'=>array('tech-attributes','tech-financial-attr','tech-capex-pe','tech-capex'));
@@ -671,6 +699,7 @@ function wamex_display_tech($techs, $static = null){
       $ary_values['P'] = array('data'=>$p_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-totp','col-totp'));
       $ary_values['TSS'] = array('data'=>$tss_display, 'class'=>array('tech-attributes','tech-ww-attr','tech-tss','col-tss'));
 			$rows[] = $ary_values;
+      $rownum++;
 		}
 
 
@@ -693,7 +722,7 @@ function wamex_display_tech($techs, $static = null){
 	//$output = theme_table(array('header'=>array($header), 'rows'=>array($rows)));
   //$output .= theme('pager', NULL, 50, 0);
 	//$output .= '</div>';
-	$output .= '</div>';
+	//$output .= '</div>';
     //$commands[] = ajax_command_settings($tech_values, TRUE);
 
     //ajax_deliver(array(
@@ -990,6 +1019,7 @@ function wamex_scenario_form($form, &$form_state, $nid = null, $pid = null){
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+	$form['actions']['cancel']['#attributes']['formnovalidate'][] = 'formnovalidate';
 
 	if ($nid){
 		// edit existing
@@ -1456,6 +1486,7 @@ function wamex_loading_form($form, &$form_state, $nid = null, $pid = null){
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-xs';
+	$form['actions']['cancel']['#attributes']['formnovalidate'][] = 'formnovalidate';
 	$form['nid']['#type'] = 'hidden';
 
 	if ($nid){
@@ -1762,7 +1793,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 		'#type' => 'select',
 		'#default_value' => $field_currency,
 		'#options' => $currency_opts,
-		'#prefix' => '<hr/><div class="row"><div class="col-sm-12 col-md-6 col-lg-6">',
+		'#prefix' => '<hr/><div class="row"><div class="col-sm-12 col-md-7 col-lg-7">',
 		'#suffix' => '</div>',
 	);
 	$form['field_exchange_rate_to_usd_und_0_value'] = array(
@@ -1925,6 +1956,7 @@ function wamex_project_form($form, &$form_state, $nid = null) {
 	//$form['actions']['cancel']['#suffix'] = '</div>';
 	$form['actions']['cancel']['#type'] = 'button';
 	$form['actions']['cancel']['#value'] = t('Cancel');
+	$form['actions']['cancel']['#markup'] = l(t('Cancel'),'node/'.$nid);
 	$form['actions']['cancel']['#attributes']['id'] = 'cancel-project';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn';
 	$form['actions']['cancel']['#attributes']['class'][] = 'btn-default';
@@ -2230,11 +2262,11 @@ function wamex_project_effl_form_submit($form, &$form_state){
 		}
 
 		if ($success){
-			$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('fragment'=>'standards'));
+			//$form_state['redirect'] = array('node/'.$form_state['values']['nid'], array('query'=>array('s'=>1),'fragment'=>'standards'));
 			//$redir_url = l('asdf',$form_state['redirect'],array('fragment'=>'standards'));
 			//drupal_set_message($redir_url);
-			$commands[] = ctools_ajax_command_reload();
-			//$commands[] = ctools_ajax_command_redirect('node/'.$form_state['values']['nid'],0,array('fragment'=>'standards'));
+			//$commands[] = ctools_ajax_command_reload();
+			$commands[] = ctools_ajax_command_redirect('node/'.$form_state['values']['nid'],0,array('query'=>array('s'=>1),'fragment'=>'standards'));
 			return array('#type' => 'ajax', '#commands' => $commands);
 		}
 	}
@@ -2426,12 +2458,13 @@ function wamex_project_popeq_form($form, &$form_state){
 	);
 
 	foreach ($popeq_parameters as $popeq_parameter => $name){
+    $param_label_markup = $name."<br/><span class=\"label-unit\">(mg/&#x2113;)</span>";
 		$form['popeq_parameter'][$name] = array(
 			'#type' => 'radio',
+			'#title' => $param_label_markup,
 			'#value' => 'default',
 			//'#default_value' => t('cod'),
 			'#return_value' => $popeq_parameter,
-			'#title' => $name."<br/><span class=\"label-unit\">(mg/&#x2113;)</span>",
 			'#parents' => array('popeq_parameter'),
 			'#attributes' => array('class'=>array('popeq-parameter-radio','popeq-parameter-radio-'.$popeq_parameter)),
 		);

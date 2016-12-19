@@ -105,12 +105,6 @@
 												return weight_sum+parseInt(value) <= 100;
 											}
 										},
-										/*between: {
-											min: 1,
-											max: 100,
-											inclusive: true,
-											message: 'Must be 1-100'
-										}*/
 									}
 								}
 							}
@@ -118,15 +112,7 @@
 						.formValidation('validate')//;
 						.on('err.form.fv', function(e) {
 							console.log('error!');
-							//generateCaptcha();
 						});
-						/*.on('success.field.bv', function(e, data) {
-						console.log('success.field.bv');
-						console.log(data.field);
-						if (data.bv.isValid()) {
-							data.bv.disableSubmitButtons(false);
-						}
-					});*/
 				});
 
 				$('#wamex-scenario-form').ready(function(){
@@ -159,6 +145,31 @@
 							console.log('error');
 						});
 				});
+
+        /*$('#wamex-project-retic-form').ready(function(){
+          $('#edit-field-pipe-length')
+            .formValidation({
+							framework: 'bootstrap',
+							icon: {
+									valid: 'glyphicon glyphicon-ok',
+									invalid: 'glyphicon glyphicon-remove',
+									validating: 'glyphicon glyphicon-refresh'
+							},
+							fields: {
+								field_pipe_length: {
+									validators: {
+										notEmpty: {
+											message: 'Pipe length required'
+										}
+									}
+								}
+							}
+            })
+						.formValidation('validate')
+						.on('err.form.fv', function(e){
+							console.log('error');
+						});
+        });*/
 
 			}
 

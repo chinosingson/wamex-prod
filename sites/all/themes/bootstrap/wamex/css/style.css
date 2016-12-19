@@ -9,8 +9,12 @@
   border-radius: 0px !important;
 }*/
 
-body, h1, h2, h3, h4, h5, h6 {
+body, h1, h2, h3, h4, h5, h6, div.tooltip-inner {
   font-family: 'Open Sans', sans-serif;
+}
+
+.tooltip {
+  position: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -37,22 +41,94 @@ body.front > div.main-container.container {
   width: 100%;
 }
 
-#wamex-jumbotron {
-  color: #ffffff;
-  background-color: #1995dc;
-  background-color: #0b4160;
-  border: none !important;
-  border-radius: 0px !important;
-  font-size: 15px;
-  padding: 40px 40px 40px 40px;
-  margin-top: -42px;
- /* background-size: 100%;
+.footer {
+  /*background-image: -webkit-gradient(linear,0 0,0 100%,from(#54b4eb),color-stop(60%,#2fa4e7),to(#1d9ce5));
+  background-image: -webkit-linear-gradient(#54b4eb,#2fa4e7 60%,#1d9ce5);
+  background-image: linear-gradient(#54b4eb,#2fa4e7 60%,#1d9ce5);
   background-repeat: no-repeat;*/
-  background-image: url('/wamex/sites/default/files/wamex/ww_bg_2.jpg');
+  /*background-color: #04519b;*/
+  background-color: #1d9ce5;
+  color: #ffffff;
+  font-size: 0.85em;
+  margin: 0px;
+  padding: 0px 40px 0px 40px;
+  width: 100%;
 }
 
+.footer #block-block-2,
+.footer #block-block-3 {
+  padding: 20px 0px 20px 0px;
+}
+
+.footer #block-block-2 > div.container,
+.footer #block-block-3 > div.container {
+  width: 95%;
+}
+
+.footer a {
+  color: #ffffff;
+  text-decoration: underline !important;
+}
+
+.footer #block-block-2 img,
+.footer #block-block-3 img {
+  float: left;
+  height: 50px;
+  line-height: 1.6em;
+  margin: 0px 5px 5px 0px;
+}
+
+
+#wamex-home-banner{
+  /*background-color: #0b4160;*/
+  /*background-color: rgba(11, 65, 96, 0.5);*/
+  background-image: url('/sites/all/themes/bootstrap/wamex/wamex-abt-bg.jpg');
+  background-repeat: no-repeat;
+
+  background-size: cover;
+  background-position: center;
+}
+
+#wamex-jumbotron > div {
+  background-color: rgba(50,50,50,0.8);
+  padding: 10px;
+}
+#wamex-home-banner > div.pane-content {
+  background-color: rgba(11, 65, 96, 0.3);
+}
+
+#wamex-home-features {
+  margin-bottom: 10px;
+}
+
+body.not-front.not-logged-in.page-user > div.main-container.container {
+  margin-bottom: 10px;
+}
+
+#wamex-home-features > h2 {
+  font-weight: normal;
+  text-align: center;
+  color: #1d9ce5;
+  margin-top: 10px;
+}
+
+#wamex-jumbotron {
+  background: inherit;
+  /*background-image: url('/wamex/sites/all/themes/bootstrap/wamex/wamex-abt-bg.jpg');*/
+  color: #ffffff;
+  /*background-color: #0b4160;*/
+  border: none !important;
+  border-radius: 0px !important;
+  font-size: 1em !important;
+  padding: 40px 0px 40px 0px;
+  margin: initial;
+  opacity: 0.9;
+  background-blend-mode: multiply;
+}
+
+
 #wamex-jumbotron li {
-  margin-bottom: -10px;
+  margin-bottom: initial;
 }
 
 #wamex-jumbotron h5 {
@@ -60,22 +136,48 @@ body.front > div.main-container.container {
 }
 
 #wamex-jumbotron #wamex-logotype img {
-  width: 395px;
+  height: 80px;
 }
 
 #wamex-jumbotron .field-item {
   display: inline-block;
 }
 
+#wamex-jumbotron p {
+  font-size: 1.2em !important;
+}
+
 #wamex-try,
-#wamex-login
-{
+#wamex-login {
   width: 220px !important;
-  float: left;
+}
+
+#wamex-try a.btn,
+#wamex-login a.btn {
+  border-radius: 0px;
+  width: 200px;
 }
 
 #about-actions {
   margin-top: 20px;
+  display: inline-block;
+}
+
+#home-wamex-features h1 .glyphicon {
+    font-size: 1.4em;
+    color: #1d9ce5;
+}
+
+#home-wamex-features p {
+  font-size: 0.9em;
+}
+
+#home-wamex-features .feature-container {
+  margin-bottom: 10px;
+}
+
+#wamex-project-form {
+  margin-bottom: 10px;
 }
 
 #wamex-project-form div.tabbable.tabs-left.vertical-tabs.clearfix,
@@ -172,17 +274,10 @@ body.front > div.main-container.container {
 #project-node-form-ajax select,
 #loading-node-form select
 {
-	/*border: 1px dotted blue;*/
 	width: 60%;
-	/*float: right;*/
 	display: inline-block;
 }
 
-/*#edit-body-und-0-value
-{
-	border: 1px dotted blue;
-	width: 50% !important;
-}*/
 
 #body-add-more-wrapper .form-textarea-wrapper {
 	display: inline-block;
@@ -333,6 +428,22 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	margin: 10px 10px 10px 0px;
 }
 
+
+
+
+/* fixes for bootstrap module */
+
+#collapse-popeq > div.panel-body {
+  border-top: 0px !important;
+}
+
+body.node-type-project .panel-group .panel {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+/* fixes for bootstrap module */
+
 #view-project-loadings {
   margin-top: -20px !important;
 }
@@ -415,6 +526,9 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 	/*margin-bottom: 10px;*/
 }
 
+#wamex-scenario-form {
+  display: inline-block;
+}
 
 #wamex-project-form  .form-control-feedback.glyphicon-remove,
 #wamex-scenario-form .form-control-feedback.glyphicon-remove,
@@ -442,10 +556,21 @@ body.node-type-project #effluent-standard-values .project-effluent-attribute lab
 #wamex-scenario-form .form-control-feedback.glyphicon-remove {
 	float: left;
 	/*position:  relative;*/
-	top: 6px;
-	left: -7px;
+	top: -10px;
+	left: 53px;
 }
 
+/*#wamex-scenario-form #form-wrapper-div > div.row {
+  overflow-y: hidden;
+  border: 1px dotted blue;
+}*/
+
+
+#wamex-scenario-form .scenario-param {
+  padding-left: 7px;
+  padding-right: 7px;
+  text-align: center;
+}
 
 .views-scenario-field-header,
 .views-scenario-field-value {
@@ -574,6 +699,9 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	padding-bottom: 0px;
 }
 
+
+
+#collapse-standards .panel-body,
 #collapse-scenario .panel-body,
 #collapse-loading-list .panel-body {
 	padding-left: 0px;
@@ -595,10 +723,10 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 }
 
 #tech-count {
-	font-size: 12px;
 	margin: 5px 0px 5px 10px;
 	color: #666666;
 	float: left;
+  font-style: italic;
 }
 
 .tech-display-controls {
@@ -611,12 +739,13 @@ body.page-dashboard #project-effluent-standard-values .effluent-standard-attribu
 	width: 50px;
 	height: 25px;
 	float: left;
-	font-size: 11px;
+	/*font-size: 11px;*/
 }
 
 .tech-display-controls label {
-	font-size: 12px;
-	margin: 4px 0px 0px 4px;
+  font-weight: normal;
+	/*font-size: 12px;*/
+	margin: 0px 0px 0px 5px;
 }
 #table-scenario-form > tbody > tr > td.form-scenario-label,
 #table-popeq > tbody > tr > td.popeq-row-header,
@@ -645,7 +774,8 @@ input.popeq-parameter {
 
 #table-popeq input.popeq-parameter-radio {
 	position: relative;
-	top: -18px;
+	top: 2px;
+  margin-right: 4px;
 }
 
 
@@ -666,6 +796,12 @@ td.tech-attributes {
 
 td.tech-attributes.tech-name {
 	text-align: left;
+}
+
+#table-popeq,
+#table-effl-standards,
+#table-retic-values {
+  margin-bottom: 0px;
 }
 
 /*#table-effl-standards th.tech-attributes.tech-name,
@@ -699,7 +835,6 @@ td.tech-attributes.tech-landcost,*/
 #table-loading-tech > tbody > tr > td.tech-attributes.tech-name.col-name > a.technology-name,
 #table-loading-tech > td.tech-attributes.tech-name > a.technology-name {
   color: #317eac;
-  font-weight: 700;
 	width: 275px !important;
 }
 
@@ -769,8 +904,8 @@ td.tech-attributes.tech-landcost,*/
 }
 
 #wamex-scenario-form #form-wrapper-div {
-	padding-top: 10px;
-	padding-left: 15px;
+	padding-top: 5px;
+	padding-left: 10px;
 }
 
 #scenario-toggle-container {
@@ -793,7 +928,8 @@ td.tech-attributes.tech-landcost,*/
 	width: 8px;
 	height: 120px;
 	padding: 0 5px;
-	margin-left: 10px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #wamex-loading-delete-confirm,
@@ -819,10 +955,16 @@ td.tech-attributes.tech-landcost,*/
   margin-bottom: 0px;
 }
 
-.tech-score { background-color: #f9f9f9 !important;}
+/*.tech-score { background-color: #f9f9f9 !important;}
 .tech-capex { background-color: #61a3d4 !important; }
 .tech-opex { background-color: #79b4dc !important; }
 .tech-landreq { background-color: #94c5e4 !important; }
+.tech-landcost { background-color: #add6ec !important; }
+.tech-totinv { background-color: #c7e7f4 !important; }*/
+.tech-score { background-color: #dddddd !important;}
+.tech-capex { background-color: #c7e7f4 !important; }
+.tech-opex { background-color: #add6ec !important; }
+.tech-landreq { background-color: #c7e7f4 !important; }
 .tech-landcost { background-color: #add6ec !important; }
 .tech-totinv { background-color: #c7e7f4 !important; }
 
@@ -839,4 +981,10 @@ td.tech-attributes.tech-landcost,*/
     {
         display: none !important;
     }
+}
+
+
+body.page-dashboard #wamex-project-form,
+body.page-featured-projects #wamex-project-form {
+  margin-bottom: 20px;
 }
